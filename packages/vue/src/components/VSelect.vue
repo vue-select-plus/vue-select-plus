@@ -1,9 +1,7 @@
 <script lang="ts" setup>
 import { useTemplateRef, watch, nextTick, computed, toRef, ref } from 'vue';
 import { useVirtualizer } from '@tanstack/vue-virtual';
-import { useSelect } from '../composables/useSelect';
-import { useClickOutside } from '../composables/useClickOutside';
-import type { SelectOption, SelectModelValue } from '../types';
+import { useSelect, useClickOutside, type SelectOption, type SelectModelValue } from '@vue-select-plus/core';
 import VSelectOption from './VSelectOption.vue';
 
 interface VSelectProps {

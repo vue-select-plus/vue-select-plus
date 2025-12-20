@@ -37,3 +37,14 @@ __screenshots__/
 
 *storybook.log
 storybook-static
+.vitepress/cache
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# System Files
+Thumbs.db
+Desktop.ini
+

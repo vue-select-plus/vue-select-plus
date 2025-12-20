@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/vue3';
 import { ref, reactive } from 'vue';
 import { userEvent, within, expect, fn, waitFor } from 'storybook/test';
-import VSelect from '@/components/VSelect.vue';
-import type { SelectOption } from '../types';
+import VSelect from '../components/VSelect.vue';
+import type { SelectOption } from '@vue-select-plus/core';
 
-import "@/assets/style.css"
+import "@vue-select-plus/styles"
 
 // --- MOCK DATA ---
 const fruitOptions: SelectOption[] = [

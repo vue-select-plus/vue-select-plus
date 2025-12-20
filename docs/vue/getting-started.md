@@ -3,7 +3,8 @@
 ## Installation
 
 ```bash
-npm install vue-select-plus
+npm install @vue-select-plus/vue
+
 ```
 
 ## Setup
@@ -13,7 +14,7 @@ Imports styles and the component.
 ```typescript
 import { createApp } from 'vue'
 import App from './App.vue'
-import 'vue-select-plus/dist/style.css' // Import default styles
+import '@vue-select-plus/styles' // Import default styles
 
 createApp(App).mount('#app')
 ```

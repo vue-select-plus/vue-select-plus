@@ -1,11 +1,8 @@
 # Examples
 
 <script setup>
-import VSelect from '@/components/VSelect.vue'
-// In a real app, you would import the dist style:
-// import 'vue-select-plus/dist/style.css'
-// But for local docs dev, we import the source:
-import '@/assets/style.css'
+import { VSelect } from '@vue-select-plus/vue'
+import '@vue-select-plus/styles'
 
 import { ref } from 'vue'
 
@@ -67,8 +64,8 @@ function handleCreate({ parent, value }) {
 ```vue
 <script setup>
 import { ref } from 'vue'
-import { VSelect } from 'vue-select-plus'
-import 'vue-select-plus/dist/style.css'
+import { VSelect } from '@vue-select-plus/vue'
+import '@vue-select-plus/styles'
 
 const value = ref(null)
 const options = [
@@ -103,7 +100,7 @@ const options = [
 ```vue
 <script setup>
 import { ref } from 'vue'
-import { VSelect } from 'vue-select-plus'
+import { VSelect } from '@vue-select-plus/vue'
 
 const value = ref(['apple'])
 const options = [
@@ -138,7 +135,7 @@ const options = [
 ```vue
 <script setup>
 import { ref } from 'vue'
-import { VSelect } from 'vue-select-plus'
+import { VSelect } from '@vue-select-plus/vue'
 
 const value = ref(null)
 const options = [
@@ -255,7 +252,7 @@ const options = [
 ```vue
 <script setup>
 import { ref } from 'vue'
-import { VSelect } from 'vue-select-plus'
+import { VSelect } from '@vue-select-plus/vue'
 
 const value = ref(null)
 const options = ref([

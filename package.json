@@ -1,77 +1,22 @@
 {
-  "name": "vue-select-plus",
-  "version": "0.0.1",
-  "description": "A headless, flexible, and accessible select component for Vue 3.",
-  "author": "Leon Mathey",
-  "license": "MIT",
-  "keywords": [
-    "vue",
-    "select",
-    "dropdown",
-    "virtual-list",
-    "headless",
-    "accessibility"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/vue-select-plus/vue-select-plus.git"
-  },
-  "bugs": {
-    "url": "https://github.com/vue-select-plus/vue-select-plus/issues"
-  },
+  "name": "vue-select-plus-monorepo",
+  "version": "0.0.0",
+  "private": true,
   "type": "module",
-  "files": [
-    "dist"
+  "workspaces": [
+    "packages/*",
+    "playground",
+    "docs"
   ],
-  "main": "./dist/vue-select-plus.umd.cjs",
-  "module": "./dist/vue-select-plus.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/vue-select-plus.js",
-      "require": "./dist/vue-select-plus.umd.cjs"
-    }
-  },
-  "engines": {
-    "node": "^20.19.0 || >=22.12.0"
-  },
   "scripts": {
-    "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --build",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
-    "test": "vitest",
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
-    "test:unit": "vitest"
-  },
-  "peerDependencies": {
-    "vue": "^3.0.0"
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm test --workspaces --if-present"
   },
   "devDependencies": {
-    "@storybook/vue3-vite": "^10.1.4",
     "@tsconfig/node24": "^24.0.3",
-    "@types/node": "^24.10.1",
-    "@vitejs/plugin-vue": "^6.0.2",
-    "@vue/test-utils": "^2.4.6",
-    "@vue/tsconfig": "^0.8.1",
-    "jsdom": "^27.3.0",
-    "npm-run-all2": "^8.0.4",
-    "storybook": "^10.1.4",
-    "typescript": "~5.9.0",
+    "@types/node": "^25.0.3",
     "vite": "^7.2.4",
-    "vite-plugin-dts": "^4.5.3",
-    "vite-plugin-vue-devtools": "^8.0.5",
-    "vitepress": "^1.6.4",
-    "vitest": "^4.0.16",
     "vue": "^3.5.25",
     "vue-tsc": "^3.1.5"
-  },
-  "dependencies": {
-    "@tanstack/vue-virtual": "^3.13.13"
   }
 }

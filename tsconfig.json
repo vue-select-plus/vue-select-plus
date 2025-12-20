@@ -2,10 +2,13 @@
   "files": [],
   "references": [
     {
-      "path": "./tsconfig.node.json"
+      "path": "./packages/core"
     },
     {
-      "path": "./tsconfig.app.json"
+      "path": "./packages/vue"
+    },
+    {
+      "path": "./playground"
     }
   ]
 }

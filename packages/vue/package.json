@@ -1,0 +1,38 @@
+{
+    "name": "@vue-select-plus/vue",
+    "version": "0.0.1",
+    "type": "module",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "vite build",
+        "test": "vitest run --passWithNoTests",
+        "storybook": "storybook dev -p 6006",
+        "build-storybook": "storybook build"
+    },
+    "peerDependencies": {
+        "vue": "^3.0.0"
+    },
+    "dependencies": {
+        "@tanstack/vue-virtual": "^3.13.13",
+        "@vue-select-plus/core": "^0.0.1",
+        "@vue-select-plus/styles": "^0.0.1"
+    },
+    "devDependencies": {
+        "@csstools/css-parser-algorithms": "^3.0.5",
+        "@storybook/vue3-vite": "^10.1.4",
+        "@vitejs/plugin-vue": "^6.0.2",
+        "jsdom": "^27.3.0",
+        "storybook": "^10.1.4",
+        "vite": "^7.2.4",
+        "vite-plugin-dts": "^4.5.3",
+        "vitest": "^4.0.16"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

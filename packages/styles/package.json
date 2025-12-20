@@ -1,0 +1,13 @@
+{
+    "name": "@vue-select-plus/styles",
+    "version": "0.0.1",
+    "files": [
+        "src"
+    ],
+    "exports": {
+        ".": "./src/style.css"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

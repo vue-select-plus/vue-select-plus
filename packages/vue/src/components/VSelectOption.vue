@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import type { FlatOption } from '../types';
+import type { FlatOption } from '@vue-select-plus/core';
 
 interface Props {
     option: FlatOption;

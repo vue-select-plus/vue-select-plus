@@ -5,9 +5,9 @@ import {
   triggerRef,
   unref,
   watch
-} from "./chunk-EKBJ2FPM.js";
+} from "./chunk-D66RQT5R.js";
 
-// node_modules/@tanstack/virtual-core/dist/esm/utils.js
+// ../node_modules/@tanstack/virtual-core/dist/esm/utils.js
 function memo(getDeps, fn, opts) {
   let deps = opts.initialDeps ?? [];
   let result;
@@ -75,7 +75,7 @@ var debounce = (targetWindow, fn, ms) => {
   };
 };
 
-// node_modules/@tanstack/virtual-core/dist/esm/index.js
+// ../node_modules/@tanstack/virtual-core/dist/esm/index.js
 var getRect = (element) => {
   const { offsetWidth, offsetHeight } = element;
   return { width: offsetWidth, height: offsetHeight };
@@ -928,7 +928,7 @@ function calculateRange({
   return { startIndex, endIndex };
 }
 
-// node_modules/@tanstack/vue-virtual/dist/esm/index.js
+// ../node_modules/@tanstack/vue-virtual/dist/esm/index.js
 function useVirtualizerBase(options) {
   const virtualizer = new Virtualizer(unref(options));
   const state = shallowRef(virtualizer);
