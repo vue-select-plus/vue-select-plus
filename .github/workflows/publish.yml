@@ -1,0 +1,37 @@
+name: Publish Packages
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Packages
+        run: npm run build
+
+      # Publish in order of dependencies: Styles -> Core -> Vue
+      
+      - name: Publish Styles
+        run: npm publish -w packages/styles --access public --provenance
+          
+      - name: Publish Core
+        run: npm publish -w packages/core --access public --provenance
+
+      - name: Publish Vue
+        run: npm publish -w packages/vue --access public --provenance
