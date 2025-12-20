@@ -1,6 +1,11 @@
 # Vue Select Plus
 
-📘 **Documentation**: [Read the Docs](./docs/index.md)
+![NPM Version](https://img.shields.io/npm/v/@vue-select-plus/vue?style=flat-square&color=41d1ff)
+![Build Status](https://img.shields.io/github/actions/workflow/status/vue-select-plus/vue-select-plus/deploy.yml?layout=flat-square&label=docs)
+![License](https://img.shields.io/github/license/vue-select-plus/vue-select-plus?style=flat-square&color=blue)
+![TypeScript](https://img.shields.io/badge/Written%20in-TypeScript-3178C6?style=flat-square)
+
+📘 **Documentation**: [https://vue-select-plus.github.io/vue-select-plus/](https://vue-select-plus.github.io/vue-select-plus/)
 
 > A headless, flexible, and accessible select component for Vue 3.
 
@@ -15,7 +20,7 @@
 ## Installation
 
 ```bash
-npm install vue-select-plus
+npm install @vue-select-plus/vue
 ```
 
 ## Usage
@@ -23,8 +28,9 @@ npm install vue-select-plus
 ```vue
 <script setup>
 import { ref } from 'vue';
-import { VSelect } from 'vue-select-plus';
-import 'vue-select-plus/dist/style.css'; // If you have styles
+import { VSelect } from '@vue-select-plus/vue';
+import '@vue-select-plus/styles';
+
 
 const value = ref(null);
 const options = [

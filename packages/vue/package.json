@@ -1,6 +1,6 @@
 {
     "name": "@vue-select-plus/vue",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "type": "module",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
@@ -19,8 +19,8 @@
     },
     "dependencies": {
         "@tanstack/vue-virtual": "^3.13.13",
-        "@vue-select-plus/core": "^0.0.1",
-        "@vue-select-plus/styles": "^0.0.1"
+        "@vue-select-plus/core": "^0.0.2",
+        "@vue-select-plus/styles": "^0.0.2"
     },
     "devDependencies": {
         "@csstools/css-parser-algorithms": "^3.0.5",
