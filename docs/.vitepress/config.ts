@@ -4,7 +4,6 @@ import path from 'path';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-    base: '/vue-select-plus/',
     title: "Vue Select Plus",
     description: "Enterprise-grade Headless Select Component for Vue 3",
     themeConfig: {
