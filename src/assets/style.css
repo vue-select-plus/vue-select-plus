@@ -1,0 +1,362 @@
+:root {
+  --vs-primary: #3b82f6;
+  --vs-primary-focus: rgba(59, 130, 246, 0.2);
+  --vs-danger: #ef4444;
+  --vs-border: #d1d5db;
+  --vs-bg: #ffffff;
+  --vs-text: #1f2937;
+  --vs-text-light: #6b7280;
+  --vs-hover: #f3f4f6;
+  --vs-selected-bg: #eff6ff;
+  --vs-selected-text: #2563eb;
+  --vs-radius: 6px;
+  --vs-transition: 0.2s ease;
+  --vs-border-hover: #9ca3af;
+  --vs-option-hover: #f3f4f6;
+  --vs-option-focus: #e5e7eb;
+}
+
+/* Dark Mode Overrides */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --vs-bg: #1f2937;
+    --vs-text: #f9fafb;
+    --vs-text-light: #9ca3af;
+    --vs-border: #374151;
+    --vs-border-hover: #4b5563;
+    --vs-hover: #374151;
+    --vs-selected-bg: #1e40af;
+    /* Distinct deep blue */
+    --vs-selected-text: #ffffff;
+    --vs-primary-focus: rgba(59, 130, 246, 0.4);
+    --vs-option-hover: #374151;
+    --vs-option-focus: #4b5563;
+  }
+}
+
+.dark {
+  --vs-bg: #1f2937;
+  --vs-text: #f9fafb;
+  --vs-text-light: #9ca3af;
+  --vs-border: #374151;
+  --vs-border-hover: #4b5563;
+  --vs-hover: #374151;
+  --vs-selected-bg: #1e40af;
+  --vs-selected-text: #ffffff;
+  --vs-primary-focus: rgba(59, 130, 246, 0.4);
+  --vs-option-hover: #374151;
+  --vs-option-focus: #4b5563;
+}
+
+.vue-select-root {
+  position: relative;
+  width: 100%;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.vue-select-root *,
+.vue-select-root *::before,
+.vue-select-root *::after {
+  box-sizing: inherit;
+}
+
+.vue-select-root.is-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.vue-select-label {
+  display: block;
+  margin-bottom: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--vs-text);
+  cursor: pointer;
+}
+
+.vue-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.375rem 0.75rem;
+  background-color: var(--vs-bg);
+  border: 1px solid var(--vs-border);
+  border-radius: var(--vs-radius);
+  cursor: pointer;
+  transition: border-color var(--vs-transition), box-shadow var(--vs-transition);
+}
+
+.vue-select-trigger:hover {
+  border-color: var(--vs-border-hover);
+}
+
+.vue-select-trigger:focus,
+.vue-select-root.is-open .vue-select-trigger {
+  outline: none;
+  border-color: var(--vs-primary);
+  box-shadow: 0 0 0 3px var(--vs-primary-focus);
+}
+
+.vue-select-root.has-error .vue-select-trigger {
+  border-color: var(--vs-danger);
+}
+
+.vue-select-content-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+  overflow: hidden;
+}
+
+.vue-select-single-value {
+  color: var(--vs-text);
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vue-select-placeholder {
+  color: var(--vs-text-light);
+  font-size: 0.875rem;
+}
+
+.vue-select-input {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 0.875rem;
+  color: var(--vs-text);
+  outline: none;
+  min-width: 2rem;
+  flex: 1;
+}
+
+.vue-select-input::placeholder {
+  color: var(--vs-text-light);
+}
+
+.vue-select-tag {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--vs-hover);
+  border: 1px solid var(--vs-border);
+  border-radius: 4px;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--vs-text);
+}
+
+.vue-select-tag-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.25rem;
+  padding: 0;
+  width: 1rem;
+  height: 1rem;
+  background: transparent;
+  border: none;
+  color: var(--vs-text-light);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.vue-select-tag-remove:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: var(--vs-danger);
+}
+
+.vue-select-icons {
+  display: flex;
+  align-items: center;
+  margin-left: 0.5rem;
+  color: var(--vs-text-light);
+}
+
+.vue-select-arrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  transition: transform var(--vs-transition);
+}
+
+.vue-select-arrow--open {
+  transform: rotate(180deg);
+}
+
+.vue-select-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.25rem;
+  background-color: var(--vs-bg);
+  border: 1px solid var(--vs-border);
+  border-radius: var(--vs-radius);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 50;
+  max-height: 15rem;
+  overflow-y: auto;
+  padding: 0.25rem 0;
+  list-style: none;
+}
+
+.vue-select-empty {
+  padding: 0.75rem;
+  text-align: center;
+  color: var(--vs-text-light);
+  font-size: 0.875rem;
+}
+
+.vue-select-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--vs-text);
+  transition: background-color 0.1s;
+}
+
+.vue-select-option:hover {
+  background-color: var(--vs-option-hover);
+}
+
+.vue-select-option--active {
+  background-color: var(--vs-option-focus);
+}
+
+.vue-select-option--selected {
+  background-color: var(--vs-selected-bg);
+  color: var(--vs-selected-text);
+  font-weight: 500;
+}
+
+.vue-select-option--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.vue-select-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.25rem;
+  border-radius: 4px;
+  color: var(--vs-text-light);
+}
+
+.vue-select-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--vs-text);
+}
+
+.vue-select-chevron {
+  display: inline-block;
+  transition: transform var(--vs-transition);
+  font-size: 0.65rem;
+}
+
+.vue-select-chevron--collapsed {
+  transform: rotate(-90deg);
+}
+
+.vue-select-spacer {
+  width: 1.5rem;
+  display: inline-block;
+}
+
+.vue-select-group {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--vs-text-light);
+  letter-spacing: 0.05em;
+  background-color: #f9fafb;
+  border-top: 1px solid #f3f4f6;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.vue-select-group:first-child {
+  border-top: none;
+}
+
+.vue-select-label-container {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vue-select-actions {
+  display: flex;
+  align-items: center;
+  margin-left: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.vue-select-option:hover .vue-select-actions,
+.vue-select-option:focus-within .vue-select-actions {
+  opacity: 1;
+}
+
+.vue-select-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid var(--vs-border);
+  background-color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--vs-text-light);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.vue-select-action-btn:hover {
+  border-color: var(--vs-primary);
+  color: var(--vs-primary);
+  background-color: var(--vs-selected-bg);
+}
+
+.vue-select-creator {
+  padding: 0.25rem 0.5rem;
+}
+
+.vue-select-creator-inner {
+  display: flex;
+  align-items: center;
+}
+
+.vue-select-creator-input {
+  width: 100%;
+  padding: 0.375rem 0.5rem;
+  font-size: 0.875rem;
+  border: 1px solid var(--vs-primary);
+  border-radius: var(--vs-radius);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--vs-primary-focus);
+}
+
+.vue-select-error-msg {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--vs-danger);
+}
