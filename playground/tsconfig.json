@@ -5,24 +5,11 @@
         "paths": {
             "@/*": [
                 "./src/*"
-            ],
-            "@vue-select-plus/core": [
-                "../packages/core/src/index.ts"
-            ],
-            "@vue-select-plus/vue": [
-                "../packages/vue/src/index.ts"
             ]
         },
         "noImplicitAny": false
     },
-    "references": [
-        {
-            "path": "../packages/core"
-        },
-        {
-            "path": "../packages/vue"
-        }
-    ],
+    "references": [],
     "include": [
         "src/**/*",
         "env.d.ts"
