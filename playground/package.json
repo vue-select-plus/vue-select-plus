@@ -12,8 +12,8 @@
     },
     "dependencies": {
         "vue": "^3.5.25",
-        "@vue-select-plus/vue": "^0.0.1",
-        "@vue-select-plus/styles": "^0.0.1"
+        "@vue-select-plus/vue": "^0.0.2",
+        "@vue-select-plus/styles": "^0.0.2"
     },
     "devDependencies": {
         "@tsconfig/node24": "^24.0.3",

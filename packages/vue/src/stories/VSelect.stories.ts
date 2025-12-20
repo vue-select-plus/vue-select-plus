@@ -80,7 +80,7 @@ export const Default: Story = {
         label: 'Choose a fruit',
         placeholder: 'Select fruit...',
     },
-    render: (args) => ({
+    render: (args: any) => ({
         components: { VSelect },
         setup() {
             const model = ref(null);
@@ -88,7 +88,7 @@ export const Default: Story = {
         },
         template: '<VSelect v-bind="args" v-model="model" />',
     }),
-    play: async ({ canvasElement }) => {
+    play: async ({ canvasElement }: any) => {
         const canvas = within(canvasElement);
 
         // Open
@@ -112,7 +112,7 @@ export const Multiple: Story = {
         label: 'Favorite Fruits',
         multiple: true,
     },
-    render: (args) => ({
+    render: (args: any) => ({
         components: { VSelect },
         setup() {
             const model = ref(['apple']);
@@ -120,7 +120,7 @@ export const Multiple: Story = {
         },
         template: '<VSelect v-bind="args" v-model="model" />',
     }),
-    play: async ({ canvasElement }) => {
+    play: async ({ canvasElement }: any) => {
         const canvas = within(canvasElement);
         const trigger = canvas.getByRole('combobox');
 
@@ -158,7 +158,7 @@ export const Searchable: Story = {
         searchable: true,
         placeholder: 'Pick one...',
     },
-    render: (args) => ({
+    render: (args: any) => ({
         components: { VSelect },
         setup() {
             const model = ref(null);
@@ -166,7 +166,7 @@ export const Searchable: Story = {
         },
         template: '<VSelect v-bind="args" v-model="model" />',
     }),
-    play: async ({ canvasElement }) => {
+    play: async ({ canvasElement }: any) => {
         const canvas = within(canvasElement);
         const trigger = canvas.getByRole('combobox');
 
@@ -202,7 +202,7 @@ export const ComplexCombination: Story = {
         searchable: true,
         placeholder: 'Search technologies...',
     },
-    render: (args) => ({
+    render: (args: any) => ({
         components: { VSelect },
         setup() {
             const model = ref(['vue']); // Initial value deep nested
@@ -232,7 +232,7 @@ export const ComplexCombination: Story = {
         },
         template: '<VSelect v-bind="args" :options="localOptions" v-model="model" @create="handleCreate" />',
     }),
-    play: async ({ canvasElement }) => {
+    play: async ({ canvasElement }: any) => {
         const canvas = within(canvasElement);
         const trigger = canvas.getByRole('combobox');
 
@@ -260,7 +260,7 @@ export const CreatorMode: Story = {
         label: 'Add Custom Item',
         placeholder: 'Click + on Backend',
     },
-    render: (args) => ({
+    render: (args: any) => ({
         components: { VSelect },
         setup() {
             const model = ref(null);
@@ -295,7 +295,7 @@ export const CreatorMode: Story = {
         />
       `,
     }),
-    play: async ({ canvasElement, args }) => {
+    play: async ({ canvasElement, args }: any) => {
         const canvas = within(canvasElement);
 
         await userEvent.click(canvas.getByRole('combobox'));
@@ -329,12 +329,12 @@ export const EmptyState: Story = {
         label: 'No Options',
         placeholder: 'Nothing to see here',
     },
-    render: (args) => ({
+    render: (args: any) => ({
         components: { VSelect },
         setup() { return { args, model: ref(null) }; },
         template: '<VSelect v-bind="args" v-model="model" />',
     }),
-    play: async ({ canvasElement }) => {
+    play: async ({ canvasElement }: any) => {
         const canvas = within(canvasElement);
         await userEvent.click(canvas.getByRole('combobox'));
         await expect(canvas.getByText('No results.')).toBeInTheDocument();
@@ -348,7 +348,7 @@ export const Disabled: Story = {
         placeholder: 'Cannot select',
         disabled: true,
     },
-    render: (args) => ({
+    render: (args: any) => ({
         components: { VSelect },
         setup() {
             // Pre-selected value to verify it's displayed but immutable
@@ -357,7 +357,7 @@ export const Disabled: Story = {
         },
         template: '<VSelect v-bind="args" v-model="model" />',
     }),
-    play: async ({ canvasElement }) => {
+    play: async ({ canvasElement }: any) => {
         const canvas = within(canvasElement);
         const trigger = canvas.getByRole('combobox');
         const root = canvasElement.querySelector('.vue-select-root');
@@ -380,12 +380,12 @@ export const DisabledOption: Story = {
         options: fruitOptions, // Contains 'Date' which is disabled
         label: 'Disabled Option',
     },
-    render: (args) => ({
+    render: (args: any) => ({
         components: { VSelect },
         setup() { return { args, model: ref(null) }; },
         template: '<VSelect v-bind="args" v-model="model" />',
     }),
-    play: async ({ canvasElement }) => {
+    play: async ({ canvasElement }: any) => {
         const canvas = within(canvasElement);
         await userEvent.click(canvas.getByRole('combobox'));
 
@@ -412,12 +412,12 @@ export const KeyboardNavigation: Story = {
         label: 'Keyboard Nav',
         placeholder: 'Use arrows...',
     },
-    render: (args) => ({
+    render: (args: any) => ({
         components: { VSelect },
         setup() { return { args, model: ref(null) }; },
         template: '<VSelect v-bind="args" v-model="model" />',
     }),
-    play: async ({ canvasElement }) => {
+    play: async ({ canvasElement }: any) => {
         const canvas = within(canvasElement);
         const trigger = canvas.getByRole('combobox');
 
@@ -450,12 +450,12 @@ export const KeyboardSelectionBug: Story = {
         options: fruitOptions,
         label: 'Keyboard Selection Bug',
     },
-    render: (args) => ({
+    render: (args: any) => ({
         components: { VSelect },
         setup() { return { args, model: ref(null) }; },
         template: '<VSelect v-bind="args" v-model="model" />',
     }),
-    play: async ({ canvasElement }) => {
+    play: async ({ canvasElement }: any) => {
         const canvas = within(canvasElement);
         const trigger = canvas.getByRole('combobox');
 
@@ -488,12 +488,12 @@ export const LongList: Story = {
         label: '1000 Items (Virtual)',
         searchable: true,
     },
-    render: (args) => ({
+    render: (args: any) => ({
         components: { VSelect },
         setup() { return { args, model: ref(null) }; },
         template: '<VSelect v-bind="args" v-model="model" />',
     }),
-    play: async ({ canvasElement }) => {
+    play: async ({ canvasElement }: any) => {
         const canvas = within(canvasElement);
         await userEvent.click(canvas.getByRole('combobox'));
 
