@@ -1,6 +1,31 @@
 {
     "name": "@vue-select-plus/vue",
     "version": "0.0.2",
+    "description": "The official Vue 3 component for Vue Select Plus. Enterprise-grade, headless, and accessible.",
+    "keywords": [
+        "vue",
+        "vue3",
+        "select",
+        "dropdown",
+        "multiselect",
+        "autocomplete",
+        "component",
+        "form",
+        "input",
+        "tag",
+        "combobox"
+    ],
+    "license": "MIT",
+    "author": "Vue Select Plus Team",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/vue-select-plus/vue-select-plus.git",
+        "directory": "packages/vue"
+    },
+    "bugs": {
+        "url": "https://github.com/vue-select-plus/vue-select-plus/issues"
+    },
+    "homepage": "https://vue-select-plus.github.io/vue-select-plus/",
     "type": "module",
     "main": "./dist/index.js",
     "module": "./dist/index.js",

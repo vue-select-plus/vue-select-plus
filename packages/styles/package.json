@@ -1,6 +1,25 @@
 {
     "name": "@vue-select-plus/styles",
     "version": "0.0.2",
+    "description": "Default styling and design system for Vue Select Plus.",
+    "keywords": [
+        "css",
+        "styles",
+        "theme",
+        "design-system",
+        "vue-select-plus"
+    ],
+    "license": "MIT",
+    "author": "Vue Select Plus Team",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/vue-select-plus/vue-select-plus.git",
+        "directory": "packages/styles"
+    },
+    "bugs": {
+        "url": "https://github.com/vue-select-plus/vue-select-plus/issues"
+    },
+    "homepage": "https://vue-select-plus.github.io/vue-select-plus/",
     "files": [
         "src"
     ],

@@ -1,6 +1,29 @@
 {
     "name": "@vue-select-plus/core",
     "version": "0.0.2",
+    "description": "Core logic and state management for the Vue Select Plus component.",
+    "keywords": [
+        "vue",
+        "select",
+        "headless",
+        "core",
+        "logic",
+        "state",
+        "composable",
+        "ui",
+        "dropdown"
+    ],
+    "license": "MIT",
+    "author": "Vue Select Plus Team",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/vue-select-plus/vue-select-plus.git",
+        "directory": "packages/core"
+    },
+    "bugs": {
+        "url": "https://github.com/vue-select-plus/vue-select-plus/issues"
+    },
+    "homepage": "https://vue-select-plus.github.io/vue-select-plus/",
     "type": "module",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
