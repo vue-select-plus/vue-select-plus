@@ -7,6 +7,9 @@ export default defineConfig({
     base: '/vue-select-plus/',
     title: "Vue Select Plus",
     description: "Enterprise-grade Headless Select Component for Vue 3",
+    head: [
+        ['meta', { name: 'google-site-verification', content: 'Hg5OiVhB5NU9KJfKLYkuiuTL9cqFGjfrEO2hEdmWKpE' }]
+    ],
     themeConfig: {
         // https://vitepress.dev/reference/default-theme-config
         nav: [
