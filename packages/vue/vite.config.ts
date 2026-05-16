@@ -20,8 +20,25 @@ export default defineConfig({
     plugins: [
         vue(),
         dts({
-            tsconfigPath: './tsconfig.json',
+            tsconfigPath: './tsconfig.build.json',
             cleanVueFileName: true,
+            // Post-process the generated declarations: rewrite source-path
+            // re-exports back to their real package name. vite-plugin-dts
+            // follows the workspace path alias when resolving cross-package
+            // imports — even when paths are absent from the active tsconfig —
+            // and inlines the resolved source path. Consumers would otherwise
+            // see imports like `'../../core/src/index.ts'` in our `.d.ts`.
+            afterDiagnostic: () => { /* no-op */ },
+            beforeWriteFile(filePath, content) {
+                // Match any depth of `../` segments leading to `core/src/...`
+                // and rewrite the whole specifier to the published package
+                // name. Covers both top-level and nested declaration files.
+                const rewritten = content.replace(
+                    /(['"])(?:\.\.\/)+core\/src\/[^'"]+\1/g,
+                    "'@vue-select-plus/core'"
+                );
+                return { filePath, content: rewritten };
+            },
         }),
     ],
     build: {

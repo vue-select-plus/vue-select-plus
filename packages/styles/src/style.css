@@ -80,9 +80,18 @@
 /*
  * Class-based dark override (works even without media query).
  *
- * Both `.dark` (legacy / Tailwind-compatible) and `.vsp-dark` (component-namespaced,
- * recommended) work. Use `.vsp-dark` if your app already owns the `.dark` class
- * for unrelated theming so the two systems don't collide.
+ * `.vsp-dark` is the recommended, component-namespaced class. `.dark` is also
+ * supported for now to match Tailwind's default dark-mode selector — BUT this
+ * causes Vue Select Plus to flip its theme any time Tailwind does, even if
+ * that wasn't your intent.
+ *
+ * The `.dark` mapping is planned to be removed in v1.0. Migrate to `.vsp-dark`,
+ * or set the CSS variables yourself if you need finer control:
+ *
+ *     :root.your-app-dark {
+ *         --vs-bg: ...;
+ *         --vs-text: ...;
+ *     }
  */
 .vsp-dark,
 .dark {

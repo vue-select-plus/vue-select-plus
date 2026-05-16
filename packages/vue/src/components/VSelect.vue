@@ -40,61 +40,136 @@ interface VSelectLabels {
 }
 
 interface VSelectProps {
+    /** Option tree. Items can be flat or nested via `children`. */
     options: ReadonlyArray<SelectOption>;
+    /** Visible label rendered above the control and used as the accessible name. */
     label?: string;
+    /**
+     * Text shown when nothing is selected (and, in searchable mode, used as the
+     * input's placeholder).
+     * @default 'Select...'
+     */
     placeholder?: string;
+    /**
+     * Enable multi-select. The model becomes an array; selections render as
+     * keyboard-reachable tags.
+     * @default false
+     */
     multiple?: boolean;
+    /**
+     * Render a text input that filters options. Combined with `filterable: false`
+     * for server-driven search.
+     * @default false
+     */
     searchable?: boolean;
+    /**
+     * Disable the entire control. Sets `disabled` on the focusable element and
+     * prevents the menu from opening.
+     * @default false
+     */
     disabled?: boolean;
+    /**
+     * Sets `aria-required="true"` and, with `validateOnSubmit`, blocks form
+     * submission while the model is empty.
+     * @default false
+     */
     required?: boolean;
+    /**
+     * Render a clear (×) button whenever a value is selected.
+     * @default false
+     */
     clearable?: boolean;
+    /**
+     * When set, hidden `<input name="...">` elements are emitted so the value
+     * serializes via `FormData` like a native `<select>`.
+     */
     name?: string;
+    /**
+     * Root element id. The trigger, listbox, label, error and live-region ids
+     * are derived from this. Defaults to an SSR-safe `useId()`-generated value.
+     */
     id?: string;
+    /** Error message. Sets `aria-invalid` and links to the message via `aria-describedby`. */
     error?: string;
-    /** Visible row height in px. Used for virtualization. */
+    /**
+     * Row height in px used by the virtualizer.
+     * @default 40
+     */
     itemHeight?: number;
     /** Accessible label for the listbox. Defaults to the `label` prop. */
     listboxLabel?: string;
     /** Localizable text for screen reader announcements. */
     labels?: VSelectLabels;
-    /** Preferred placement of the dropdown. Auto-flips when no space is available. */
+    /**
+     * Preferred placement of the dropdown. Auto-flips when no space is available.
+     * @default 'bottom-start'
+     */
     placement?: Placement;
     /**
      * Where to render the dropdown.
      * - `true` (default): teleport to `<body>` to escape `overflow: hidden` ancestors.
      * - `false`: render inline (same DOM position as the trigger).
      * - `string` (CSS selector) or `HTMLElement`: teleport to that target.
+     * @default true
      */
     teleport?: boolean | string | HTMLElement;
-    /** Maximum visible height of the dropdown in px. */
+    /**
+     * Maximum visible height of the dropdown in px. Floating UI clamps further
+     * to the available viewport space.
+     * @default 320
+     */
     maxMenuHeight?: number;
-    /** Show a spinner + announce a busy state (typically while async-fetching options). */
+    /**
+     * Show a spinner + announce a busy state (typically while async-fetching
+     * options).
+     * @default false
+     */
     loading?: boolean;
     /**
-     * Enable client-side filtering. Set to `false` for server-driven search:
+     * Enable client-side filtering. Set to `false` for server-driven search —
      * the parent listens to `@search` and replaces `options` itself.
+     * @default true
      */
     filterable?: boolean;
-    /** Minimum query length before `@search` is emitted and the menu attempts to show results. */
+    /**
+     * Minimum query length before `@search` is emitted and the menu attempts
+     * to show results.
+     * @default 0
+     */
     minSearchLength?: number;
-    /** Debounce delay (ms) for the `@search` event. `0` disables debouncing. */
+    /**
+     * Debounce delay (ms) for the `@search` event. `0` disables debouncing.
+     * @default 0
+     */
     searchDebounce?: number;
-    /** Visual size variant. Maps to padding + font-size + control height. */
+    /**
+     * Visual size variant. Maps to padding + font-size + control height.
+     * @default 'md'
+     */
     size?: 'sm' | 'md' | 'lg';
     /**
      * Forwarded to the underlying input in searchable mode. Use this for browser
      * autofill hints (`autocomplete="country"`, `autocomplete="off"`, …).
+     * @default 'off'
      */
     autocomplete?: string;
-    /** Forwarded `inputmode` for soft-keyboard hints on mobile. */
+    /**
+     * Forwarded `inputmode` for soft-keyboard hints on mobile. Defaults to the
+     * browser default (omitted attribute).
+     */
     inputmode?: 'none' | 'text' | 'search' | 'numeric' | 'email' | 'tel' | 'url' | 'decimal';
     /**
-     * Enable browser-native form validation. When `required` is true and the
-     * model is empty, the next `<form>` submit will be blocked and the browser
-     * will surface its own validation tooltip.
+     * Enable browser-native HTML5 form validation. When `required` is true and
+     * the model is empty, the next `<form>` submit is blocked and the browser
+     * surfaces its own validation tooltip. Set to `false` to delegate to a
+     * validation library (VeeValidate, FormKit, …).
+     * @default true
      */
     validateOnSubmit?: boolean;
-    /** Custom message for the browser-native required validation tooltip. */
+    /**
+     * Custom message for the browser-native required validation tooltip.
+     * Defaults to `'Please select an item.'` when omitted.
+     */
     validationMessage?: string;
 }
 

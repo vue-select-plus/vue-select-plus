@@ -31,8 +31,7 @@
         "README.md"
     ],
     "exports": {
-        ".": "./src/style.css",
-        "./style.css": "./src/style.css"
+        ".": "./src/style.css"
     },
     "publishConfig": {
         "access": "public"
