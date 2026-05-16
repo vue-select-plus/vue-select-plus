@@ -18,7 +18,6 @@
     "updateInternalDependencies": "patch",
     "ignore": [
         "@vue-select-plus/playground",
-        "@vue-select-plus/docs",
-        "vue-select-plus-monorepo"
+        "@vue-select-plus/docs"
     ]
 }
