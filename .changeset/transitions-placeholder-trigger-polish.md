@@ -22,6 +22,13 @@ Polish fixes from the first round of real-world testing.
 - **Multi + searchable + no tags: placeholder is back.** The previous fix
   would have hidden the placeholder entirely in this state — the input now
   shows it via its own `placeholder` attribute.
+- **Searchable + selected value + menu closed: label is no longer doubled.**
+  The bold single-value span and the input's placeholder both rendered the
+  selected label, producing `"Apple Apple"`. The input is now hidden via
+  `v-show` while the menu is closed and a value is selected — the single-
+  value span owns that state. The input reappears (still in the DOM, so
+  focus management keeps working) the moment the menu opens or the value
+  is cleared.
 - **Faster open for large option lists.** `useSelect.open()` skips the
   full-options scan when the model is empty, halving the work on every open
   for static lists ≥ 5 000 items.
