@@ -84,19 +84,19 @@ Accessible via template ref (`ref="mySelect"` → `mySelect.value.open()`):
 
 ## Slots
 
-| Slot | Scope | Description |
-| :--- | :--- | :--- |
-| `value` | `{ value, label }` | Replaces the displayed single value. |
-| `option` | `{ option }` | Replaces an option's label cell. |
-| `group` | `{ group }` | Replaces a group header. |
-| `empty` | — | Shown when `visibleOptions` is empty (after `loading`/min-search states). |
-| `loading` | — | Replaces the in-menu loading state. |
-| `loading-icon` | — | Replaces the spinner glyph next to the trigger. |
-| `hint` | `{ min }` | Replaces the "type at least X characters" hint. |
-| `trigger-icon` | `{ isOpen }` | Replaces the chevron in the trigger. |
-| `toggle-icon` | `{ collapsed, option }` | Replaces the tree expand/collapse glyph. |
-| `add-icon` | `{ option }` | Replaces the "+" glyph next to expandable rows. |
-| `creator` | `{ cancel }` | Replaces the inline create-input row. |
+| Slot | Where | Scope | Description |
+| :--- | :--- | :--- | :--- |
+| `value` | trigger | `{ value, label }` | Replaces the displayed single value. |
+| `option` | menu | `{ option }` | Replaces an option's label cell. |
+| `group` | menu | `{ group }` | Replaces a group header. |
+| `empty` | menu | — | Rendered when `visibleOptions` is empty (after `loading`/min-search states). |
+| `loading` | **menu** | — | Replaces the **in-menu** "Loading…" state. |
+| `loading-icon` | **trigger** | — | Replaces the spinner glyph **next to the trigger** (different slot, same word). |
+| `hint` | menu | `{ min }` | Replaces the "type at least X characters" hint. |
+| `trigger-icon` | trigger | `{ isOpen }` | Replaces the chevron in the trigger. |
+| `toggle-icon` | menu | `{ collapsed, option }` | Replaces the tree expand/collapse glyph. |
+| `add-icon` | menu | `{ option }` | Replaces the "+" glyph next to expandable rows. |
+| `creator` | menu | `{ cancel }` | Replaces the inline create-input row. |
 
 ## Keyboard
 
@@ -112,6 +112,43 @@ Accessible via template ref (`ref="mySelect"` → `mySelect.value.open()`):
 | <kbd>Backspace</kbd> | In multi mode with an empty search input (or no input at all): remove the last selected tag. |
 | <kbd>Escape</kbd> | Close the menu, return focus to the trigger. |
 | <kbd>Tab</kbd> | Close the menu and continue tab order. |
+
+## Behaviour notes
+
+### Trigger surface and Tab focus
+
+The element that receives keyboard focus depends on `searchable`:
+
+| `searchable` | Focus target | DOM | Comment |
+| :---: | :--- | :--- | :--- |
+| `false` | `<button role="combobox">` | hidden via `position: absolute; clip: …` | The "trigger surface" you see is the `<div class="vue-select-control">` wrapper. Clicks anywhere on it programmatically focus the button. |
+| `true` | `<input role="combobox">` | always visible while menu is open; visually hidden while menu is closed and a single value is selected (the value span owns the row) | Click on the wrapper focuses the input. |
+
+Logic gated on `searchable` (e.g. "auto-open on focus") should target the input ref returned from `useTemplateRef`/`ref`, not the button.
+
+### Initial highlight on open
+
+When the menu opens, the highlight lands on:
+
+- the currently selected option (single mode) or the first selected option (multi mode), if any;
+- otherwise the **first navigable row** (groups, disabled rows and the creator placeholder are skipped).
+
+This is the "select-with-cursor" variant of the WAI-ARIA combobox pattern — the default `<select>` behaviour. The Authoring Practices Guide also documents a "no initial highlight" variant; that is **not** what this component does. The next <kbd>↓</kbd> moves to the option **after** the highlight, not to the first one.
+
+### `itemHeight` and custom option slots
+
+The virtualizer needs to know the row height to compute scroll position and `aria-setsize`. **`itemHeight` (default `40 px`) must match the actual rendered height** of an option row. If you replace the `option` slot with multi-line content, bump `itemHeight` to match — otherwise the scroll position drifts and rows partially clip.
+
+For mixed-height rows (some single-line, some multi-line) the virtualizer is not the right tool — disable virtualization by capping the option count instead, or render your own list using `useSelect()` headless.
+
+### `labels` is partial-override
+
+The `labels` prop is **merged key-by-key** with the defaults — any key you omit keeps its English default. There is no deep-merge inside the callback signatures.
+
+```ts
+:labels="{ clear: 'Leeren' }"
+// → clear: 'Leeren', all other keys still use their English defaults
+```
 
 ## Accessibility
 

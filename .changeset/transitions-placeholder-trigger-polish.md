@@ -68,6 +68,41 @@ Polish fixes from the first round of real-world testing.
   troubleshooting now spell out the three integration patterns (Tailwind-
   only, both, VSP-only) and clearly call the legacy `.dark` mapping out as
   v1.0-removal. No behaviour change in 0.1.x.
+- **Listbox no longer carries conflicting `aria-label` + `aria-labelledby`.**
+  Both were being set when an external label was present; ARIA lint tools
+  flagged the combo as a conflict (even though `aria-labelledby` wins per
+  spec). The component now picks exactly one: labelledby when a label
+  element exists, label otherwise.
+- **Tree expand/collapse + add-child accessible labels are now i18n-able.**
+  The strings `Expand …`, `Collapse …`, and `Add child to …` were hard-
+  coded English. The `labels` prop gained three new function keys:
+  `expand(label)`, `collapse(label)`, and `addChildTo(label)`. Pass any
+  of them to translate; omit to keep the English defaults.
+- **`useSelect` props are now consistent.** `multiple` and `searchable`
+  were typed as plain `boolean` while `disabled`, `filterable`, `options`
+  used `Ref` / `MaybeRefOrGetter`. Headless consumers can now bind any of
+  them to a ref or computed — toggling single ↔ multi (or searchable on/
+  off) at runtime works. Backward compatible: plain values still accepted.
+- **Cleaner type display for `collapsedValues`.** The IDE used to show
+  `Ref<Set<SelectValue> & Omit<Set<SelectValue>, …>>` in tooltips, courtesy
+  of TypeScript's inference for `ref(new Set())`. Now annotated explicitly
+  as `Ref<Set<SelectValue>>`.
+- **New `--vs-opacity-disabled` token.** The disabled-state opacity (0.6)
+  is no longer hardcoded; override it on `:root` to match your design
+  system.
+- **New `.vsp-light` class for explicit light pinning.** Useful when a
+  parent has `.dark` (e.g. Tailwind on `<html>`) but you want a specific
+  `<VSelect>` to stay light. Symmetric to `.vsp-dark`.
+- **Source maps are now published.** `dist/index.js.map` and
+  `dist/index.umd.cjs.map` ship alongside the build outputs for both
+  `core` and `vue`. Consumer stack traces resolve to original source
+  locations instead of minified column numbers.
+- **Docs: behaviour notes for `searchable` focus target, initial
+  highlight, `itemHeight`, and `labels` merge semantics.** The API
+  reference gained a "Behaviour notes" section so consumers don't have
+  to spelunk through the source. The slot table now also tags each slot
+  as `trigger` vs `menu` to disambiguate `loading` (menu) from
+  `loading-icon` (trigger).
 - **No more "VSelect went dark behind your app's back".** The default
   styles no longer listen to `@media (prefers-color-scheme: dark)`. The
   previous `:root:not(.light)` gate didn't help: VitePress / Tailwind /

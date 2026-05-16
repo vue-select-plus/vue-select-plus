@@ -8,8 +8,8 @@ interface UseKeyboardProps {
     navigableIndices: Ref<number[]>;
     creatorParentValue: Ref<SelectValue | null>;
     searchQuery: Ref<string>;
-    multiple: boolean;
-    searchable: boolean;
+    multiple: MaybeRefOrGetter<boolean>;
+    searchable: MaybeRefOrGetter<boolean>;
     disabled: MaybeRefOrGetter<boolean>;
 
     open: () => void;
@@ -94,13 +94,13 @@ export function useKeyboard({
 
         switch (e.key) {
             case 'Backspace':
-                if (multiple && searchQuery.value.length === 0) {
+                if (toValue(multiple) && searchQuery.value.length === 0) {
                     removeLastSelection();
                 }
                 break;
 
             case ' ':
-                if (searchable && isOpen.value) {
+                if (toValue(searchable) && isOpen.value) {
                     // Allow native space typing when search input is focused.
                     break;
                 }
@@ -155,7 +155,7 @@ export function useKeyboard({
                 break;
 
             case 'Home':
-                if (searchable && isOpen.value) return;
+                if (toValue(searchable) && isOpen.value) return;
                 e.preventDefault();
                 if (isOpen.value && navigableIndices.value.length > 0) {
                     setHighlight(navigableIndices.value[0] ?? -1);
@@ -163,7 +163,7 @@ export function useKeyboard({
                 break;
 
             case 'End':
-                if (searchable && isOpen.value) return;
+                if (toValue(searchable) && isOpen.value) return;
                 e.preventDefault();
                 if (isOpen.value && navigableIndices.value.length > 0) {
                     setHighlight(navigableIndices.value[navigableIndices.value.length - 1] ?? -1);
@@ -171,7 +171,7 @@ export function useKeyboard({
                 break;
 
             case 'ArrowRight': {
-                if (searchable && isOpen.value) return;
+                if (toValue(searchable) && isOpen.value) return;
                 if (!isOpen.value) return;
                 const opt = visibleOptions.value[highlightedIndex.value];
                 if (opt?.children?.length && opt.value !== undefined) {
@@ -183,7 +183,7 @@ export function useKeyboard({
             }
 
             case 'ArrowLeft': {
-                if (searchable && isOpen.value) return;
+                if (toValue(searchable) && isOpen.value) return;
                 if (!isOpen.value) return;
                 const opt = visibleOptions.value[highlightedIndex.value];
                 if (opt?.depth && opt.depth > 0 && opt.parentValue !== undefined) {

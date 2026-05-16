@@ -61,6 +61,22 @@ interface VSelectLabels {
      * @default (min) => `Type at least ${min} character(s) to search.`
      */
     typeToSearch?: (min: number) => string;
+    /**
+     * Accessible label on the expand button of a collapsed tree node.
+     * @default (label) => `Expand ${label}`
+     */
+    expand?: (label: string) => string;
+    /**
+     * Accessible label on the collapse button of an expanded tree node.
+     * @default (label) => `Collapse ${label}`
+     */
+    collapse?: (label: string) => string;
+    /**
+     * Accessible label on the "+" creator-mode button. Receives the parent
+     * row's label.
+     * @default (label) => `Add child to ${label}`
+     */
+    addChildTo?: (label: string) => string;
 }
 
 interface VSelectProps {
@@ -219,23 +235,31 @@ const props = withDefaults(defineProps<VSelectProps>(), {
 
 const model = defineModel<SelectModelValue>({ required: false });
 
+/**
+ * Component events — Vue 3.3+ short-hand tuple syntax.
+ *
+ * Note: Vue's generated component type widens emit handler return values to
+ * `any` regardless of how they're declared. That's a framework decision
+ * (template `@event="…"` callbacks may return any value). The arg types
+ * stay correct — only the return type is `any` in the emitted `.d.ts`.
+ */
 const emit = defineEmits<{
     /**
      * Emitted when the user submits the creator-mode input (Enter on the
      * inline "+" row). The parent owns the data: react by appending a child
      * with `value` under the option identified by `parent`.
      */
-    (e: 'create', payload: { parent: SelectValue; value: string }): void;
+    create: [payload: { parent: SelectValue; value: string }];
     /** Emitted after the listbox opens. */
-    (e: 'open'): void;
+    open: [];
     /** Emitted after the listbox closes (any cause: selection, Escape, click outside, Tab). */
-    (e: 'close'): void;
+    close: [];
     /**
      * Emitted when the search query changes. Honors `searchDebounce` and
      * `minSearchLength` — for server-driven search, listen here and replace
      * `options` from the parent.
      */
-    (e: 'search', query: string): void;
+    search: [query: string];
 }>();
 
 const optionsRef = toRef(props, 'options');
@@ -478,7 +502,14 @@ const activeOptionId = computed(() => {
     return `${rootId.value}-opt-${highlightedIndex.value}`;
 });
 
-const listboxAriaLabel = computed(() => props.listboxLabel ?? (props.label ? undefined : props.placeholder));
+// Per WAI-ARIA, `aria-labelledby` takes precedence over `aria-label`. Setting
+// both is permitted but flagged by some linters as a conflict. We pick exactly
+// one: an external `<label>` (preferred) → labelledby, otherwise → label.
+const listboxLabelledBy = computed(() => (props.label ? labelId.value : undefined));
+const listboxAriaLabel = computed(() => {
+    if (listboxLabelledBy.value) return undefined;
+    return props.listboxLabel ?? props.placeholder;
+});
 
 /**
  * Screen-reader announcement of the current selection. For non-searchable mode
@@ -529,7 +560,10 @@ const resolvedLabels = computed(() => ({
         count === 0 ? 'No results available.' : `${count} result${count === 1 ? '' : 's'} available.`),
     loading: props.labels?.loading ?? 'Loading…',
     typeToSearch: props.labels?.typeToSearch ?? ((min: number) =>
-        `Type at least ${min} character${min === 1 ? '' : 's'} to search.`)
+        `Type at least ${min} character${min === 1 ? '' : 's'} to search.`),
+    expand: props.labels?.expand ?? ((label: string) => `Expand ${label}`),
+    collapse: props.labels?.collapse ?? ((label: string) => `Collapse ${label}`),
+    addChildTo: props.labels?.addChildTo ?? ((label: string) => `Add child to ${label}`)
 }));
 
 const navigableCount = computed(() =>
@@ -856,7 +890,7 @@ defineExpose({
             :style="floatingStyles"
             :data-placement="actualPlacement"
             :aria-label="listboxAriaLabel"
-            :aria-labelledby="label ? labelId : undefined"
+            :aria-labelledby="listboxLabelledBy"
             :aria-multiselectable="multiple || undefined"
             :aria-busy="loading || undefined"
             @mousedown.prevent
@@ -950,7 +984,9 @@ defineExpose({
                             :collapsed="visibleOptions[virtualRow.index]!.value !== undefined && collapsedValues.has(visibleOptions[virtualRow.index]!.value!)"
                             :set-size="navigableCount"
                             :pos-in-set="virtualRow.index + 1"
-                            :remove-label="resolvedLabels.addChild"
+                            :expand-label="resolvedLabels.expand"
+                            :collapse-label="resolvedLabels.collapse"
+                            :add-child-label="resolvedLabels.addChildTo"
                             @click="handleSelect"
                             @toggle="toggleCollapse"
                             @add-child="startCreator"
