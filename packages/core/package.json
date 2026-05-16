@@ -1,6 +1,6 @@
 {
     "name": "@vue-select-plus/core",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Core logic and state management for the Vue Select Plus component.",
     "keywords": [
         "vue",
