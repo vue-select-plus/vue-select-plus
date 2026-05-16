@@ -39,10 +39,21 @@ Polish fixes from the first round of real-world testing.
 - **New troubleshooting section: opening with huge option lists.** Order-of-
   magnitude expectations + the dev-mode-vs-production caveat are now
   documented.
-- **DX: JSDoc with defaults on every prop.** `@default` annotations now show
-  up in IDE tooltips. No public-API change, just less guessing — especially
-  helpful for `inputmode`, `validationMessage`, `autocomplete` which are
-  forwarded to the input.
+- **DX: JSDoc on the entire public API, not just props.** `@default`
+  annotations on every prop with a default. Descriptions on every event
+  emitted by `<VSelect>` (incl. how `@search` interacts with
+  `searchDebounce`/`minSearchLength`). The four `defineExpose` methods
+  (`open`/`close`/`focus`/`clear`) now have a usage example. `VSelectLabels`
+  spells out which keys are SR-only vs. visible, and the callback signatures
+  with their fallback defaults. The Core composable `useSelect` has JSDoc on
+  every input prop and every return key (`isOpen`, `visibleOptions`,
+  `labelMap`, `handleSelect`, …) — critical for headless consumers who
+  only see the type signature. `useClickOutside` gained `@param`/`@example`
+  blocks. `SelectOption`/`SelectValue`/`FlatOption`/`SelectModelValue` each
+  have a top-level JSDoc explaining the design constraint (why values are
+  primitive, why `FlatOption` is internal-only, why `null` ≡ `undefined`).
+  `VSelectOption` props/emits documented. Bundle size unchanged — JSDoc
+  ships in `.d.ts`, not in the runtime JS.
 - **Fixed: source paths leaking into generated `.d.ts` files.** Cross-package
   imports were emitted as `from '../../core/src/index.ts'` instead of
   `from '@vue-select-plus/core'`. The published declarations now resolve via
