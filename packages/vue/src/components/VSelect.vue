@@ -331,6 +331,21 @@ const showPlaceholder = computed(() => {
     return true;
 });
 
+/**
+ * Whether the searchable <input> should be visible.
+ *
+ * - Always invisible when not `searchable` (the <button> trigger is used).
+ * - Always visible in `multiple` mode (the input lives alongside the tags).
+ * - In single mode it's visible only while actively searching, or when no
+ *   value is selected — otherwise the `vue-select-single-value` span owns
+ *   the visual slot and stacking both would double-render the label.
+ */
+const showSearchInput = computed(() => {
+    if (!props.searchable) return false;
+    if (props.multiple) return true;
+    return showSearch.value || singleLabel.value === null;
+});
+
 const searchPlaceholder = computed(() => {
     if (props.multiple) {
         // When no tags exist yet the input is the only thing on the row — show
@@ -338,7 +353,11 @@ const searchPlaceholder = computed(() => {
         // tags read clearly.
         return showTags.value ? '' : props.placeholder;
     }
-    return singleLabel.value !== null ? String(singleLabel.value) : props.placeholder;
+    // In single mode the input is only visible when the menu is open (see
+    // `showSearchInput`); using the static placeholder rather than the
+    // currently-selected label avoids the "selected label as placeholder"
+    // UX which looks like a missing value to most users.
+    return props.placeholder;
 });
 
 const activeOptionId = computed(() => {
@@ -560,6 +579,7 @@ defineExpose({
                 <!-- Searchable: input is the combobox -->
                 <input
                     v-if="searchable"
+                    v-show="showSearchInput"
                     ref="input"
                     :id="`${rootId}-input`"
                     v-model="searchQuery"
