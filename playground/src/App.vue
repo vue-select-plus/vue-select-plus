@@ -4,17 +4,31 @@ import { VSelect } from '@vue-select-plus/vue';
 import type { SelectOption } from '@vue-select-plus/core';
 
 // --- Theme ---
+//
+// Vue Select Plus is class-based: `.dark` (or `.vsp-dark`) on <html> activates
+// the dark theme; absence of either keeps it light. For the playground's
+// "system" mode we resolve `prefers-color-scheme` ourselves and reactively
+// apply/remove the class — that's the recommended pattern for consumers who
+// want OS-driven theming.
 type Theme = 'system' | 'light' | 'dark';
 const theme = ref<Theme>('system');
 
-function applyTheme(value: Theme) {
-    const root = document.documentElement;
-    root.classList.remove('light', 'dark');
-    if (value !== 'system') root.classList.add(value);
+const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+const isSystemDark = ref(systemDark.matches);
+systemDark.addEventListener('change', (e) => { isSystemDark.value = e.matches; });
+
+const effectiveDark = computed(() => {
+    if (theme.value === 'dark') return true;
+    if (theme.value === 'light') return false;
+    return isSystemDark.value;
+});
+
+function applyTheme() {
+    document.documentElement.classList.toggle('dark', effectiveDark.value);
 }
 
-watch(theme, applyTheme);
-onMounted(() => applyTheme(theme.value));
+watch(effectiveDark, applyTheme);
+onMounted(applyTheme);
 
 // --- Sample data ---
 const fruits: SelectOption[] = [
@@ -305,16 +319,7 @@ const errorMessage = computed(() => (errorValue.value ? '' : 'Please pick a frui
     --pg-radius: 10px;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root:not(.light) {
-        --pg-bg: #0b1220;
-        --pg-card: #111827;
-        --pg-border: #1f2937;
-        --pg-text: #f9fafb;
-        --pg-text-muted: #9ca3af;
-    }
-}
-
+/* Class-driven dark mode — matches Vue Select Plus' theming model. */
 :root.dark {
     --pg-bg: #0b1220;
     --pg-card: #111827;

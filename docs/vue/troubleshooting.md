@@ -30,6 +30,28 @@ Common issues, their causes, and the fastest fix.
 <VSelect :teleport="dialogRef" ... />
 ```
 
+## The component is dark even though my page is light
+
+**Symptom:** Your app/docs are clearly in light mode, but `<VSelect>` shows up dark.
+
+**Why (pre-0.1.1):** The default styles used to listen to `@media (prefers-color-scheme: dark)`. That was buggy in real apps — most theming systems (Tailwind class-mode, VitePress, Nuxt UI) toggle a `.dark` class on `<html>` and remove it for light. They never apply a `.light` class. So when the host was light but the user's OS preferred dark, the component flipped on its own.
+
+**Fix:** Upgrade to 0.1.1+. The component now follows the host class (`.dark` or `.vsp-dark`) only and stays light by default.
+
+**If you want OS-driven switching** (the old behaviour), add it explicitly to your global CSS:
+
+```css
+@media (prefers-color-scheme: dark) {
+    :root:not(.light) {
+        --vs-bg: #111827;
+        --vs-text: #f9fafb;
+        /* …mirror the rest of the .vsp-dark block */
+    }
+}
+```
+
+Or reactively toggle `.vsp-dark` from JavaScript — the [playground](https://github.com/vue-select-plus/vue-select-plus/blob/main/playground/src/App.vue) shows the 8-line pattern.
+
 ## The dropdown flips dark when Tailwind does (and you didn't want that)
 
 **Symptom:** Tailwind's `.dark` class on `<html>` toggles your own dark theme, and Vue Select Plus jumps to its dark variant at the same time, breaking your colour story.
