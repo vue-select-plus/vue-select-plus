@@ -1,10 +1,10 @@
-import { computed, ref, toValue, type MaybeRefOrGetter } from 'vue';
+import { computed, ref, toValue, type Ref, type MaybeRefOrGetter } from 'vue';
 import type { SelectOption, FlatOption, SelectValue } from '../types';
 
 interface UseOptionsProps {
     options: MaybeRefOrGetter<ReadonlyArray<SelectOption>>;
     searchQuery: MaybeRefOrGetter<string>;
-    searchable: boolean;
+    searchable: MaybeRefOrGetter<boolean>;
     creatorParentValue: MaybeRefOrGetter<SelectValue | null>;
     disabled: MaybeRefOrGetter<boolean>;
     /**
@@ -28,7 +28,11 @@ export function useOptions({
     filterable
 }: UseOptionsProps) {
 
-    const collapsedValues = ref<Set<SelectValue>>(new Set());
+    // Annotated explicitly: TypeScript's inference produces a noisy
+    // intersection like `Ref<Set<SelectValue> & Omit<Set<SelectValue>, …>>`
+    // in IDE tooltips. The explicit `Ref<Set<SelectValue>>` keeps the surface
+    // readable for headless consumers.
+    const collapsedValues: Ref<Set<SelectValue>> = ref(new Set());
 
     function toggleCollapse(value: SelectValue | undefined) {
         if (value === undefined) return;
@@ -62,7 +66,7 @@ export function useOptions({
         const creatorVal = toValue(creatorParentValue);
         const isDisabled = toValue(disabled);
         const query = toValue(searchQuery);
-        const isSearching = searchable && query.length > 0;
+        const isSearching = toValue(searchable) && query.length > 0;
 
         for (const node of nodes) {
             const key = node.value ?? `group-${node.group ?? node.label}-${depth}`;
@@ -102,7 +106,7 @@ export function useOptions({
         const query = toValue(searchQuery);
         const allowClientFilter = filterable === undefined ? true : toValue(filterable);
 
-        const filtered = (searchable && allowClientFilter && query.length > 0)
+        const filtered = (toValue(searchable) && allowClientFilter && query.length > 0)
             ? filterTree(opts, query)
             : opts;
 

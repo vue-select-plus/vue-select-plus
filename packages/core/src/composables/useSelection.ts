@@ -1,9 +1,9 @@
-import { type Ref, toValue } from 'vue';
+import { type Ref, type MaybeRefOrGetter, toValue } from 'vue';
 import type { SelectModelValue, FlatOption, SelectValue } from '../types';
 
 interface UseSelectionProps {
     modelValue: Ref<SelectModelValue>;
-    multiple: boolean;
+    multiple: MaybeRefOrGetter<boolean>;
     onAfterSelect?: () => void;
 }
 
@@ -22,7 +22,7 @@ export function useSelection({ modelValue, multiple, onAfterSelect }: UseSelecti
             return;
         }
 
-        if (multiple) {
+        if (toValue(multiple)) {
             const current = Array.isArray(modelValue.value) ? [...modelValue.value] : [];
             const idx = current.indexOf(option.value);
             if (idx > -1) {
@@ -46,14 +46,14 @@ export function useSelection({ modelValue, multiple, onAfterSelect }: UseSelecti
     }
 
     function removeLast() {
-        if (!multiple || !Array.isArray(modelValue.value) || modelValue.value.length === 0) return;
+        if (!toValue(multiple) || !Array.isArray(modelValue.value) || modelValue.value.length === 0) return;
         const current = [...modelValue.value];
         current.pop();
         modelValue.value = current;
     }
 
     function clear() {
-        modelValue.value = multiple ? [] : undefined;
+        modelValue.value = toValue(multiple) ? [] : undefined;
     }
 
     return {

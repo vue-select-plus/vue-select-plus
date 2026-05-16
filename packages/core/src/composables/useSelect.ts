@@ -1,4 +1,4 @@
-import { type Ref, toValue } from 'vue';
+import { type Ref, type MaybeRefOrGetter, toValue } from 'vue';
 import type { SelectOption, SelectModelValue, FlatOption, SelectValue } from '../types';
 import { useSelectState } from './useSelectState';
 import { useCreator } from './useCreator';
@@ -9,31 +9,35 @@ import { useKeyboard } from './useKeyboard';
 /**
  * Configuration accepted by {@link useSelect}.
  *
- * All `Ref<…>` inputs are read with `toValue`, so plain refs and shallow refs
- * both work. Static-by-design configuration (`multiple`, `searchable`) is
- * intentionally non-reactive — flipping these at runtime is not supported.
+ * Every option (except `modelValue`, which must be a writable `Ref`) accepts
+ * a `MaybeRefOrGetter` — a plain value, a `ref`, a `computed`, or a getter
+ * function. Pick whatever matches your reactivity needs; the implementation
+ * reads each input with `toValue()`.
  */
 export interface UseSelectProps {
     /** The option tree (flat or nested via `children`). */
-    options: Ref<ReadonlyArray<SelectOption>>;
+    options: MaybeRefOrGetter<ReadonlyArray<SelectOption>>;
     /**
-     * Two-way-bound model. Set this to a `defineModel<SelectModelValue>()`
-     * ref when building a Vue component, or a `ref(initial)` otherwise.
+     * Two-way-bound model. Pass a writable `Ref` — a `defineModel()` result
+     * in a component, or a `ref(initial)` standalone. Read-only refs would
+     * break selection.
      */
     modelValue: Ref<SelectModelValue>;
-    /** Whether the consumer renders multi-select UI (the model becomes an array). */
-    multiple: boolean;
-    /** Whether the consumer renders a text-search input. */
-    searchable: boolean;
-    /** Disables open/keyboard handling. Reactive. */
-    disabled: Ref<boolean>;
     /**
-     * Enables built-in client-side filtering. Set to `ref(false)` for
-     * server-driven search — the parent listens to changes on `searchQuery`
-     * and replaces `options` themselves.
-     * @default ref(true)
+     * Whether to render multi-select UI. The model becomes an array. Reactive:
+     * flipping single ↔ multi at runtime is supported.
      */
-    filterable?: Ref<boolean>;
+    multiple: MaybeRefOrGetter<boolean>;
+    /** Whether to render a text-search input. Reactive. */
+    searchable: MaybeRefOrGetter<boolean>;
+    /** Disables open/keyboard handling. */
+    disabled: MaybeRefOrGetter<boolean>;
+    /**
+     * Enables built-in client-side filtering. Pass `false` for server-driven
+     * search — the parent watches `searchQuery` and replaces `options` itself.
+     * @default true
+     */
+    filterable?: MaybeRefOrGetter<boolean>;
 }
 
 /**
@@ -103,9 +107,10 @@ export function useSelect(props: UseSelectProps) {
 
     function findOptionIndex(options: ReadonlyArray<FlatOption>, model: SelectModelValue): number {
         if (model === null || model === undefined) return -1;
+        const isMulti = toValue(props.multiple);
         return options.findIndex(opt => {
             if (opt.isGroup || opt.isCreator || opt.value === undefined) return false;
-            if (props.multiple && Array.isArray(model)) {
+            if (isMulti && Array.isArray(model)) {
                 return model.some(val => val === opt.value);
             }
             return opt.value === model;
