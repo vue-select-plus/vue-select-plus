@@ -68,3 +68,17 @@ Polish fixes from the first round of real-world testing.
   troubleshooting now spell out the three integration patterns (Tailwind-
   only, both, VSP-only) and clearly call the legacy `.dark` mapping out as
   v1.0-removal. No behaviour change in 0.1.x.
+- **No more "VSelect went dark behind your app's back".** The default
+  styles no longer listen to `@media (prefers-color-scheme: dark)`. The
+  previous `:root:not(.light)` gate didn't help: VitePress / Tailwind /
+  Nuxt UI all toggle `.dark` on `<html>` and remove it for light — they
+  never set `.light`. So a light page on a dark-preferring OS would flip
+  `<VSelect>` to dark against the page's explicit choice. The component
+  is now class-only by default: `.dark` or `.vsp-dark` turns it dark,
+  absence keeps it light, regardless of the OS. Consumers who want OS-
+  driven switching get a documented CSS snippet (in the styles README and
+  the troubleshooting guide); the playground demonstrates the reactive
+  JavaScript pattern. **Note:** this is a behaviour change. Apps that
+  relied on the implicit `prefers-color-scheme` dark switch will now stay
+  light by default. Pre-1.0 patch — semver permits this; CHANGELOG flags
+  it prominently.
