@@ -2,22 +2,41 @@
 import { computed } from 'vue';
 import type { FlatOption, SelectValue } from '@vue-select-plus/core';
 
+/**
+ * Internal renderer used by `<VSelect>` for every row in the virtualized
+ * listbox. Not part of the public component API — consumers customize via
+ * the `option`, `toggle-icon`, `add-icon` slots on `<VSelect>` instead.
+ */
 interface Props {
+    /** The flattened option to render (already enriched with depth/grouping). */
     option: FlatOption;
+    /** `true` when this row is the current `aria-activedescendant` target. */
     active: boolean;
+    /** `true` when this row's value is part of the model. */
     selected: boolean;
+    /** `true` when this option's children are currently hidden in the tree. */
     collapsed: boolean;
+    /** DOM id referenced by the combobox's `aria-activedescendant`. */
     id: string;
+    /**
+     * Total number of *navigable* siblings (groups, disabled rows, and the
+     * creator placeholder are excluded). Exposed via `aria-setsize`.
+     */
     setSize?: number;
+    /** 1-based position inside the navigable set. Exposed via `aria-posinset`. */
     posInSet?: number;
+    /** Accessible label for the "+" add-child button. */
     removeLabel?: string;
 }
 
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
+    /** Fired when the user clicks the row body. The host calls `handleSelect`. */
     (e: 'click', option: FlatOption): void;
+    /** Fired when the user clicks the tree-expand chevron. Payload is the row's value. */
     (e: 'toggle', value: SelectValue): void;
+    /** Fired when the user clicks the "+" add-child button. Payload is the parent's value. */
     (e: 'add-child', value: SelectValue): void;
 }>();
 

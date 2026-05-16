@@ -29,13 +29,37 @@ import {
 } from '@vue-select-plus/core';
 import VSelectOption from './VSelectOption.vue';
 
+/**
+ * Localizable text used by the component. Every key is optional — anything
+ * you omit falls back to its English default. Used for screen-reader
+ * announcements and visible-but-low-prominence UI like the clear button.
+ */
 interface VSelectLabels {
+    /** Accessible label on the clear (×) button. @default 'Clear selection' */
     clear?: string;
+    /**
+     * Accessible label on each tag's remove button. Called once per visible
+     * tag with the tag's own label.
+     * @default (label) => `Remove ${label}`
+     */
     removeItem?: (label: string) => string;
+    /** Shown in the menu when the option list is empty. @default 'No results.' */
     noResults?: string;
+    /** Accessible label on the "+" creator-mode button on tree rows. @default 'Add child item' */
     addChild?: string;
+    /**
+     * Announced via the polite live region whenever the navigable result count
+     * changes (search, filtering, options updates).
+     * @default (n) => `${n} result(s) available.`
+     */
     resultsCount?: (count: number) => string;
+    /** Announced + rendered in the menu when `loading` is true. @default 'Loading…' */
     loading?: string;
+    /**
+     * Announced + rendered in the menu when the typed query is shorter than
+     * `minSearchLength`. Receives the configured minimum.
+     * @default (min) => `Type at least ${min} character(s) to search.`
+     */
     typeToSearch?: (min: number) => string;
 }
 
@@ -196,9 +220,21 @@ const props = withDefaults(defineProps<VSelectProps>(), {
 const model = defineModel<SelectModelValue>({ required: false });
 
 const emit = defineEmits<{
+    /**
+     * Emitted when the user submits the creator-mode input (Enter on the
+     * inline "+" row). The parent owns the data: react by appending a child
+     * with `value` under the option identified by `parent`.
+     */
     (e: 'create', payload: { parent: SelectValue; value: string }): void;
+    /** Emitted after the listbox opens. */
     (e: 'open'): void;
+    /** Emitted after the listbox closes (any cause: selection, Escape, click outside, Tab). */
     (e: 'close'): void;
+    /**
+     * Emitted when the search query changes. Honors `searchDebounce` and
+     * `minSearchLength` — for server-driven search, listen here and replace
+     * `options` from the parent.
+     */
     (e: 'search', query: string): void;
 }>();
 
@@ -579,10 +615,25 @@ onBeforeUnmount(() => {
     if (isOpen.value) close();
 });
 
+/**
+ * Imperative API for template-ref consumers:
+ *
+ * ```ts
+ * const selectRef = ref<InstanceType<typeof VSelect> | null>(null);
+ * selectRef.value?.open();
+ * ```
+ */
 defineExpose({
+    /** Open the listbox (no-op when `disabled`). */
     open,
+    /** Close the listbox and cancel any active creator-mode input. */
     close,
+    /**
+     * Move focus to the trigger — the `<button>` in non-searchable mode, or
+     * the `<input>` in searchable mode.
+     */
     focus: focusTrigger,
+    /** Reset the model: `undefined` in single mode, `[]` in multi mode. */
     clear
 });
 </script>
