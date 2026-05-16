@@ -1,7 +1,7 @@
 # Examples
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import { VSelect } from '@vue-select-plus/vue'
 import '@vue-select-plus/styles'
 
@@ -70,20 +70,28 @@ async function onAsyncSearch(query) {
 }
 
 // Creator demo
-const creatorOptions = reactive(JSON.parse(JSON.stringify(techStack)))
+//
+// Note: we use `ref(...)` + a whole-array swap on every create. With
+// `reactive(...)` and in-place mutation, VitePress' SSR + hydration boundary
+// occasionally drops nested reactivity inside markdown <script setup> blocks.
+// The ref-and-replace pattern is bulletproof.
+const creatorOptions = ref(JSON.parse(JSON.stringify(techStack)))
 const creatorValue = ref(null)
 function handleCreate({ parent, value }) {
+    const next = JSON.parse(JSON.stringify(creatorOptions.value))
     const add = (opts) => {
         for (const opt of opts) {
             if (opt.value === parent) {
-                opt.children = [...(opt.children ?? []), { label: value, value: value.toLowerCase() }]
+                if (!opt.children) opt.children = []
+                opt.children.push({ label: value, value: value.toLowerCase() })
                 return true
             }
             if (opt.children && add(opt.children)) return true
         }
         return false
     }
-    add(creatorOptions)
+    add(next)
+    creatorOptions.value = next
 }
 
 // Native form demo

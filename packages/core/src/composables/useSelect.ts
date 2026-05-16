@@ -80,9 +80,21 @@ export function useSelect(props: UseSelectProps) {
         if (toValue(props.disabled)) return;
         _open();
 
-        const options = visibleOptions.value;
         const model = toValue(props.modelValue);
+        const modelIsEmpty =
+            model === undefined ||
+            model === null ||
+            (Array.isArray(model) && model.length === 0);
 
+        // Skip the O(n) full-options scan when nothing is selected — for large
+        // option lists (5k+ items) this halves the work done on every open.
+        if (modelIsEmpty) {
+            const firstNavigable = navigableIndices.value[0];
+            setHighlight(firstNavigable ?? -1);
+            return;
+        }
+
+        const options = visibleOptions.value;
         let targetIndex = findOptionIndex(options, model);
 
         if (targetIndex === -1 && navigableIndices.value.length > 0) {
