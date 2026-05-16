@@ -143,6 +143,41 @@ function onSearch(q: string) {
 }
 ```
 
+## Opening the menu with a huge list feels slow
+
+**Symptom:** With 5 000+ options, clicking the trigger takes a perceptible moment before the menu appears.
+
+**Why:** Opening flattens the option tree once (so the virtualizer knows the row count, navigable indices, and label map). The cost scales linearly with the option count — roughly 10–20 ms in production builds, but **5–10× more in Vite/Vue dev mode** because of reactivity-tracking instrumentation.
+
+**Fixes, in order of effort:**
+
+1. **Test in a production build.** Most "slow" reports vanish once dev-mode overhead is gone. Run `npm run build && npm run preview` for the playground, or visit the deployed docs site.
+
+2. **Reduce the static option count** with server-side search:
+
+    ```vue
+    <VSelect
+        :options="results"        <!-- 30 items, not 5000 -->
+        :loading="isFetching"
+        :filterable="false"
+        :min-search-length="2"
+        :search-debounce="300"
+        searchable
+        @search="fetch"
+    />
+    ```
+
+3. **Trim the option payload.** `SelectOption` only reads `value`, `label`, `disabled`, `children`, `group`. Anything else (descriptions, metadata) is cloned during flattening and slows the open. Look those up by `value` from a separate map in your render slot.
+
+Expected order of magnitude (production build, mid-range laptop):
+
+| Option count | Open time |
+| ---: | :--- |
+| 100 | < 1 ms |
+| 1 000 | ~ 5 ms |
+| 10 000 | ~ 50 ms |
+| 50 000 | ~ 300 ms — consider async/server search |
+
 ## The dropdown jumps when I scroll
 
 **Symptom:** While scrolling the page, the menu briefly lags behind the trigger before snapping back.

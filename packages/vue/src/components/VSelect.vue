@@ -325,12 +325,19 @@ const showSingleValue = computed(() => !props.multiple && singleLabel.value !== 
 const showPlaceholder = computed(() => {
     if (showSingleValue.value) return false;
     if (showTags.value) return false;
-    if (showSearch.value && !props.multiple) return false;
+    // In searchable mode the <input> carries its own placeholder attribute —
+    // rendering a placeholder span here would duplicate the text on top of it.
+    if (props.searchable) return false;
     return true;
 });
 
 const searchPlaceholder = computed(() => {
-    if (props.multiple) return '';
+    if (props.multiple) {
+        // When no tags exist yet the input is the only thing on the row — show
+        // the placeholder there. With tags present, keep the input quiet so the
+        // tags read clearly.
+        return showTags.value ? '' : props.placeholder;
+    }
     return singleLabel.value !== null ? String(singleLabel.value) : props.placeholder;
 });
 
