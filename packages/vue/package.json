@@ -27,30 +27,44 @@
     },
     "homepage": "https://vue-select-plus.github.io/vue-select-plus/",
     "type": "module",
+    "sideEffects": false,
     "main": "./dist/index.js",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
+        }
+    },
     "files": [
-        "dist"
+        "dist",
+        "LICENSE",
+        "README.md"
     ],
     "scripts": {
         "build": "vite build",
-        "test": "vitest run --passWithNoTests",
+        "test": "vitest run",
         "storybook": "storybook dev -p 6006",
         "build-storybook": "storybook build"
     },
     "peerDependencies": {
-        "vue": "^3.0.0"
+        "vue": "^3.5.0"
     },
     "dependencies": {
+        "@floating-ui/vue": "^1.1.11",
         "@tanstack/vue-virtual": "^3.13.13",
         "@vue-select-plus/core": "^0.0.2",
         "@vue-select-plus/styles": "^0.0.2"
     },
     "devDependencies": {
         "@csstools/css-parser-algorithms": "^3.0.5",
+        "@storybook/addon-a11y": "^10.4.0",
         "@storybook/vue3-vite": "^10.1.4",
         "@vitejs/plugin-vue": "^6.0.2",
+        "@vue/server-renderer": "^3.5.26",
+        "@vue/test-utils": "^2.4.10",
         "jsdom": "^27.3.0",
         "storybook": "^10.1.4",
         "vite": "^7.2.4",

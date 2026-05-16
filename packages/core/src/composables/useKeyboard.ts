@@ -1,26 +1,25 @@
 import { toValue, type Ref, type MaybeRefOrGetter } from 'vue';
-import type { FlatOption } from '../types';
+import type { FlatOption, SelectValue } from '../types';
 
 interface UseKeyboardProps {
     isOpen: Ref<boolean>;
     highlightedIndex: Ref<number>;
     visibleOptions: Ref<FlatOption[]>;
     navigableIndices: Ref<number[]>;
-    creatorParentValue: Ref<string | number | null>;
-    searchQuery: Ref<string>; // NEU
-    multiple: boolean;        // NEU
-    searchable: boolean; // NEU
+    creatorParentValue: Ref<SelectValue | null>;
+    searchQuery: Ref<string>;
+    multiple: boolean;
+    searchable: boolean;
     disabled: MaybeRefOrGetter<boolean>;
 
-    // Actions
     open: () => void;
     close: () => void;
     selectOption: (option: FlatOption) => void;
-    toggleCollapse: (value: string | number) => void;
+    toggleCollapse: (value: SelectValue) => void;
     cancelCreator: () => void;
     setHighlight: (index: number) => void;
-    removeLastSelection: () => void; // NEU
-    collapsedValues: Ref<Set<string | number>>;
+    removeLastSelection: () => void;
+    collapsedValues: Ref<Set<SelectValue>>;
 }
 
 export function useKeyboard({
@@ -49,11 +48,10 @@ export function useKeyboard({
             return;
         }
         const indices = navigableIndices.value;
-
         if (!indices.length) return;
 
         const currentPos = indices.indexOf(highlightedIndex.value);
-        let nextPos;
+        let nextPos: number;
 
         if (direction === 'next') {
             if (currentPos === -1) {
@@ -67,16 +65,13 @@ export function useKeyboard({
             if (currentPos === -1) {
                 nextPos = indices.length - 1;
             } else if (allowWrap) {
-                // Robust modulo for negative numbers
                 nextPos = ((currentPos - step) % indices.length + indices.length) % indices.length;
             } else {
                 nextPos = Math.max(currentPos - step, 0);
             }
         }
 
-        // Safety check to ensure we never set -1 if we have indices
         const targetIndex = indices[nextPos];
-
         if (targetIndex !== undefined) {
             setHighlight(targetIndex);
         } else {
@@ -87,9 +82,8 @@ export function useKeyboard({
     function onKeyDown(e: KeyboardEvent) {
         if (toValue(disabled)) return;
 
-        // Wenn Creator Mode aktiv ist, lassen wir den Input machen (keine Select Navigation)
+        // Creator input owns its own keystrokes; just allow Escape to bubble.
         if (creatorParentValue.value !== null) {
-            // Escape muss trotzdem funktionieren
             if (e.key === 'Escape') {
                 e.preventDefault();
                 e.stopPropagation();
@@ -100,18 +94,16 @@ export function useKeyboard({
 
         switch (e.key) {
             case 'Backspace':
-                // Lösche letztes Tag nur, wenn Input leer ist und wir im Multiple Mode sind
                 if (multiple && searchQuery.value.length === 0) {
                     removeLastSelection();
                 }
                 break;
 
-            case ' ': // Space
+            case ' ':
                 if (searchable && isOpen.value) {
-                    // Wenn wir suchen, ist Space ein Leerzeichen -> Standardverhalten
+                    // Allow native space typing when search input is focused.
                     break;
                 }
-                // Ansonsten: Auswählen / Öffnen
                 e.preventDefault();
                 if (isOpen.value && highlightedIndex.value > -1) {
                     const opt = visibleOptions.value[highlightedIndex.value];
@@ -122,22 +114,33 @@ export function useKeyboard({
                 break;
 
             case 'Enter':
-                e.preventDefault();
-                if (isOpen.value && highlightedIndex.value > -1) {
+                if (!isOpen.value) {
+                    e.preventDefault();
+                    open();
+                    break;
+                }
+                if (highlightedIndex.value > -1) {
+                    e.preventDefault();
                     const opt = visibleOptions.value[highlightedIndex.value];
                     if (opt && !opt.disabled) selectOption(opt);
-                } else {
-                    open();
                 }
                 break;
 
             case 'ArrowDown':
                 e.preventDefault();
+                if (e.altKey && !isOpen.value) {
+                    open();
+                    break;
+                }
                 navigate('next');
                 break;
 
             case 'ArrowUp':
                 e.preventDefault();
+                if (e.altKey && isOpen.value) {
+                    close();
+                    break;
+                }
                 navigate('prev');
                 break;
 
@@ -152,6 +155,7 @@ export function useKeyboard({
                 break;
 
             case 'Home':
+                if (searchable && isOpen.value) return;
                 e.preventDefault();
                 if (isOpen.value && navigableIndices.value.length > 0) {
                     setHighlight(navigableIndices.value[0] ?? -1);
@@ -159,6 +163,7 @@ export function useKeyboard({
                 break;
 
             case 'End':
+                if (searchable && isOpen.value) return;
                 e.preventDefault();
                 if (isOpen.value && navigableIndices.value.length > 0) {
                     setHighlight(navigableIndices.value[navigableIndices.value.length - 1] ?? -1);
@@ -166,43 +171,41 @@ export function useKeyboard({
                 break;
 
             case 'ArrowRight': {
-                // Wenn wir suchen, Cursor im Input lassen (außer mit Modifier?)
                 if (searchable && isOpen.value) return;
-
                 if (!isOpen.value) return;
                 const opt = visibleOptions.value[highlightedIndex.value];
-                if (opt?.children?.length) {
-                    if (collapsedValues.value.has(opt.value!)) {
-                        toggleCollapse(opt.value!);
+                if (opt?.children?.length && opt.value !== undefined) {
+                    if (collapsedValues.value.has(opt.value)) {
+                        toggleCollapse(opt.value);
                     }
                 }
                 break;
             }
 
             case 'ArrowLeft': {
-                // Wenn wir suchen, Cursor im Input lassen
                 if (searchable && isOpen.value) return;
-
                 if (!isOpen.value) return;
                 const opt = visibleOptions.value[highlightedIndex.value];
-                if (opt?.depth && opt.depth > 0 && opt.parentValue) {
+                if (opt?.depth && opt.depth > 0 && opt.parentValue !== undefined) {
                     const parentIdx = visibleOptions.value.findIndex(o => o.value === opt.parentValue);
                     if (parentIdx > -1) setHighlight(parentIdx);
-                } else if (opt?.children?.length) {
-                    if (!collapsedValues.value.has(opt.value!)) {
-                        toggleCollapse(opt.value!);
+                } else if (opt?.children?.length && opt.value !== undefined) {
+                    if (!collapsedValues.value.has(opt.value)) {
+                        toggleCollapse(opt.value);
                     }
                 }
                 break;
             }
 
             case 'Escape':
-                e.preventDefault();
-                close();
+                if (isOpen.value) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    close();
+                }
                 break;
 
             case 'Tab':
-                // Tab schließt das Dropdown
                 if (isOpen.value) close();
                 break;
         }

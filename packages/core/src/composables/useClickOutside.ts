@@ -4,34 +4,29 @@ type MaybeRef<T> = T | Ref<T>;
 
 /**
  * Detects clicks outside of the specified target element(s) and triggers a callback.
- * Useful for closing dropdowns or modals.
- * * @param targets - A single ref/element or an array of refs/elements to monitor.
- * @param handler - The callback function to execute when a click outside occurs.
+ * Listeners attach in capture phase so they fire before modal/portal layers can swallow them.
  */
 export function useClickOutside(
     targets: MaybeRef<HTMLElement | null> | MaybeRef<HTMLElement | null>[],
-    handler: (event: MouseEvent | TouchEvent) => void
+    handler: (event: PointerEvent | FocusEvent) => void
 ) {
-    const listener = (event: MouseEvent | TouchEvent) => {
+    const listener = (event: PointerEvent | FocusEvent) => {
         const targetNodes = Array.isArray(targets) ? targets : [targets];
+        const target = event.target as Node | null;
 
         const isInside = targetNodes.some((ref) => {
             const el = unref(ref);
-            return el && (event.target === el || el.contains(event.target as Node));
+            return el && target !== null && (event.target === el || el.contains(target));
         });
 
-        if (!isInside) {
-            handler(event);
-        }
+        if (!isInside) handler(event);
     };
 
     onMounted(() => {
-        document.addEventListener('mousedown', listener);
-        document.addEventListener('touchstart', listener);
+        document.addEventListener('pointerdown', listener, true);
     });
 
     onBeforeUnmount(() => {
-        document.removeEventListener('mousedown', listener);
-        document.removeEventListener('touchstart', listener);
+        document.removeEventListener('pointerdown', listener, true);
     });
 }

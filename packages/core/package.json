@@ -25,18 +25,28 @@
     },
     "homepage": "https://vue-select-plus.github.io/vue-select-plus/",
     "type": "module",
+    "sideEffects": false,
     "main": "./dist/index.js",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
+        }
+    },
     "files": [
-        "dist"
+        "dist",
+        "LICENSE",
+        "README.md"
     ],
     "scripts": {
         "build": "vite build",
         "test": "vitest run"
     },
     "peerDependencies": {
-        "vue": "^3.0.0"
+        "vue": "^3.5.0"
     },
     "devDependencies": {
         "@csstools/css-parser-algorithms": "^3.0.5",

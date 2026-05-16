@@ -1,21 +1,19 @@
 import { type Ref, toValue } from 'vue';
-import type { SelectModelValue, FlatOption } from '../types';
+import type { SelectModelValue, FlatOption, SelectValue } from '../types';
 
 interface UseSelectionProps {
     modelValue: Ref<SelectModelValue>;
     multiple: boolean;
-    closeOnSelect?: () => void;
+    onAfterSelect?: () => void;
 }
 
-export function useSelection({ modelValue, multiple, closeOnSelect }: UseSelectionProps) {
+export function useSelection({ modelValue, multiple, onAfterSelect }: UseSelectionProps) {
 
-    function isSelected(value: string | number | undefined): boolean {
+    function isSelected(value: SelectValue | undefined): boolean {
         if (value === undefined) return false;
         const current = toValue(modelValue);
-
-        if (Array.isArray(current)) {
-            return current.includes(value);
-        }
+        if (current === undefined || current === null) return false;
+        if (Array.isArray(current)) return current.includes(value);
         return current === value;
     }
 
@@ -27,7 +25,6 @@ export function useSelection({ modelValue, multiple, closeOnSelect }: UseSelecti
         if (multiple) {
             const current = Array.isArray(modelValue.value) ? [...modelValue.value] : [];
             const idx = current.indexOf(option.value);
-
             if (idx > -1) {
                 current.splice(idx, 1);
             } else {
@@ -36,11 +33,11 @@ export function useSelection({ modelValue, multiple, closeOnSelect }: UseSelecti
             modelValue.value = current;
         } else {
             modelValue.value = option.value;
-            closeOnSelect?.();
+            onAfterSelect?.();
         }
     }
 
-    function removeValue(value: string | number) {
+    function removeValue(value: SelectValue) {
         if (Array.isArray(modelValue.value)) {
             modelValue.value = modelValue.value.filter(v => v !== value);
         } else if (modelValue.value === value) {
@@ -55,10 +52,15 @@ export function useSelection({ modelValue, multiple, closeOnSelect }: UseSelecti
         modelValue.value = current;
     }
 
+    function clear() {
+        modelValue.value = multiple ? [] : undefined;
+    }
+
     return {
         isSelected,
         handleSelect,
         removeValue,
-        removeLast
+        removeLast,
+        clear
     };
 }

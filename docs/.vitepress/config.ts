@@ -1,6 +1,5 @@
 import { defineConfig } from 'vitepress'
 import { fileURLToPath, URL } from 'node:url'
-import path from 'path';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -36,6 +35,20 @@ export default defineConfig({
                         { text: 'Getting Started', link: '/vue/getting-started' },
                         { text: 'Examples', link: '/vue/examples' },
                         { text: 'API Reference', link: '/vue/api' }
+                    ]
+                },
+                {
+                    text: 'Integrations',
+                    items: [
+                        { text: 'SSR / Nuxt', link: '/vue/ssr' },
+                        { text: 'Recipes', link: '/vue/recipes' }
+                    ]
+                },
+                {
+                    text: 'Reference',
+                    items: [
+                        { text: 'Accessibility', link: '/vue/accessibility' },
+                        { text: 'Troubleshooting', link: '/vue/troubleshooting' }
                     ]
                 }
             ]

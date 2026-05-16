@@ -1,37 +1,102 @@
-name: Publish Packages
+name: Release
 
 on:
-  release:
-    types: [created]
-  workflow_dispatch:
+    push:
+        branches: [main]
+    workflow_dispatch:
+
+concurrency:
+    group: release-${{ github.ref }}
+    cancel-in-progress: false
+
+# Trusted Publishing (OIDC) requires `id-token: write`. The workflow exchanges a
+# short-lived OIDC token with npm at publish time — no long-lived NPM_TOKEN.
+#
+# To enable:
+#   1. npmjs.com → each package → Settings → Publishing access → "Add trusted publisher"
+#      - Organization / user: vue-select-plus  (or your account)
+#      - Repository: vue-select-plus
+#      - Workflow filename: publish.yml
+#      - Environment: (leave blank unless you configure one below)
+#   2. Make sure no `NPM_TOKEN` secret is set on the repo (or remove it). If it is,
+#      npm CLI picks it up and silently bypasses OIDC.
+#   3. The job must run on GitHub-hosted runners (self-hosted needs extra config).
+permissions:
+    id-token: write       # required for OIDC token exchange with npm
+    contents: write       # changesets needs to commit version bumps + tags
+    pull-requests: write  # changesets needs to open the "Version Packages" PR
 
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v4
-      
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org'
+    release:
+        name: Version or publish
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
 
-      - name: Install Dependencies
-        run: npm ci
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  # Trusted Publishing requires Node >= 22.14. Node 22 LTS ships
+                  # with npm 10.9 though, so we upgrade npm in the next step.
+                  node-version: '22.14.0'
+                  registry-url: 'https://registry.npmjs.org'
+                  cache: 'npm'
 
-      - name: Build Packages
-        run: npm run build
+            - name: Upgrade npm to a Trusted-Publishing-capable version
+              # Trusted Publishing requires npm CLI >= 11.5.1. Pin to a known-good
+              # range here to avoid surprises from rolling latest.
+              run: npm install -g npm@^11.5.1
 
-      # Publish in order of dependencies: Styles -> Core -> Vue
-      
-      - name: Publish Styles
-        run: npm publish -w packages/styles --access public --provenance
-          
-      - name: Publish Core
-        run: npm publish -w packages/core --access public --provenance
+            - name: Verify toolchain
+              # Trusted Publishing prerequisites — fail fast with a clear message
+              # instead of cryptic 4xx errors at publish time.
+              run: |
+                  echo "Node: $(node --version)"
+                  echo "npm:  $(npm --version)"
+                  node -e '
+                      const parse = v => v.replace(/^v/, "").split(".").map(Number);
+                      const [nMaj, nMin] = parse(process.versions.node);
+                      if (nMaj < 22 || (nMaj === 22 && nMin < 14)) {
+                          console.error("✖ Node >= 22.14 required for npm Trusted Publishing");
+                          process.exit(1);
+                      }
+                      console.log("✓ Node version OK");
+                  '
+                  node -e '
+                      const { execSync } = require("child_process");
+                      const npmV = execSync("npm --version").toString().trim();
+                      const [maj, min, patch] = npmV.split(".").map(Number);
+                      const ok = maj > 11 || (maj === 11 && (min > 5 || (min === 5 && patch >= 1)));
+                      if (!ok) {
+                          console.error(`✖ npm >= 11.5.1 required for Trusted Publishing, got ${npmV}`);
+                          process.exit(1);
+                      }
+                      console.log("✓ npm version OK");
+                  '
 
-      - name: Publish Vue
-        run: npm publish -w packages/vue --access public --provenance
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build packages
+              run: npm run build -w @vue-select-plus/core -w @vue-select-plus/vue
+
+            - name: Run tests
+              run: npm test --workspaces --if-present
+
+            - name: Create release PR or publish
+              uses: changesets/action@v1
+              with:
+                  # On pushes to main with pending changesets: opens "Version Packages" PR.
+                  # On pushes to main after that PR merges: publishes to npm via OIDC.
+                  version: npx changeset version
+                  publish: npx changeset publish
+                  commit: 'chore(release): version packages'
+                  title: 'chore(release): version packages'
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  # No NPM_TOKEN — OIDC handles auth. Provenance + OIDC together
+                  # produce the "Provenance" badge on npmjs.com.
+                  NPM_CONFIG_PROVENANCE: 'true'

@@ -1,0 +1,24 @@
+{
+    "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
+    "changelog": [
+        "@changesets/changelog-github",
+        { "repo": "vue-select-plus/vue-select-plus" }
+    ],
+    "commit": false,
+    "fixed": [
+        [
+            "@vue-select-plus/core",
+            "@vue-select-plus/vue",
+            "@vue-select-plus/styles"
+        ]
+    ],
+    "linked": [],
+    "access": "public",
+    "baseBranch": "main",
+    "updateInternalDependencies": "patch",
+    "ignore": [
+        "@vue-select-plus/playground",
+        "@vue-select-plus/docs",
+        "vue-select-plus-monorepo"
+    ]
+}

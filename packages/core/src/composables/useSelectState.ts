@@ -1,4 +1,4 @@
-import { ref, type Ref, type MaybeRefOrGetter, toValue } from 'vue';
+import { ref, type MaybeRefOrGetter, toValue } from 'vue';
 
 /**
  * Manages the basic UI state of the select component.
@@ -20,7 +20,11 @@ export function useSelectState(disabled: MaybeRefOrGetter<boolean>) {
     }
 
     function toggle() {
-        isOpen.value ? close() : open();
+        if (isOpen.value) {
+            close();
+        } else {
+            open();
+        }
     }
 
     function setHighlight(index: number) {

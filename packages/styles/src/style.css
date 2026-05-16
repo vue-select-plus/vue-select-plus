@@ -1,362 +1,794 @@
+/* =====================================================================
+   Vue Select Plus — default theme
+   Customise by overriding the CSS variables below or by setting the
+   `.dark` class on a parent element.
+   ===================================================================== */
+
 :root {
-  --vs-primary: #3b82f6;
-  --vs-primary-focus: rgba(59, 130, 246, 0.2);
-  --vs-danger: #ef4444;
-  --vs-border: #d1d5db;
-  --vs-bg: #ffffff;
-  --vs-text: #1f2937;
-  --vs-text-light: #6b7280;
-  --vs-hover: #f3f4f6;
-  --vs-selected-bg: #eff6ff;
-  --vs-selected-text: #2563eb;
-  --vs-radius: 6px;
-  --vs-transition: 0.2s ease;
-  --vs-border-hover: #9ca3af;
-  --vs-option-hover: #f3f4f6;
-  --vs-option-focus: #e5e7eb;
+    --vs-primary: #2563eb;
+    --vs-primary-hover: #1d4ed8;
+    --vs-primary-contrast: #ffffff;
+    --vs-focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.45);
+    --vs-danger: #dc2626;
+    --vs-danger-soft: rgba(220, 38, 38, 0.15);
+
+    --vs-bg: #ffffff;
+    --vs-bg-elevated: #ffffff;
+    --vs-bg-subtle: #f9fafb;
+    --vs-bg-hover: #f3f4f6;
+    --vs-bg-active: #e5e7eb;
+
+    --vs-text: #111827;
+    --vs-text-muted: #6b7280;
+    --vs-text-disabled: #9ca3af;
+
+    --vs-border: #d1d5db;
+    --vs-border-hover: #9ca3af;
+    --vs-border-strong: #6b7280;
+
+    --vs-selected-bg: #dbeafe;
+    --vs-selected-text: #1e40af;
+
+    --vs-tag-bg: #eef2ff;
+    --vs-tag-text: #3730a3;
+    --vs-tag-remove-hover-bg: rgba(67, 56, 202, 0.15);
+
+    --vs-radius: 6px;
+    --vs-radius-sm: 4px;
+    --vs-shadow-menu: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                      0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --vs-transition: 150ms ease;
+    --vs-z-menu: 50;
+    --vs-control-height: 2.5rem;
+    --vs-font-size: 0.875rem;
 }
 
-/* Dark Mode Overrides */
+/* System-preference dark mode */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --vs-bg: #1f2937;
+    :root:not(.light) {
+        --vs-primary: #3b82f6;
+        --vs-primary-hover: #60a5fa;
+        --vs-primary-contrast: #0b1220;
+        --vs-focus-ring: 0 0 0 3px rgba(96, 165, 250, 0.55);
+
+        --vs-bg: #111827;
+        --vs-bg-elevated: #1f2937;
+        --vs-bg-subtle: #1f2937;
+        --vs-bg-hover: #374151;
+        --vs-bg-active: #4b5563;
+
+        --vs-text: #f9fafb;
+        --vs-text-muted: #9ca3af;
+        --vs-text-disabled: #6b7280;
+
+        --vs-border: #374151;
+        --vs-border-hover: #4b5563;
+        --vs-border-strong: #9ca3af;
+
+        --vs-selected-bg: #1e3a8a;
+        --vs-selected-text: #ffffff;
+
+        --vs-tag-bg: #312e81;
+        --vs-tag-text: #c7d2fe;
+        --vs-tag-remove-hover-bg: rgba(199, 210, 254, 0.2);
+
+        --vs-shadow-menu: 0 10px 15px -3px rgba(0, 0, 0, 0.4),
+                          0 4px 6px -4px rgba(0, 0, 0, 0.4);
+    }
+}
+
+/*
+ * Class-based dark override (works even without media query).
+ *
+ * Both `.dark` (legacy / Tailwind-compatible) and `.vsp-dark` (component-namespaced,
+ * recommended) work. Use `.vsp-dark` if your app already owns the `.dark` class
+ * for unrelated theming so the two systems don't collide.
+ */
+.vsp-dark,
+.dark {
+    --vs-primary: #3b82f6;
+    --vs-primary-hover: #60a5fa;
+    --vs-primary-contrast: #0b1220;
+    --vs-focus-ring: 0 0 0 3px rgba(96, 165, 250, 0.55);
+
+    --vs-bg: #111827;
+    --vs-bg-elevated: #1f2937;
+    --vs-bg-subtle: #1f2937;
+    --vs-bg-hover: #374151;
+    --vs-bg-active: #4b5563;
+
     --vs-text: #f9fafb;
-    --vs-text-light: #9ca3af;
+    --vs-text-muted: #9ca3af;
+    --vs-text-disabled: #6b7280;
+
     --vs-border: #374151;
     --vs-border-hover: #4b5563;
-    --vs-hover: #374151;
-    --vs-selected-bg: #1e40af;
-    /* Distinct deep blue */
+    --vs-border-strong: #9ca3af;
+
+    --vs-selected-bg: #1e3a8a;
     --vs-selected-text: #ffffff;
-    --vs-primary-focus: rgba(59, 130, 246, 0.4);
-    --vs-option-hover: #374151;
-    --vs-option-focus: #4b5563;
-  }
+
+    --vs-tag-bg: #312e81;
+    --vs-tag-text: #c7d2fe;
+    --vs-tag-remove-hover-bg: rgba(199, 210, 254, 0.2);
+
+    --vs-shadow-menu: 0 10px 15px -3px rgba(0, 0, 0, 0.4),
+                      0 4px 6px -4px rgba(0, 0, 0, 0.4);
 }
 
-.dark {
-  --vs-bg: #1f2937;
-  --vs-text: #f9fafb;
-  --vs-text-light: #9ca3af;
-  --vs-border: #374151;
-  --vs-border-hover: #4b5563;
-  --vs-hover: #374151;
-  --vs-selected-bg: #1e40af;
-  --vs-selected-text: #ffffff;
-  --vs-primary-focus: rgba(59, 130, 246, 0.4);
-  --vs-option-hover: #374151;
-  --vs-option-focus: #4b5563;
-}
-
+/* =====================================================================
+   Root container
+   ===================================================================== */
 .vue-select-root {
-  position: relative;
-  width: 100%;
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  box-sizing: border-box;
+    position: relative;
+    inline-size: 100%;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+                 "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: var(--vs-font-size);
+    color: var(--vs-text);
+    box-sizing: border-box;
 }
 
 .vue-select-root *,
 .vue-select-root *::before,
 .vue-select-root *::after {
-  box-sizing: inherit;
+    box-sizing: inherit;
 }
 
 .vue-select-root.is-disabled {
-  opacity: 0.6;
-  pointer-events: none;
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
+.vue-select-root.is-disabled .vue-select-control {
+    pointer-events: none;
+}
+
+/* =====================================================================
+   Label
+   ===================================================================== */
 .vue-select-label {
-  display: block;
-  margin-bottom: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--vs-text);
-  cursor: pointer;
+    display: block;
+    margin-block-end: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--vs-text);
+    cursor: pointer;
 }
 
-.vue-select-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  min-height: 2.5rem;
-  padding: 0.375rem 0.75rem;
-  background-color: var(--vs-bg);
-  border: 1px solid var(--vs-border);
-  border-radius: var(--vs-radius);
-  cursor: pointer;
-  transition: border-color var(--vs-transition), box-shadow var(--vs-transition);
+.vue-select-required {
+    color: var(--vs-danger);
+    margin-inline-start: 0.125rem;
 }
 
-.vue-select-trigger:hover {
-  border-color: var(--vs-border-hover);
+/* =====================================================================
+   Control (trigger wrapper)
+   ===================================================================== */
+.vue-select-control {
+    display: flex;
+    align-items: stretch;
+    inline-size: 100%;
+    min-block-size: var(--vs-control-height);
+    padding-block: 0.25rem;
+    padding-inline: 0.75rem;
+    background-color: var(--vs-bg);
+    border: 1px solid var(--vs-border);
+    border-radius: var(--vs-radius);
+    cursor: text;
+    transition: border-color var(--vs-transition),
+                box-shadow var(--vs-transition),
+                background-color var(--vs-transition);
 }
 
-.vue-select-trigger:focus,
-.vue-select-root.is-open .vue-select-trigger {
-  outline: none;
-  border-color: var(--vs-primary);
-  box-shadow: 0 0 0 3px var(--vs-primary-focus);
+.vue-select-root:not(.is-searchable) .vue-select-control {
+    cursor: pointer;
 }
 
-.vue-select-root.has-error .vue-select-trigger {
-  border-color: var(--vs-danger);
+.vue-select-control:hover {
+    border-color: var(--vs-border-hover);
 }
 
-.vue-select-content-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.25rem;
-  flex: 1;
-  overflow: hidden;
+.vue-select-root.is-open .vue-select-control,
+.vue-select-control:focus-within {
+    outline: none;
+    border-color: var(--vs-primary);
+    box-shadow: var(--vs-focus-ring);
+}
+
+.vue-select-root.has-error .vue-select-control {
+    border-color: var(--vs-danger);
+}
+
+.vue-select-root.has-error .vue-select-control:focus-within {
+    box-shadow: 0 0 0 3px var(--vs-danger-soft);
+}
+
+/* =====================================================================
+   Content area
+   ===================================================================== */
+.vue-select-content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    min-inline-size: 0;
+    overflow: hidden;
 }
 
 .vue-select-single-value {
-  color: var(--vs-text);
-  font-size: 0.875rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    color: var(--vs-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-inline-size: 100%;
 }
 
 .vue-select-placeholder {
-  color: var(--vs-text-light);
-  font-size: 0.875rem;
+    color: var(--vs-text-muted);
+    pointer-events: none;
+    user-select: none;
 }
 
+/* =====================================================================
+   Combobox surfaces
+   ===================================================================== */
 .vue-select-input {
-  border: none;
-  background: transparent;
-  padding: 0;
-  font-size: 0.875rem;
-  color: var(--vs-text);
-  outline: none;
-  min-width: 2rem;
-  flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: var(--vs-text);
+    outline: none;
+    min-inline-size: 2rem;
+    flex: 1 1 auto;
 }
 
 .vue-select-input::placeholder {
-  color: var(--vs-text-light);
+    color: var(--vs-text-muted);
 }
 
+.vue-select-input:disabled {
+    cursor: not-allowed;
+    color: var(--vs-text-disabled);
+}
+
+.vue-select-button {
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    text-align: start;
+    cursor: pointer;
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    /* The button itself is invisible — visual content sits in `.vue-select-content`. */
+    inline-size: 100%;
+    block-size: 1px;
+    /* Keep it focusable; the visible focus ring is on `.vue-select-control`. */
+    outline: none;
+}
+
+.vue-select-button:disabled {
+    cursor: not-allowed;
+}
+
+/* =====================================================================
+   Tags
+   ===================================================================== */
 .vue-select-tag {
-  display: inline-flex;
-  align-items: center;
-  background-color: var(--vs-hover);
-  border: 1px solid var(--vs-border);
-  border-radius: 4px;
-  padding: 0.125rem 0.375rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--vs-text);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background-color: var(--vs-tag-bg);
+    color: var(--vs-tag-text);
+    border-radius: var(--vs-radius-sm);
+    padding-block: 0.125rem;
+    padding-inline: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    max-inline-size: 100%;
+}
+
+.vue-select-tag-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .vue-select-tag-remove {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 0.25rem;
-  padding: 0;
-  width: 1rem;
-  height: 1rem;
-  background: transparent;
-  border: none;
-  color: var(--vs-text-light);
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 1rem;
-  line-height: 1;
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1rem;
+    block-size: 1rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: currentColor;
+    cursor: pointer;
+    transition: background-color var(--vs-transition);
 }
 
-.vue-select-tag-remove:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-  color: var(--vs-danger);
+.vue-select-tag-remove:hover,
+.vue-select-tag-remove:focus-visible {
+    background-color: var(--vs-tag-remove-hover-bg);
+    outline: none;
 }
 
-.vue-select-icons {
-  display: flex;
-  align-items: center;
-  margin-left: 0.5rem;
-  color: var(--vs-text-light);
+.vue-select-tag-remove:focus-visible {
+    box-shadow: var(--vs-focus-ring);
+}
+
+/* =====================================================================
+   Indicators
+   ===================================================================== */
+.vue-select-indicators {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-inline-start: 0.5rem;
+    color: var(--vs-text-muted);
+    flex-shrink: 0;
+}
+
+.vue-select-indicators > .vue-select-spinner + .vue-select-clear {
+    /* Subtle divider so the two icons read as distinct affordances. */
+    border-inline-start: 1px solid var(--vs-border);
+    padding-inline-start: 0.375rem;
+}
+
+.vue-select-clear {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--vs-text-muted);
+    cursor: pointer;
+    transition: color var(--vs-transition), background-color var(--vs-transition);
+}
+
+.vue-select-clear:hover {
+    color: var(--vs-danger);
+    background-color: var(--vs-bg-hover);
 }
 
 .vue-select-arrow {
-  display: inline-block;
-  font-size: 0.75rem;
-  transition: transform var(--vs-transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1rem;
+    block-size: 1rem;
+    transition: transform var(--vs-transition);
 }
 
 .vue-select-arrow--open {
-  transform: rotate(180deg);
+    transform: rotate(180deg);
 }
 
+/* =====================================================================
+   Menu / Listbox
+   Positioned via Floating UI (inline styles); CSS only provides theming.
+   ===================================================================== */
 .vue-select-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  margin-top: 0.25rem;
-  background-color: var(--vs-bg);
-  border: 1px solid var(--vs-border);
-  border-radius: var(--vs-radius);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  z-index: 50;
-  max-height: 15rem;
-  overflow-y: auto;
-  padding: 0.25rem 0;
-  list-style: none;
+    /* Position is set by Floating UI's `floatingStyles` — do not override here. */
+    background-color: var(--vs-bg-elevated);
+    border: 1px solid var(--vs-border);
+    border-radius: var(--vs-radius);
+    box-shadow: var(--vs-shadow-menu);
+    z-index: var(--vs-z-menu);
+    overflow-y: auto;
+    padding-block: 0.25rem;
+    list-style: none;
+    /* When teleported to <body>, ensure the menu inherits our font. */
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+                 "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: var(--vs-font-size);
+    color: var(--vs-text);
+    box-sizing: border-box;
 }
 
-.vue-select-empty {
-  padding: 0.75rem;
-  text-align: center;
-  color: var(--vs-text-light);
-  font-size: 0.875rem;
+.vue-select-menu *,
+.vue-select-menu *::before,
+.vue-select-menu *::after {
+    box-sizing: border-box;
 }
 
+.vue-select-empty,
+.vue-select-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding-block: 0.75rem;
+    padding-inline: 0.75rem;
+    text-align: center;
+    color: var(--vs-text-muted);
+}
+
+.vue-select-state--loading {
+    color: var(--vs-text);
+}
+
+/* =====================================================================
+   Loading spinner
+   ===================================================================== */
+.vue-select-spinner {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--vs-text-muted);
+    animation: vue-select-spin 750ms linear infinite;
+    transform-origin: center;
+}
+
+.vue-select-spinner--menu {
+    color: var(--vs-primary);
+}
+
+@keyframes vue-select-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vue-select-spinner {
+        animation: none;
+    }
+    .vue-select-spinner svg circle {
+        stroke-dasharray: 0;
+    }
+}
+
+/* =====================================================================
+   Options
+   ===================================================================== */
 .vue-select-option {
-  position: relative;
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 0.75rem;
-  cursor: pointer;
-  font-size: 0.875rem;
-  color: var(--vs-text);
-  transition: background-color 0.1s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    block-size: 100%;
+    padding-block: 0.5rem;
+    padding-inline: 0.75rem;
+    cursor: pointer;
+    color: var(--vs-text);
+    transition: background-color 80ms linear;
 }
 
 .vue-select-option:hover {
-  background-color: var(--vs-option-hover);
+    background-color: var(--vs-bg-hover);
 }
 
 .vue-select-option--active {
-  background-color: var(--vs-option-focus);
+    background-color: var(--vs-bg-active);
 }
 
 .vue-select-option--selected {
-  background-color: var(--vs-selected-bg);
-  color: var(--vs-selected-text);
-  font-weight: 500;
+    background-color: var(--vs-selected-bg);
+    color: var(--vs-selected-text);
+    font-weight: 500;
+}
+
+.vue-select-option--selected.vue-select-option--active {
+    background-color: var(--vs-selected-bg);
+    box-shadow: inset 2px 0 0 var(--vs-primary);
 }
 
 .vue-select-option--disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+    color: var(--vs-text-disabled);
+    cursor: not-allowed;
+    background-color: transparent;
+}
+
+.vue-select-option--disabled:hover {
+    background-color: transparent;
+}
+
+/* =====================================================================
+   Tree (expand / actions)
+   ===================================================================== */
+.vue-select-toggle,
+.vue-select-action-btn {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--vs-text-muted);
+    cursor: pointer;
+    border-radius: var(--vs-radius-sm);
 }
 
 .vue-select-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.25rem;
-  height: 1.25rem;
-  margin-right: 0.25rem;
-  border-radius: 4px;
-  color: var(--vs-text-light);
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    margin-inline-end: 0.25rem;
 }
 
 .vue-select-toggle:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  color: var(--vs-text);
+    background-color: var(--vs-bg-hover);
+    color: var(--vs-text);
 }
 
 .vue-select-chevron {
-  display: inline-block;
-  transition: transform var(--vs-transition);
-  font-size: 0.65rem;
+    transition: transform var(--vs-transition);
 }
 
 .vue-select-chevron--collapsed {
-  transform: rotate(-90deg);
+    transform: rotate(-90deg);
 }
 
 .vue-select-spacer {
-  width: 1.5rem;
-  display: inline-block;
-}
-
-.vue-select-group {
-  padding: 0.5rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--vs-text-light);
-  letter-spacing: 0.05em;
-  background-color: #f9fafb;
-  border-top: 1px solid #f3f4f6;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-.vue-select-group:first-child {
-  border-top: none;
+    inline-size: 1.5rem;
+    display: inline-block;
 }
 
 .vue-select-label-container {
-  flex: 1;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .vue-select-actions {
-  display: flex;
-  align-items: center;
-  margin-left: 0.5rem;
-  opacity: 0;
-  transition: opacity 0.1s;
+    display: flex;
+    align-items: center;
+    margin-inline-start: 0.5rem;
+    opacity: 0;
+    transition: opacity var(--vs-transition);
 }
 
 .vue-select-option:hover .vue-select-actions,
 .vue-select-option:focus-within .vue-select-actions {
-  opacity: 1;
+    opacity: 1;
 }
 
 .vue-select-action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  border: 1px solid var(--vs-border);
-  background-color: #fff;
-  border-radius: 4px;
-  cursor: pointer;
-  color: var(--vs-text-light);
-  font-size: 1rem;
-  line-height: 1;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    border: 1px solid var(--vs-border);
+    background-color: var(--vs-bg-elevated);
 }
 
 .vue-select-action-btn:hover {
-  border-color: var(--vs-primary);
-  color: var(--vs-primary);
-  background-color: var(--vs-selected-bg);
+    border-color: var(--vs-primary);
+    color: var(--vs-primary);
+    background-color: var(--vs-bg-hover);
 }
 
+/* =====================================================================
+   Groups
+   ===================================================================== */
+.vue-select-group {
+    padding-block: 0.5rem;
+    padding-inline: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--vs-text-muted);
+    letter-spacing: 0.05em;
+    background-color: var(--vs-bg-subtle);
+    border-block-start: 1px solid var(--vs-border);
+    border-block-end: 1px solid var(--vs-border);
+}
+
+.vue-select-group:first-child {
+    border-block-start: none;
+}
+
+/* =====================================================================
+   Creator
+   ===================================================================== */
 .vue-select-creator {
-  padding: 0.25rem 0.5rem;
-}
-
-.vue-select-creator-inner {
-  display: flex;
-  align-items: center;
+    padding-block: 0.25rem;
+    padding-inline: 0.5rem;
 }
 
 .vue-select-creator-input {
-  width: 100%;
-  padding: 0.375rem 0.5rem;
-  font-size: 0.875rem;
-  border: 1px solid var(--vs-primary);
-  border-radius: var(--vs-radius);
-  outline: none;
-  box-shadow: 0 0 0 2px var(--vs-primary-focus);
+    inline-size: 100%;
+    padding-block: 0.375rem;
+    padding-inline: 0.5rem;
+    font: inherit;
+    color: var(--vs-text);
+    background-color: var(--vs-bg);
+    border: 1px solid var(--vs-primary);
+    border-radius: var(--vs-radius);
+    outline: none;
+    box-shadow: var(--vs-focus-ring);
 }
 
+/* =====================================================================
+   Error message
+   ===================================================================== */
 .vue-select-error-msg {
-  display: block;
-  margin-top: 0.25rem;
-  font-size: 0.75rem;
-  color: var(--vs-danger);
+    display: block;
+    margin-block-start: 0.25rem;
+    margin-block-end: 0;
+    font-size: 0.75rem;
+    color: var(--vs-danger);
+}
+
+/* =====================================================================
+   Screen-reader only utility
+   ===================================================================== */
+.vue-select-sr-only {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* =====================================================================
+   HTML5 form validation input
+   Invisible, but focusable so the browser can target it with its native
+   validation tooltip when the form is submitted with an empty `required` field.
+   ===================================================================== */
+.vue-select-validation {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: 1px;
+    block-size: 1px;
+    opacity: 0;
+    pointer-events: none;
+    /* Keep it inside the layout so the browser's tooltip anchors near the control. */
+    z-index: -1;
+}
+
+/* =====================================================================
+   Size variants
+   ===================================================================== */
+.vue-select-root--sm {
+    --vs-control-height: 2rem;
+    --vs-font-size: 0.8125rem;
+    --vs-radius: 4px;
+}
+
+.vue-select-root--sm .vue-select-control {
+    padding-inline: 0.5rem;
+}
+
+.vue-select-root--sm .vue-select-option {
+    padding-block: 0.375rem;
+    padding-inline: 0.5rem;
+}
+
+.vue-select-menu--sm {
+    --vs-font-size: 0.8125rem;
+    font-size: 0.8125rem;
+}
+
+.vue-select-menu--sm .vue-select-option {
+    padding-block: 0.375rem;
+    padding-inline: 0.5rem;
+}
+
+.vue-select-root--lg {
+    --vs-control-height: 3rem;
+    --vs-font-size: 1rem;
+    --vs-radius: 8px;
+}
+
+.vue-select-root--lg .vue-select-control {
+    padding-inline: 1rem;
+}
+
+.vue-select-root--lg .vue-select-option {
+    padding-block: 0.625rem;
+    padding-inline: 1rem;
+}
+
+.vue-select-menu--lg {
+    --vs-font-size: 1rem;
+    font-size: 1rem;
+}
+
+.vue-select-menu--lg .vue-select-option {
+    padding-block: 0.625rem;
+    padding-inline: 1rem;
+}
+
+/* =====================================================================
+   Open / close transitions
+   ===================================================================== */
+.vue-select-menu-enter-active,
+.vue-select-menu-leave-active {
+    transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.vue-select-menu-enter-from,
+.vue-select-menu-leave-to {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+    transform-origin: top;
+}
+
+.vue-select-menu--top-start.vue-select-menu-enter-from,
+.vue-select-menu--top.vue-select-menu-enter-from,
+.vue-select-menu--top-end.vue-select-menu-enter-from,
+.vue-select-menu--top-start.vue-select-menu-leave-to,
+.vue-select-menu--top.vue-select-menu-leave-to,
+.vue-select-menu--top-end.vue-select-menu-leave-to {
+    transform: translateY(4px) scale(0.98);
+    transform-origin: bottom;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vue-select-menu-enter-active,
+    .vue-select-menu-leave-active {
+        transition: none;
+    }
+    .vue-select-menu-enter-from,
+    .vue-select-menu-leave-to {
+        transform: none;
+    }
+}
+
+/* =====================================================================
+   Motion preferences
+   ===================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    .vue-select-root,
+    .vue-select-root *,
+    .vue-select-root *::before,
+    .vue-select-root *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
+
+/* =====================================================================
+   Windows High Contrast / forced colors
+   ===================================================================== */
+@media (forced-colors: active) {
+    .vue-select-control,
+    .vue-select-menu,
+    .vue-select-tag,
+    .vue-select-action-btn {
+        border: 1px solid CanvasText;
+        background: Canvas;
+        color: CanvasText;
+        forced-color-adjust: none;
+    }
+
+    .vue-select-option--active,
+    .vue-select-option--selected {
+        background: Highlight;
+        color: HighlightText;
+        forced-color-adjust: none;
+    }
+
+    .vue-select-control:focus-within,
+    .vue-select-tag-remove:focus-visible,
+    .vue-select-creator-input {
+        outline: 2px solid Highlight;
+        outline-offset: 2px;
+    }
+
+    .vue-select-arrow,
+    .vue-select-clear,
+    .vue-select-toggle {
+        color: CanvasText;
+    }
 }
