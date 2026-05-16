@@ -39,3 +39,21 @@ Polish fixes from the first round of real-world testing.
 - **New troubleshooting section: opening with huge option lists.** Order-of-
   magnitude expectations + the dev-mode-vs-production caveat are now
   documented.
+- **DX: JSDoc with defaults on every prop.** `@default` annotations now show
+  up in IDE tooltips. No public-API change, just less guessing — especially
+  helpful for `inputmode`, `validationMessage`, `autocomplete` which are
+  forwarded to the input.
+- **Fixed: source paths leaking into generated `.d.ts` files.** Cross-package
+  imports were emitted as `from '../../core/src/index.ts'` instead of
+  `from '@vue-select-plus/core'`. The published declarations now resolve via
+  the package name, so consumer tooling treats `@vue-select-plus/core` as a
+  proper peer (and not a relative source dependency that doesn't exist in
+  their install).
+- **Simplified `@vue-select-plus/styles` exports map.** The redundant
+  `./style.css` subpath has been removed; the package now exports only `.`
+  pointing at the same file. Bundlers tree-shake the import marginally
+  faster, and there's only one canonical path.
+- **Tailwind `.dark` collision: documentation upgraded.** The README and
+  troubleshooting now spell out the three integration patterns (Tailwind-
+  only, both, VSP-only) and clearly call the legacy `.dark` mapping out as
+  v1.0-removal. No behaviour change in 0.1.x.

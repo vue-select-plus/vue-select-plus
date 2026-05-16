@@ -30,26 +30,36 @@ Common issues, their causes, and the fastest fix.
 <VSelect :teleport="dialogRef" ... />
 ```
 
-## The label collides with Tailwind's dark mode
+## The dropdown flips dark when Tailwind does (and you didn't want that)
 
 **Symptom:** Tailwind's `.dark` class on `<html>` toggles your own dark theme, and Vue Select Plus jumps to its dark variant at the same time, breaking your colour story.
 
-**Fix:** Use `.vsp-dark` (or simply override the CSS variables in your own dark scope):
+**Why:** Until v1.0 the default theme listens to both `.vsp-dark` and `.dark`. The latter is there for backward compatibility but collides with Tailwind, which owns `.dark` by default.
 
-```html
-<html class="dark">   <!-- Tailwind dark mode (your colours) -->
-```
+**Fixes, pick one:**
 
-```css
-:root.dark {
-    /* your tokens */
-}
+1. **Use `.vsp-dark` only and keep `.dark` for Tailwind:**
 
-/* Vue Select Plus stays in light mode unless you also opt in: */
-.vsp-dark {
-    /* Vue Select Plus dark theme */
-}
-```
+    ```html
+    <html class="dark">                  <!-- Tailwind -->
+    <html class="dark vsp-dark">         <!-- both -->
+    <html class="vsp-dark">              <!-- VSP dark, Tailwind stays light -->
+    ```
+
+2. **Override the variables in your own scope** — gives you full control and ignores both classes:
+
+    ```css
+    :root.your-app-dark {
+        --vs-bg: #1f2937;
+        --vs-text: #f9fafb;
+        --vs-border: #374151;
+        /* …and the rest of the tokens you want to override */
+    }
+    ```
+
+3. **Disable Tailwind's `.dark` class behaviour entirely** (Tailwind config: `darkMode: 'media'` or a custom selector).
+
+The `.dark` mapping will be removed in v1.0. Today it's still in `@vue-select-plus/styles` to keep upgrade pain low for early adopters.
 
 ## The label is read as just "combobox" with no value
 
