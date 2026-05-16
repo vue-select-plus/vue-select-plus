@@ -254,28 +254,36 @@
     color: var(--vs-text-disabled);
 }
 
+/*
+ * The non-searchable trigger is a real <button role="combobox"> — but the
+ * visible "trigger surface" is the wrapping `.vue-select-control`. The button
+ * therefore needs to be focus-target-only: present in the accessibility tree,
+ * not in the visual layout. We hide it via the standard sr-only pattern.
+ *
+ * Clicks on the wrapper call `focusTrigger()` which programmatically focuses
+ * this hidden button; the focus ring lives on `.vue-select-control:focus-within`.
+ */
 .vue-select-button {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+    background: transparent;
     appearance: none;
     -webkit-appearance: none;
-    border: none;
-    background: transparent;
-    padding: 0;
-    margin: 0;
     font: inherit;
     color: inherit;
-    text-align: start;
-    cursor: pointer;
-    flex: 1 1 auto;
-    min-inline-size: 0;
-    /* The button itself is invisible — visual content sits in `.vue-select-content`. */
-    inline-size: 100%;
-    block-size: 1px;
-    /* Keep it focusable; the visible focus ring is on `.vue-select-control`. */
-    outline: none;
 }
 
-.vue-select-button:disabled {
-    cursor: not-allowed;
+/* Firefox renders an inner focus border on <button> by default — kill it. */
+.vue-select-button::-moz-focus-inner {
+    border: 0;
+    padding: 0;
 }
 
 /* =====================================================================
@@ -710,37 +718,27 @@
 
 /* =====================================================================
    Open / close transitions
+
+   The menu uses Floating UI's `floatingStyles` which set `transform` on the
+   element's inline style for positioning. Animating `transform` here would
+   stomp the positioning during enter/leave and the menu would visually jump
+   to (0, 0). We therefore only animate `opacity` — Floating UI keeps full
+   control of position.
    ===================================================================== */
 .vue-select-menu-enter-active,
 .vue-select-menu-leave-active {
-    transition: opacity 120ms ease, transform 120ms ease;
+    transition: opacity 120ms ease;
 }
 
 .vue-select-menu-enter-from,
 .vue-select-menu-leave-to {
     opacity: 0;
-    transform: translateY(-4px) scale(0.98);
-    transform-origin: top;
-}
-
-.vue-select-menu--top-start.vue-select-menu-enter-from,
-.vue-select-menu--top.vue-select-menu-enter-from,
-.vue-select-menu--top-end.vue-select-menu-enter-from,
-.vue-select-menu--top-start.vue-select-menu-leave-to,
-.vue-select-menu--top.vue-select-menu-leave-to,
-.vue-select-menu--top-end.vue-select-menu-leave-to {
-    transform: translateY(4px) scale(0.98);
-    transform-origin: bottom;
 }
 
 @media (prefers-reduced-motion: reduce) {
     .vue-select-menu-enter-active,
     .vue-select-menu-leave-active {
         transition: none;
-    }
-    .vue-select-menu-enter-from,
-    .vue-select-menu-leave-to {
-        transform: none;
     }
 }
 
