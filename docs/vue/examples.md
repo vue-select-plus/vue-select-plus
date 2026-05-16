@@ -1,309 +1,350 @@
 # Examples
 
 <script setup>
+import { ref, reactive } from 'vue'
 import { VSelect } from '@vue-select-plus/vue'
 import '@vue-select-plus/styles'
-
-import { ref } from 'vue'
 
 const fruits = [
-  { label: 'Apple', value: 'apple' },
-  { label: 'Banana', value: 'banana' },
-  { label: 'Cherry', value: 'cherry' },
-  { label: 'Date', value: 'date', disabled: true },
-  { label: 'Elderberry', value: 'elderberry' }
+    { value: 'apple', label: 'Apple' },
+    { value: 'banana', label: 'Banana' },
+    { value: 'cherry', label: 'Cherry' },
+    { value: 'date', label: 'Date', disabled: true },
+    { value: 'elderberry', label: 'Elderberry' }
 ]
 
-const value1 = ref(null)
-const value2 = ref(['apple', 'banana'])
-const value3 = ref(null)
-const value4 = ref(null)
-const value5 = ref(null)
-const value6 = ref(null)
+const single = ref(null)
+const multi = ref(['apple', 'banana'])
+const search = ref(null)
+const tree = ref(['vue'])
+const clearable = ref('cherry')
+const requiredValue = ref(null)
+const longValue = ref(null)
 
-const creatorOptions = ref([
-  { 
-    label: 'Backend', 
-    value: 'be', 
-    children: [
-      { label: 'Node.js', value: 'node' }
-    ] 
-  },
-  { 
-    label: 'Frontend', 
-    value: 'fe', 
-    children: [
-      { label: 'Vue.js', value: 'vue' }
-    ] 
-  }
-])
+const techStack = [
+    {
+        label: 'Frontend', value: 'fe', children: [
+            { label: 'Vue', value: 'vue' },
+            { label: 'React', value: 'react' },
+            { label: 'Svelte', value: 'svelte' }
+        ]
+    },
+    {
+        label: 'Backend', value: 'be', children: [
+            { label: 'Node.js', value: 'node', children: [
+                { label: 'Express', value: 'express' },
+                { label: 'NestJS', value: 'nest' }
+            ]},
+            { label: 'Go', value: 'go' }
+        ]
+    }
+]
 
+const longList = Array.from({ length: 5000 }, (_, i) => ({
+    value: `item-${i}`,
+    label: `Item ${String(i + 1).padStart(4, '0')}`
+}))
+
+// Async demo
+const allUsers = Array.from({ length: 200 }, (_, i) => ({
+    value: `u-${i}`,
+    label: `${['Alice', 'Bob', 'Carol', 'Dan'][i % 4]} #${i}`
+}))
+const asyncOptions = ref([])
+const asyncLoading = ref(false)
+const asyncValue = ref(null)
+let asyncToken = 0
+
+async function onAsyncSearch(query) {
+    const my = ++asyncToken
+    if (!query) {
+        asyncOptions.value = []
+        return
+    }
+    asyncLoading.value = true
+    await new Promise(r => setTimeout(r, 300))
+    if (my !== asyncToken) return
+    const q = query.toLowerCase()
+    asyncOptions.value = allUsers.filter(u => u.label.toLowerCase().includes(q)).slice(0, 30)
+    asyncLoading.value = false
+}
+
+// Creator demo
+const creatorOptions = reactive(JSON.parse(JSON.stringify(techStack)))
+const creatorValue = ref(null)
 function handleCreate({ parent, value }) {
-  const parentOpt = creatorOptions.value.find(o => o.value === parent)
-  if (parentOpt) {
-      // Allow modifying readonly array for demo
-      if (!parentOpt.children) parentOpt.children = []
-      parentOpt.children.push({ label: value, value: value.toLowerCase() })
-  }
+    const add = (opts) => {
+        for (const opt of opts) {
+            if (opt.value === parent) {
+                opt.children = [...(opt.children ?? []), { label: value, value: value.toLowerCase() }]
+                return true
+            }
+            if (opt.children && add(opt.children)) return true
+        }
+        return false
+    }
+    add(creatorOptions)
+}
+
+// Native form demo
+const formValue = ref(['vue'])
+const formOutput = ref('')
+function onSubmit(e) {
+    e.preventDefault()
+    const data = new FormData(e.target)
+    formOutput.value = JSON.stringify(Object.fromEntries(
+        Array.from(data.keys()).map(k => [k, data.getAll(k)])
+    ), null, 2)
 }
 </script>
 
-## Basic Select
-
+## Single select
 
 <div class="demo-box">
-  <VSelect 
-    v-model="value1" 
-    :options="fruits" 
-    label="Single Select"
-    placeholder="Pick a fruit"
-  />
-  <p>Selected: {{ value1 }}</p>
+    <VSelect v-model="single" :options="fruits" label="Pick a fruit" placeholder="Choose…" clearable />
+    <p class="muted">Selected: <code>{{ single ?? 'null' }}</code></p>
 </div>
 
 ```vue
-<script setup>
+<VSelect
+    v-model="fruit"
+    :options="fruits"
+    label="Pick a fruit"
+    placeholder="Choose…"
+    clearable
+/>
+```
+
+## Multi select with tags
+
+<div class="demo-box">
+    <VSelect v-model="multi" :options="fruits" label="Favorites" multiple clearable />
+    <p class="muted">Selected: <code>{{ JSON.stringify(multi) }}</code></p>
+</div>
+
+```vue
+<VSelect v-model="favorites" :options="fruits" label="Favorites" multiple clearable />
+```
+
+Tag-remove buttons are reachable via <kbd>Tab</kbd> and labelled "Remove {item}". <kbd>Backspace</kbd> in an empty search input removes the last tag.
+
+## Searchable (client-side)
+
+<div class="demo-box">
+    <VSelect v-model="search" :options="fruits" label="Filter" placeholder="Type to filter…" searchable clearable />
+</div>
+
+```vue
+<VSelect v-model="value" :options="options" searchable placeholder="Type to filter…" />
+```
+
+## Async / server-side search
+
+<div class="demo-box">
+    <VSelect
+        v-model="asyncValue"
+        :options="asyncOptions"
+        :loading="asyncLoading"
+        :filterable="false"
+        :min-search-length="2"
+        :search-debounce="300"
+        label="Find a user"
+        placeholder="Type at least 2 chars…"
+        searchable
+        @search="onAsyncSearch"
+    />
+    <p class="muted small">Search is debounced 300 ms and gated to 2 characters. <code>aria-busy</code> flips while loading.</p>
+</div>
+
+```vue
+<script setup lang="ts">
 import { ref } from 'vue'
 import { VSelect } from '@vue-select-plus/vue'
-import '@vue-select-plus/styles'
 
-const value = ref(null)
-const options = [
-  { label: 'Apple', value: 'apple' },
-  { label: 'Banana', value: 'banana' }
+const value = ref<string | null>(null)
+const options = ref<SelectOption[]>([])
+const loading = ref(false)
+
+let token = 0
+async function onSearch(query: string) {
+    const my = ++token
+    if (!query) { options.value = []; return }
+    loading.value = true
+    const data = await fetch(`/api/users?q=${encodeURIComponent(query)}`).then(r => r.json())
+    if (my !== token) return    // race-guard: ignore stale responses
+    options.value = data.map(u => ({ value: u.id, label: u.name }))
+    loading.value = false
+}
+</script>
+
+<template>
+    <VSelect
+        v-model="value"
+        :options="options"
+        :loading="loading"
+        :filterable="false"
+        :min-search-length="2"
+        :search-debounce="300"
+        searchable
+        @search="onSearch"
+    />
+</template>
+```
+
+## Nested tree
+
+<div class="demo-box">
+    <VSelect v-model="tree" :options="techStack" label="Tech stack" multiple searchable />
+    <p class="muted">Selected: <code>{{ JSON.stringify(tree) }}</code></p>
+</div>
+
+Use <kbd>→</kbd>/<kbd>←</kbd> to expand/collapse, or jump to a parent.
+
+```vue
+<VSelect v-model="stack" :options="techStack" multiple searchable label="Tech stack" />
+```
+
+```ts
+const techStack = [
+    {
+        label: 'Frontend', value: 'fe',
+        children: [
+            { label: 'Vue', value: 'vue' },
+            { label: 'React', value: 'react' }
+        ]
+    },
+    {
+        label: 'Backend', value: 'be',
+        children: [
+            { label: 'Node.js', value: 'node', children: [...] },
+            { label: 'Go', value: 'go' }
+        ]
+    }
 ]
-</script>
-
-<template>
-  <VSelect 
-    v-model="value" 
-    :options="options" 
-    label="Single Select"
-    placeholder="Pick a fruit"
-  />
-</template>
 ```
 
-## Multi Select
+## Creator mode
 
 <div class="demo-box">
-  <VSelect 
-    v-model="value2" 
-    :options="fruits" 
-    multiple
-    label="Multi Select"
-    placeholder="Pick many fruits"
-  />
-  <p>Selected: {{ value2 }}</p>
+    <VSelect
+        v-model="creatorValue"
+        :options="creatorOptions"
+        label="Add child"
+        placeholder="Hover a group, hit +"
+        @create="handleCreate"
+    />
+    <p class="muted small">Hover any group with children — a <kbd>+</kbd> button appears.</p>
 </div>
 
 ```vue
-<script setup>
-import { ref } from 'vue'
-import { VSelect } from '@vue-select-plus/vue'
-
-const value = ref(['apple'])
-const options = [
-  { label: 'Apple', value: 'apple' },
-  { label: 'Banana', value: 'banana' }
-]
-</script>
-
-<template>
-  <VSelect 
-    v-model="value" 
-    :options="options" 
-    multiple
-    label="Multi Select" 
-  />
-</template>
+<VSelect v-model="value" :options="options" @create="handleCreate" />
 ```
 
-## Searchable
-
-<div class="demo-box">
-  <VSelect 
-    v-model="value3" 
-    :options="fruits" 
-    searchable
-    label="Filter Fruits"
-    placeholder="Type to search..."
-  />
-  <p>Selected: {{ value3 }}</p>
-</div>
-
-```vue
-<script setup>
-import { ref } from 'vue'
-import { VSelect } from '@vue-select-plus/vue'
-
-const value = ref(null)
-const options = [
-  { label: 'Apple', value: 'apple' },
-  { label: 'Banana', value: 'banana' }
-]
-</script>
-
-<template>
-  <VSelect 
-    v-model="value" 
-    :options="options" 
-    searchable
-    label="Filter Fruits" 
-  />
-</template>
-```
-
-## Disabled & Error
-
-<div class="demo-box">
-  <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-    <div style="flex: 1; min-width: 200px;">
-        <VSelect 
-        :options="fruits" 
-        disabled
-        label="Disabled Prop"
-        placeholder="Cannot select"
-        />
-    </div>
-    <div style="flex: 1; min-width: 200px;">
-        <VSelect 
-        v-model="value4"
-        :options="fruits" 
-        error="This field is required"
-        label="Error Prop"
-        />
-    </div>
-  </div>
-</div>
-
-```vue
-<template>
-  <VSelect disabled label="Disabled" />
-  
-  <VSelect 
-    error="Field required" 
-    label="Error State" 
-  />
-</template>
-```
-
-## Custom Slots
-
-<div class="demo-box">
-  <VSelect 
-    v-model="value5" 
-    :options="fruits" 
-    :item-height="60"
-    label="Custom Option Slot"
-  >
-    <template #option="{ option }">
-      <div class="custom-option">
-        <span class="custom-icon">🍎</span>
-        <div class="custom-details">
-          <strong>{{ option.label }}</strong>
-          <small>Value: {{ option.value }}</small>
-        </div>
-      </div>
-    </template>
-  </VSelect>
-  <p>Selected: {{ value5 }}</p>
-</div>
-
-<style>
-.custom-option {
-  display: flex; 
-  align-items: center; 
-  gap: 8px;
+```ts
+function handleCreate({ parent, value }: { parent: string | number; value: string }) {
+    // mutate your tree however you like — push to children, call an API, etc.
 }
-.custom-details {
-    display: flex; 
-    flex-direction: column;
-}
-</style>
-
-```vue
-<template>
-  <VSelect :options="fruits" :item-height="60" label="Custom Slot">
-    <template #option="{ option }">
-       <span class="my-option">
-          <strong>{{ option.label }}</strong>
-          <small>{{ option.value }}</small>
-       </span>
-    </template>
-  </VSelect>
-</template>
 ```
 
-## Creator Mode
+## Validation + error state
 
 <div class="demo-box">
-  <VSelect 
-    v-model="value6" 
-    :options="creatorOptions" 
-    label="Add Child Items"
-    placeholder="Select or Create..."
-    @create="handleCreate"
-  />
-  <p>Selected: {{ value6 }}</p>
-  <small>Click small '+' button on groups to add children.</small>
+    <VSelect
+        v-model="requiredValue"
+        :options="fruits"
+        label="Required field"
+        required
+        :error="requiredValue ? '' : 'Please pick a fruit.'"
+    />
 </div>
 
 ```vue
-<script setup>
-import { ref } from 'vue'
-import { VSelect } from '@vue-select-plus/vue'
-
-const value = ref(null)
-const options = ref([
-  { 
-    label: 'Backend', 
-    value: 'be', 
-    children: [
-      { label: 'Node.js', value: 'node' }
-    ] 
-  },
-  { 
-    label: 'Frontend', 
-    value: 'fe', 
-    children: [
-      { label: 'Vue.js', value: 'vue' }
-    ] 
-  }
-])
-
-function handleCreate({ parent, value }) {
-  const group = options.value.find(o => o.value === parent)
-  if (group) {
-    if (!group.children) group.children = []
-    group.children.push({ 
-        label: value, 
-        value: value.toLowerCase() 
-    })
-  }
-}
-</script>
-
-<template>
-  <VSelect 
-    v-model="value" 
-    :options="options" 
-    @create="handleCreate" 
-    label="Creator Mode" 
-  />
-</template>
+<VSelect
+    v-model="value"
+    :options="options"
+    required
+    :error="value ? '' : 'Please pick a fruit.'"
+/>
 ```
 
-## API Reference
+The combobox reports `aria-invalid="true"` and links to the visible message via `aria-describedby`.
 
-For a full list of props and events, see the [API Reference](./api.md).
+## Native form integration
+
+<div class="demo-box">
+    <form @submit="onSubmit">
+        <VSelect v-model="formValue" :options="techStack" label="Stack" name="stack" multiple />
+        <button type="submit" style="margin-top: 0.75rem; padding: 0.5rem 1rem;">Submit</button>
+    </form>
+    <pre v-if="formOutput">{{ formOutput }}</pre>
+    <p v-else class="muted small">Submit to see the serialized form data.</p>
+</div>
+
+```vue
+<form @submit="onSubmit">
+    <VSelect v-model="stack" :options="techStack" name="stack" multiple />
+    <button type="submit">Submit</button>
+</form>
+```
+
+```ts
+function onSubmit(e: Event) {
+    e.preventDefault()
+    const data = new FormData(e.target as HTMLFormElement)
+    console.log(data.getAll('stack'))   // ['vue', 'go']
+}
+```
+
+When `name` is set, the component emits hidden `<input>`s — one per selected value in multi mode — so the form serializes exactly like a native `<select>`.
+
+## Virtualized list (5 000 items)
+
+<div class="demo-box">
+    <VSelect v-model="longValue" :options="longList" label="Long list" searchable />
+</div>
+
+```vue
+<VSelect v-model="value" :options="hugeList" searchable />
+```
+
+The dropdown only mounts the rows currently in view — performance stays flat regardless of list size.
+
+## Theming
+
+```css
+:root {
+    --vs-primary: #16a34a;
+    --vs-radius: 12px;
+}
+:root.dark {
+    --vs-primary: #4ade80;
+}
+```
+
+See the [CSS variables reference](./api#css-variables) for the full list.
 
 <style>
 .demo-box {
-  border: 1px solid var(--vp-c-divider);
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  min-height: 250px;
+    border: 1px solid var(--vp-c-divider);
+    padding: 1.25rem;
+    border-radius: 8px;
+    margin-block: 1rem;
+}
+.demo-box pre {
+    margin-block-start: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    overflow-x: auto;
+    background: rgba(0,0,0,0.04);
+}
+.muted { color: var(--vp-c-text-2); }
+.small { font-size: 0.85rem; }
+kbd {
+    display: inline-block;
+    padding: 0 0.25rem;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 4px;
+    font-size: 0.75rem;
 }
 </style>

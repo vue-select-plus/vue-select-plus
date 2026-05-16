@@ -24,5 +24,11 @@
     ],
     "include": [
         "src/**/*"
+    ],
+    "exclude": [
+        "src/**/__tests__/**",
+        "src/**/*.spec.ts",
+        "src/**/*.test.ts",
+        "src/stories/**"
     ]
 }

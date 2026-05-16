@@ -20,11 +20,19 @@
         "url": "https://github.com/vue-select-plus/vue-select-plus/issues"
     },
     "homepage": "https://vue-select-plus.github.io/vue-select-plus/",
+    "sideEffects": [
+        "*.css"
+    ],
+    "main": "./src/style.css",
+    "style": "./src/style.css",
     "files": [
-        "src"
+        "src",
+        "LICENSE",
+        "README.md"
     ],
     "exports": {
-        ".": "./src/style.css"
+        ".": "./src/style.css",
+        "./style.css": "./src/style.css"
     },
     "publishConfig": {
         "access": "public"

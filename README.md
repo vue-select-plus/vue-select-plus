@@ -1,79 +1,116 @@
 # Vue Select Plus
 
 ![NPM Version](https://img.shields.io/npm/v/@vue-select-plus/vue?style=flat-square&color=41d1ff)
-![Build Status](https://img.shields.io/github/actions/workflow/status/vue-select-plus/vue-select-plus/deploy.yml?layout=flat-square&label=docs)
+![Build Status](https://img.shields.io/github/actions/workflow/status/vue-select-plus/vue-select-plus/deploy.yml?style=flat-square&label=docs)
 ![License](https://img.shields.io/github/license/vue-select-plus/vue-select-plus?style=flat-square&color=blue)
 ![TypeScript](https://img.shields.io/badge/Written%20in-TypeScript-3178C6?style=flat-square)
 
-📘 **Documentation**: [https://vue-select-plus.github.io/vue-select-plus/](https://vue-select-plus.github.io/vue-select-plus/)
+📘 **Documentation**: <https://vue-select-plus.github.io/vue-select-plus/>
 
-> A headless, flexible, and accessible select component for Vue 3.
+> An accessible, headless, enterprise-ready select component for Vue 3.
 
-## Features
-- 🌲 **Tree Support**: Hierarchical data with infinite nesting.
-- 🔍 **Searchable**: Filter options easily.
-- 🏷️ **Multiple Selection**: Tag-based selection.
-- ➕ **Creator Mode**: Add new items on the fly (nested or top-level).
-- ⌨️ **Keyboard Navigation**: Full arrow key support.
-- ♿ **Accessible**: ARIA attributes and roles.
+## Highlights
 
-## Installation
+- 🦾 **WAI-ARIA 1.2 combobox pattern** — every state, every transition, every option labelled.
+- 🌲 **Tree-aware** — infinite nesting with expand/collapse and keyboard navigation.
+- 🔍 **Searchable, both ways** — client filtering out of the box, or server-side via `@search` + `:filterable="false"`.
+- ⏳ **Async ready** — `loading`, `aria-busy`, debounce, min-search-length, race-safe.
+- 🏷️ **Multi select** — tags with keyboard-reachable remove buttons and Backspace shortcut.
+- 🪟 **Floating UI** — dropdown teleports to `<body>`, auto-flips, sticks to the trigger width.
+- 📋 **Native form integration** — pass a `name` and the value submits via `FormData`.
+- 🎨 **Themeable** — CSS variables, automatic dark mode, `forced-colors`, `prefers-reduced-motion`.
+- 🚀 **Virtualized** — handles 100k+ options without lag.
+- 🧩 **Headless core** — `@vue-select-plus/core` ships the logic without the UI.
+
+## Install
 
 ```bash
-npm install @vue-select-plus/vue
+npm install @vue-select-plus/vue @vue-select-plus/styles
 ```
+
+Requires Vue 3.5 or newer.
 
 ## Usage
 
 ```vue
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { VSelect } from '@vue-select-plus/vue';
+import type { SelectOption } from '@vue-select-plus/core';
 import '@vue-select-plus/styles';
 
-
-const value = ref(null);
-const options = [
-  { value: '1', label: 'Option 1' },
-  { value: '2', label: 'Option 2', children: [
-    { value: '2.1', label: 'Sub-option 2.1' }
-  ]}
+const value = ref<string | null>(null);
+const options: SelectOption[] = [
+    { value: 'apple', label: 'Apple' },
+    { value: 'banana', label: 'Banana' },
+    {
+        value: 'tropical',
+        label: 'Tropical',
+        children: [
+            { value: 'mango', label: 'Mango' },
+            { value: 'pineapple', label: 'Pineapple' }
+        ]
+    }
 ];
 </script>
 
 <template>
-  <VSelect 
-    v-model="value" 
-    :options="options" 
-    placeholder="Choose..." 
-    searchable 
-  />
+    <VSelect
+        v-model="value"
+        :options="options"
+        label="Choose a fruit"
+        placeholder="Pick one…"
+        searchable
+        clearable
+    />
 </template>
 ```
 
-## Props
+## Packages
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `modelValue` | `string | number | Array` | - | The selected value(s). |
-| `options` | `Array` | `[]` | List of options (see structure below). |
-| `multiple` | `Boolean` | `false` | Enable multiple selection. |
-| `searchable` | `Boolean` | `false` | Show search input. |
-| `disabled` | `Boolean` | `false` | Disable the control. |
-| `id` | `String` | `auto-generated` | Unique ID for the component. |
+| Package | What it is |
+| :--- | :--- |
+| [`@vue-select-plus/vue`](https://www.npmjs.com/package/@vue-select-plus/vue) | The Vue 3 component (`<VSelect>`). |
+| [`@vue-select-plus/core`](https://www.npmjs.com/package/@vue-select-plus/core) | Headless composables (`useSelect`, `useClickOutside`). |
+| [`@vue-select-plus/styles`](https://www.npmjs.com/package/@vue-select-plus/styles) | Default theme. Optional — override the CSS variables to roll your own. |
 
-## Events
+## Docs
 
-- `update:modelValue`: Emitted when selection changes.
-- `create`: Emitted when a new item is created in Creator Mode.
+- [Getting Started](https://vue-select-plus.github.io/vue-select-plus/vue/getting-started)
+- [Examples](https://vue-select-plus.github.io/vue-select-plus/vue/examples) — async search, native forms, creator mode, trees
+- [API Reference](https://vue-select-plus.github.io/vue-select-plus/vue/api) — every prop, event, slot, ARIA detail
+- [Headless Core](https://vue-select-plus.github.io/vue-select-plus/core/getting-started)
 
-## Option Structure
+## Accessibility
 
-```ts
-interface SelectOption {
-    value?: string | number;
-    label: string;
-    children?: SelectOption[];
-    // ... any other props
-}
+`<VSelect>` ships the [WAI-ARIA 1.2 combobox pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) end-to-end:
+
+- Roles: `combobox` on the focusable element, `listbox` on the popup, `option` on each row.
+- States: `aria-expanded`, `aria-activedescendant`, `aria-selected`, `aria-multiselectable`, `aria-busy`, `aria-invalid`, `aria-required`.
+- Tree semantics: `aria-level`, `aria-setsize`, `aria-posinset`, `aria-expanded`.
+- A polite live region announces result counts, loading, and below-min-search hints.
+- Tag-remove and clear buttons are reachable via Tab and labelled.
+- Focus returns to the trigger on `Escape` / selection.
+- `prefers-reduced-motion` and `forced-colors` (Windows High Contrast) are honoured.
+
+## Contributing
+
+```bash
+git clone https://github.com/vue-select-plus/vue-select-plus
+cd vue-select-plus
+npm install
+npm test        # runs all workspaces
+npm run build
 ```
+
+Interactive sandboxes:
+
+```bash
+npm run dev -w @vue-select-plus/playground     # local playground (all features)
+npm run storybook -w @vue-select-plus/vue      # Storybook (per-story a11y checks)
+npm run docs:build                              # build the docs site
+```
+
+## License
+
+[MIT](./LICENSE).

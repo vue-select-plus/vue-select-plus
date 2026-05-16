@@ -19,7 +19,7 @@ describe('useOptions', () => {
         }
     ];
 
-    it('should flatten simple options', () => {
+    it('flattens simple options', () => {
         const { visibleOptions } = useOptions({
             options: ref(simpleOptions),
             searchQuery: ref(''),
@@ -29,11 +29,11 @@ describe('useOptions', () => {
         });
 
         expect(visibleOptions.value).toHaveLength(2);
-        expect(visibleOptions.value[0].label).toBe('One');
-        expect(visibleOptions.value[0].depth).toBe(0);
+        expect(visibleOptions.value[0]!.label).toBe('One');
+        expect(visibleOptions.value[0]!.depth).toBe(0);
     });
 
-    it('should flatten nested options', () => {
+    it('flattens nested options', () => {
         const { visibleOptions } = useOptions({
             options: ref(nestedOptions),
             searchQuery: ref(''),
@@ -42,14 +42,13 @@ describe('useOptions', () => {
             disabled: ref(false)
         });
 
-        // Group + Child
         expect(visibleOptions.value).toHaveLength(2);
-        expect(visibleOptions.value[0].value).toBe('group1');
-        expect(visibleOptions.value[1].value).toBe('1.1');
-        expect(visibleOptions.value[1].depth).toBe(1);
+        expect(visibleOptions.value[0]!.value).toBe('group1');
+        expect(visibleOptions.value[1]!.value).toBe('1.1');
+        expect(visibleOptions.value[1]!.depth).toBe(1);
     });
 
-    it('should toggle collapse', () => {
+    it('toggles collapse', () => {
         const { visibleOptions, toggleCollapse } = useOptions({
             options: ref(nestedOptions),
             searchQuery: ref(''),
@@ -58,20 +57,17 @@ describe('useOptions', () => {
             disabled: ref(false)
         });
 
-        // Initially expanded
         expect(visibleOptions.value).toHaveLength(2);
 
-        // Collapse Group 1
         toggleCollapse('group1');
         expect(visibleOptions.value).toHaveLength(1);
-        expect(visibleOptions.value[0].value).toBe('group1');
+        expect(visibleOptions.value[0]!.value).toBe('group1');
 
-        // Expand
         toggleCollapse('group1');
         expect(visibleOptions.value).toHaveLength(2);
     });
 
-    it('should filter options', () => {
+    it('filters options', () => {
         const { visibleOptions } = useOptions({
             options: ref(simpleOptions),
             searchQuery: ref('Two'),
@@ -81,6 +77,39 @@ describe('useOptions', () => {
         });
 
         expect(visibleOptions.value).toHaveLength(1);
-        expect(visibleOptions.value[0].label).toBe('Two');
+        expect(visibleOptions.value[0]!.label).toBe('Two');
+    });
+
+    it('excludes groups, disabled and creators from navigableIndices', () => {
+        const opts: SelectOption[] = [
+            { value: 'a', label: 'A' },
+            { value: 'b', label: 'B', disabled: true },
+            { group: 'Group', label: 'g' },
+            { value: 'c', label: 'C' }
+        ];
+
+        const { navigableIndices, visibleOptions } = useOptions({
+            options: ref(opts),
+            searchQuery: ref(''),
+            searchable: false,
+            creatorParentValue: ref(null),
+            disabled: ref(false)
+        });
+
+        expect(visibleOptions.value).toHaveLength(4);
+        expect(navigableIndices.value).toEqual([0, 3]);
+    });
+
+    it('builds a labelMap that resolves nested values', () => {
+        const { labelMap } = useOptions({
+            options: ref(nestedOptions),
+            searchQuery: ref(''),
+            searchable: false,
+            creatorParentValue: ref(null),
+            disabled: ref(false)
+        });
+
+        expect(labelMap.value.get('group1')).toBe('Group 1');
+        expect(labelMap.value.get('1.1')).toBe('Child 1.1');
     });
 });

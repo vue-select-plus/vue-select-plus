@@ -1,13 +1,20 @@
 import { computed, ref, toValue, type MaybeRefOrGetter } from 'vue';
-import type { SelectOption, FlatOption } from '../types';
+import type { SelectOption, FlatOption, SelectValue } from '../types';
 
 interface UseOptionsProps {
     options: MaybeRefOrGetter<ReadonlyArray<SelectOption>>;
     searchQuery: MaybeRefOrGetter<string>;
     searchable: boolean;
-    creatorParentValue: MaybeRefOrGetter<string | number | null>;
+    creatorParentValue: MaybeRefOrGetter<SelectValue | null>;
     disabled: MaybeRefOrGetter<boolean>;
+    /**
+     * Enables client-side filtering when truthy. Set to `false` for server-driven
+     * search (the parent updates `options` based on the `@search` event).
+     */
+    filterable?: MaybeRefOrGetter<boolean>;
 }
+
+const CREATOR_VALUE = '__vsp_creator__' as const;
 
 /**
  * Handles option flattening, filtering, and visibility logic.
@@ -17,18 +24,21 @@ export function useOptions({
     searchQuery,
     searchable,
     creatorParentValue,
-    disabled
+    disabled,
+    filterable
 }: UseOptionsProps) {
 
-    const collapsedValues = ref<Set<string | number>>(new Set());
+    const collapsedValues = ref<Set<SelectValue>>(new Set());
 
-    function toggleCollapse(value: string | number | undefined) {
+    function toggleCollapse(value: SelectValue | undefined) {
         if (value === undefined) return;
-        if (collapsedValues.value.has(value)) {
-            collapsedValues.value.delete(value);
+        const next = new Set(collapsedValues.value);
+        if (next.has(value)) {
+            next.delete(value);
         } else {
-            collapsedValues.value.add(value);
+            next.add(value);
         }
+        collapsedValues.value = next;
     }
 
     function filterTree(nodes: ReadonlyArray<SelectOption>, query: string): SelectOption[] {
@@ -41,7 +51,7 @@ export function useOptions({
             const children = node.children ? filterTree(node.children, query) : [];
 
             if (isMatch || children.length > 0) {
-                result.push({ ...node, children });
+                result.push({ ...node, children: children.length ? children : node.children });
             }
         }
         return result;
@@ -55,7 +65,7 @@ export function useOptions({
         const isSearching = searchable && query.length > 0;
 
         for (const node of nodes) {
-            const key = node.value ?? `group-${node.group}-${depth}`;
+            const key = node.value ?? `group-${node.group ?? node.label}-${depth}`;
             const isGroup = !!node.group;
 
             result.push({
@@ -69,7 +79,7 @@ export function useOptions({
             if (creatorVal !== null && node.value === creatorVal && !isDisabled) {
                 result.push({
                     label: 'Creator',
-                    value: '__creator__',
+                    value: CREATOR_VALUE,
                     depth: depth + 1,
                     isGroup: false,
                     isCreator: true,
@@ -90,24 +100,51 @@ export function useOptions({
     const visibleOptions = computed(() => {
         const opts = toValue(options);
         const query = toValue(searchQuery);
+        const allowClientFilter = filterable === undefined ? true : toValue(filterable);
 
-        const filtered = (searchable && query.length > 0)
+        const filtered = (searchable && allowClientFilter && query.length > 0)
             ? filterTree(opts, query)
             : opts;
 
         return flatten(filtered);
     });
 
+    /**
+     * Indices of options that can be highlighted via keyboard. Excludes groups,
+     * disabled options, and creator placeholders.
+     */
     const navigableIndices = computed(() => {
-        return visibleOptions.value
-            .map((opt, index) => (opt.disabled || opt.isGroup ? -1 : index))
-            .filter((i) => i !== -1);
+        const indices: number[] = [];
+        const list = visibleOptions.value;
+        for (let i = 0; i < list.length; i++) {
+            const opt = list[i]!;
+            if (opt.disabled || opt.isGroup || opt.isCreator) continue;
+            indices.push(i);
+        }
+        return indices;
+    });
+
+    /**
+     * Flat label lookup for every value in the tree. O(n) once per options change
+     * instead of O(n) per call, which matters in multi-select with many tags.
+     */
+    const labelMap = computed(() => {
+        const map = new Map<SelectValue, string>();
+        const walk = (nodes: ReadonlyArray<SelectOption>) => {
+            for (const node of nodes) {
+                if (node.value !== undefined) map.set(node.value, node.label);
+                if (node.children?.length) walk(node.children);
+            }
+        };
+        walk(toValue(options));
+        return map;
     });
 
     return {
         visibleOptions,
         navigableIndices,
         collapsedValues,
-        toggleCollapse
+        toggleCollapse,
+        labelMap
     };
 }
