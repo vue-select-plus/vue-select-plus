@@ -1,12 +1,13 @@
 # Recipes
 
-Battle-tested integration patterns. Each one is self-contained — copy, paste, adapt.
+Integration patterns. Each one is self-contained — copy, paste, adapt.
 
 [[toc]]
 
 ## Async search with TanStack Query
 
-Use `@vue-select-plus/vue` with [`@tanstack/vue-query`](https://tanstack.com/query/latest/docs/vue/overview) for cached, race-safe server-side search.
+Pair `@vue-select-plus/vue` with [`@tanstack/vue-query`](https://tanstack.com/query/latest/docs/vue/overview)
+for cached, cancellation-safe server search.
 
 ```vue
 <script setup lang="ts">
@@ -52,10 +53,12 @@ const options = computed<SelectOption[]>(() =>
 </template>
 ```
 
-Why this works well:
-- **`AbortController`** comes for free — TanStack passes a `signal` into your fetcher and cancels stale requests automatically.
-- **`keepPreviousData`** keeps the dropdown populated while the next fetch is in flight, so the UI doesn't flash empty.
-- **`staleTime`** dedupes identical queries within a 30 s window — typing `"a"` then `"a"` again hits the cache.
+Notes:
+- TanStack passes a `signal` into your fetcher, so stale requests get
+  cancelled automatically.
+- `keepPreviousData` stops the dropdown from flashing empty during the
+  next fetch.
+- `staleTime` of 30 s dedupes repeat queries within the window.
 
 ---
 
@@ -125,15 +128,19 @@ import { VSelect } from '@vue-select-plus/vue';
 </template>
 ```
 
-For deeper integration write a [FormKit custom input](https://formkit.com/essentials/custom-inputs) that owns `<VSelect>` directly — then `validation`, `errors`, `value`, and submit-handling all flow through FormKit naturally.
+For tighter integration, wrap `<VSelect>` in a [FormKit custom input](https://formkit.com/essentials/custom-inputs).
+Validation, errors, value, and submit handling then flow through FormKit
+the normal way.
 
 ---
 
 ## Inside a Modal
 
-When the modal scrolls its own content (`overflow: auto`) or has `transform`, naive dropdowns get clipped. `<VSelect>` teleports to `<body>` by default, so it floats above the modal — but if your modal uses the HTML `<dialog>` element with `showModal()`, the body is *behind* the modal's top layer.
+`<VSelect>` teleports to `<body>` by default, so it floats above most
+modals fine. The exception is a native `<dialog>.showModal()` — the
+dialog renders in the browser's top layer, and the body is behind it.
 
-Two reliable patterns:
+Two patterns:
 
 ### Pattern A — teleport into the dialog
 
@@ -169,13 +176,17 @@ function openDialog() {
 <VSelect :teleport="false" ... />
 ```
 
-Render inline when your modal already handles layering and you want the dropdown to live inside the modal's DOM tree. The drawback: if the modal has `overflow: hidden`, the dropdown gets clipped.
+Use this when the modal already handles layering and you want the
+dropdown in the same DOM subtree. Be aware that `overflow: hidden` on
+any ancestor will clip the menu.
 
 ---
 
 ## Inside a Table cell
 
-Tables with `position: sticky` headers or `overflow-x: auto` are notorious for clipping dropdowns. Teleport-to-body solves it:
+Sticky headers and `overflow-x: auto` typically clip dropdowns. The
+defaults already solve that — teleport to body, Floating UI's `shift`
+middleware, and a small size variant:
 
 ```vue
 <td>
@@ -183,17 +194,15 @@ Tables with `position: sticky` headers or `overflow-x: auto` are notorious for c
 </td>
 ```
 
-The defaults are right for this use case — `teleport: true`, Floating UI's `shift` middleware keeps the menu inside the viewport, and `size="sm"` fits typical row heights.
-
 ---
 
 ## Mobile-friendly setup
 
-On touch devices you usually want:
+On touch devices:
 
-- **`searchable: false`** — typing on mobile is friction.
-- **No teleport-to-body when used inside a bottom-sheet** — teleport into the sheet instead.
-- **Larger touch targets** — `size="lg"`.
+- Set `searchable: false` — typing on mobile is friction.
+- Teleport into a bottom-sheet rather than `<body>` when using one.
+- Use `size="lg"` for bigger touch targets.
 
 ```vue
 <VSelect
@@ -242,7 +251,8 @@ const options = computed<SelectOption[]>(() =>
 </template>
 ```
 
-This is the pattern we recommend until full generic-`<TValue>` support lands in a future major.
+A future major will add generic `<TValue>` support; until then, this
+indirection is the recommended pattern.
 
 ---
 
@@ -311,7 +321,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 </template>
 ```
 
-The exposed methods (`open`, `close`, `focus`, `clear`) make this safe even when the component re-renders.
+The exposed methods are `open`, `close`, `focus`, and `clear`.
 
 ---
 
@@ -325,7 +335,7 @@ If your design system uses CSS-in-JS (e.g. Vanilla Extract, Stitches, Pigment), 
 </div>
 ```
 
-Variables cascade — no shadow DOM, no `:where()` indirection.
+Variables cascade naturally — no shadow DOM, no extra selector indirection.
 
 ---
 

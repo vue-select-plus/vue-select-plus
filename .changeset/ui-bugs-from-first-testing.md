@@ -4,24 +4,18 @@
 "@vue-select-plus/styles": patch
 ---
 
-UI bugs surfaced by first real-world usage.
+A handful of UI bugs surfaced as soon as the package hit a real app.
 
-- **Firefox: the dropdown no longer flies in from the top-left corner.** The
-  open/close transition animated `transform`, which stomped Floating UI's
-  positioning transform. Transitions now only fade `opacity`; position stays
-  authoritative.
-- **Non-searchable trigger: no more 1 px white line under the placeholder.**
-  The invisible focus-target `<button>` used `block-size: 1px`, which rendered
-  as a hairline strip in some themes. It's now sized via the standard
-  screen-reader-only pattern, fully outside the visual layout. Firefox's
-  `::-moz-focus-inner` default border is reset too.
-- **Searchable mode: placeholder is no longer rendered twice.** The
-  placeholder span and `<input placeholder="">` both wrote the same text on
-  top of each other. The span is suppressed when `searchable` is set; the
-  input's native placeholder owns the row. The multi-mode-no-tags case still
-  shows the placeholder (via the input attribute).
-- **Searchable + selected + closed: the label is no longer doubled** (the
-  classic "Apple Apple" report). The input is hidden via `v-show` while the
-  menu is closed and a value is selected — the bold single-value span owns
-  that state. The input reappears the moment the menu opens or the value is
-  cleared; it stays in the DOM, so focus management keeps working.
+- Dropdown no longer flies in from the top-left in Firefox. The
+  enter/leave transition was animating `transform`, which fought with
+  Floating UI's positioning transform; only `opacity` is animated now.
+- 1 px hairline strip under the non-searchable trigger is gone — the
+  hidden focus-target `<button>` is sized via the standard sr-only
+  pattern instead of `block-size: 1px`. Firefox's
+  `::-moz-focus-inner` border is reset too.
+- Searchable mode no longer paints the placeholder twice (the placeholder
+  span and the `<input placeholder="">` were both writing the same text).
+- "Apple Apple" report fixed: with a value selected and the menu closed,
+  the search input is now `v-show`-hidden so it doesn't double up the
+  single-value label. It comes back when the menu opens or the value
+  clears.

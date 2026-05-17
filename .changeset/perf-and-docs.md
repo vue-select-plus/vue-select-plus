@@ -3,35 +3,24 @@
 "@vue-select-plus/vue": patch
 ---
 
-Performance + documentation gap-filling.
+`useSelect.open()` skips the full options scan when the model is empty.
+For static lists of 5k+ items this halves the work done on every open.
 
-- **Faster open for large option lists.** `useSelect.open()` skips the full
-  options scan when the model is empty — halves the work done on every open
-  for static lists of ≥ 5 000 items.
-- **`searchDebounce` default lowered from `200` → `0`.** The 200 ms default
-  felt sluggish in interactive testing — every keystroke produced visible
-  lag before the option list refreshed. The new default emits immediately;
-  if you need debouncing (e.g., your `@search` handler hits a rate-limited
-  backend) pass an explicit value like `:search-debounce="200"`.
+`searchDebounce` default changed from `200` → `0`. The throttle made
+every keystroke feel laggy in interactive testing. If you were relying
+on the implicit 200 ms to coalesce requests against a rate-limited
+backend, set `search-debounce` explicitly to restore it — this is a
+behaviour change but pre-1.0 patch.
 
-  **Behaviour change.** Apps that *relied* on the implicit 200 ms throttle
-  to coalesce keystrokes into one backend request will now fire one request
-  per keystroke. Set `search-debounce` explicitly to restore the old
-  cadence. Pre-1.0 patch — semver permits this.
-- **Docs `Creator mode` example: new children now appear immediately.**
-  VitePress' `<script setup>` in Markdown occasionally drops deep reactivity
-  inside `reactive(...)` mutations. The example now uses `ref(...)` plus a
-  whole-array swap on every create — bulletproof across SSR boundaries.
-- **New "Behaviour notes" section in the API reference.** Covers:
-    - Tab-focus target per `searchable` (button vs. input, with a table).
-    - Initial-highlight semantics on open (the "select-with-cursor" variant
-      of the WAI-ARIA combobox pattern, not "no initial highlight").
-    - `itemHeight` must match the actual row height when using custom
-      `option` slots — otherwise the virtualizer drifts.
-    - `labels` is a partial per-key merge; omitted keys keep their defaults.
-- **Slot table re-organised.** Each slot is now tagged with its target
-  region (`trigger` vs `menu`) so the easy-to-confuse pair `loading` (menu)
-  and `loading-icon` (trigger) is unambiguous.
-- **New troubleshooting section: opening with huge option lists.**
-  Order-of-magnitude expectations + the dev-mode-vs-production caveat are
-  now documented.
+Docs:
+- The "Creator mode" example now uses `ref(...)` with whole-array
+  replacement instead of a `reactive(...)` mutation, which VitePress'
+  `<script setup>` in Markdown sometimes drops.
+- New "Behaviour notes" section in the API reference covering tab-focus
+  per `searchable`, the initial-highlight semantics, the `itemHeight`
+  caveat with custom option slots, and the per-key merge semantics of
+  `labels`.
+- Slot table now tags each slot as `trigger` or `menu` so `loading`
+  (menu) and `loading-icon` (trigger) stop getting confused.
+- Troubleshooting gets a new section on huge option lists with
+  order-of-magnitude expectations and the dev-vs-prod caveat.

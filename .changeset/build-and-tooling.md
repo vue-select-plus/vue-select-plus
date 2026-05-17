@@ -4,32 +4,25 @@
 "@vue-select-plus/styles": patch
 ---
 
-Build, packaging, and tooling improvements.
+Build/packaging cleanup.
 
-- **No more source-path leaks in the published `.d.ts` files.** Cross-package
-  imports were emitted as `from '../../core/src/index.ts'` instead of
-  `from '@vue-select-plus/core'`. vite-plugin-dts followed the workspace
-  path alias and inlined the resolved file path. Fixed via a build-only
-  `tsconfig.build.json` (no cross-package aliases) plus a `beforeWriteFile`
-  hook in the dts plugin that rewrites any leaked source path back to the
-  package name.
-- **Source maps now ship.** `dist/index.js.map` and `dist/index.umd.cjs.map`
-  are published for both `@vue-select-plus/core` and `@vue-select-plus/vue`.
-  Stack traces in consumer apps resolve to original source locations
-  instead of minified column numbers.
-- **Simplified `@vue-select-plus/styles` exports map.** The redundant
-  `./style.css` subpath has been removed. The package now exports only `.`
-  pointing at the same file; one canonical path for bundlers, slightly
-  faster resolution.
-- **Stylesheet now ships inside `@vue-select-plus/vue` as well.** The vue
-  package's build step copies `style.css` into its own `dist/` and exposes
-  it via three subpaths: `./styles`, `./styles.css`, and `./style.css`.
-  Consumers can now do a single install (`npm i @vue-select-plus/vue`) and
-  one import (`import '@vue-select-plus/vue/styles.css'`) instead of having
-  to also install `@vue-select-plus/styles` separately. This fixes the
-  pnpm-strict-mode issue where transitive deps don't hoist into the
-  consumer's `node_modules`, breaking the legacy
-  `import '@vue-select-plus/styles'` path with a "Failed to resolve" error.
-  The legacy package still publishes and resolves identically; the new
-  subpath is just a more robust default. All quickstart docs migrated to
-  the new path.
+Public `.d.ts` files no longer leak workspace source paths
+(`from '../../core/src/index.ts'`). Fixed via a build-only
+`tsconfig.build.json` without the cross-package alias, plus a
+`beforeWriteFile` hook in vite-plugin-dts that rewrites any leaked path
+back to the package name.
+
+Source maps now ship for both `@vue-select-plus/core` and `@vue-select-plus/vue`,
+so consumer stack traces resolve to original source locations instead
+of minified columns.
+
+`@vue-select-plus/styles` exports map simplified to a single `.` entry.
+
+The default stylesheet now also ships inside `@vue-select-plus/vue`,
+exposed as `@vue-select-plus/vue/styles.css` (plus `./styles` and
+`./style.css` aliases). Consumers can now install just the vue package
+and import the CSS by subpath — previously the documented
+`import '@vue-select-plus/styles'` failed under pnpm strict mode, which
+doesn't hoist transitive deps into the consumer's `node_modules`. The
+separate `@vue-select-plus/styles` package still publishes the same
+file for anyone who prefers to install it explicitly.

@@ -3,45 +3,23 @@
 "@vue-select-plus/vue": patch
 ---
 
-Theming is now purely class-driven; no more surprise dark mode.
+The default styles no longer flip to dark on
+`@media (prefers-color-scheme: dark)`. In real apps that turned out to be
+surprising more often than useful — VitePress, Tailwind class-mode, Nuxt
+UI and friends all toggle `.dark` on `<html>` and never apply a `.light`
+class, so a light page on a dark-preferring OS would flip `<VSelect>` to
+dark against the page's explicit choice. Theme now follows the host
+class only.
 
-- **The default styles no longer listen to `@media (prefers-color-scheme: dark)`.**
-  The previous `:root:not(.light)` gate didn't help in practice: VitePress,
-  Tailwind class-mode, Nuxt UI and friends all toggle `.dark` on `<html>` and
-  *remove* it for light — they never apply `.light`. So a light page on a
-  dark-preferring OS would flip `<VSelect>` to dark against the page's
-  explicit choice. The component now follows the host class only:
-    - `.dark` or `.vsp-dark` on a parent → dark theme,
-    - absence of either → light theme,
-    - OS preference → ignored by default.
+> Behaviour change. Apps that relied on the implicit
+> `prefers-color-scheme` switch will stay light by default. Toggle
+> `.vsp-dark` yourself, or copy the eight-line opt-in snippet from the
+> styles README.
 
-  Consumers who want OS-driven switching get a documented 8-line opt-in
-  snippet (in the styles README and the troubleshooting guide); the
-  playground demonstrates the reactive JavaScript pattern.
-
-  **Behaviour change.** Apps that relied on the implicit
-  `prefers-color-scheme` dark switch will now stay light by default. Pre-1.0
-  patch — semver permits this.
-
-- **New `.vsp-light` class.** Symmetric to `.vsp-dark`. Pin a single
-  `<VSelect>` to its light theme even when an ancestor is `.dark` — useful
-  for toasts, modals, or "dark page, light card" layouts.
-
-- **New `--vs-opacity-disabled` token.** The disabled-state opacity (0.6) is
-  no longer hardcoded; override it on `:root` to match your design system.
-
-- **Tailwind `.dark` collision: documentation upgraded.** The README and
-  troubleshooting now spell out three integration patterns (Tailwind-only,
-  both, VSP-only) and flag the legacy `.dark` mapping for removal in v1.0.
-
-- **Light theme tokens are now declared once.** Previously `:root` and
-  `.vsp-light` carried two near-identical 17-line blocks of CSS variable
-  declarations; they were trivial to drift apart in a future palette tweak.
-  They now share a combined `:root, .vsp-light` selector so light values
-  are listed exactly once. Structural tokens (`--vs-radius`, transitions,
-  z-index, etc.) stay on `:root` alone since they don't differ by theme.
-  Pure refactor — no visual change.
-
-- **Stylesheet header now references `.vsp-dark` instead of `.dark`.** The
-  top-of-file comment still pointed consumers at `.dark` after the
-  deprecation; updated to the recommended class.
+Other bits:
+- New `.vsp-light` class for the dark-page-light-card scenario.
+- New `--vs-opacity-disabled` token (the 0.6 was hard-coded).
+- README + troubleshooting spell out the three Tailwind-`.dark`
+  integration patterns and flag the legacy mapping for removal in v1.0.
+- Light theme tokens are listed once via `:root, .vsp-light` instead of
+  two near-identical 17-line blocks.
