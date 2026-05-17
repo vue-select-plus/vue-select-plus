@@ -51,6 +51,16 @@ const indentStyle = computed(() => ({
 const hasChildren = computed(() => !!props.option.children?.length);
 const optionValue = computed(() => props.option.value);
 
+/*
+ * Only expose `aria-level` when this row is part of an actual tree (nested,
+ * or has children). Emitting `aria-level="1"` on every option in a flat
+ * listbox is what axe-core flags as an ARIA misuse — the value is correct
+ * but semantically meaningless for non-tree listboxes.
+ */
+const ariaLevel = computed<number | undefined>(() =>
+    (props.option.depth > 0 || hasChildren.value) ? props.option.depth + 1 : undefined
+);
+
 function onToggleClick(e: MouseEvent) {
     e.stopPropagation();
     if (optionValue.value !== undefined) emit('toggle', optionValue.value);
@@ -74,7 +84,7 @@ function onOptionClick() {
         :aria-selected="selected"
         :aria-disabled="option.disabled || undefined"
         :aria-expanded="hasChildren ? !collapsed : undefined"
-        :aria-level="option.depth + 1"
+        :aria-level="ariaLevel"
         :aria-setsize="setSize"
         :aria-posinset="posInSet"
         class="vue-select-option"

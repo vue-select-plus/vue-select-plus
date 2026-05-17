@@ -33,3 +33,15 @@ Theming is now purely class-driven; no more surprise dark mode.
 - **Tailwind `.dark` collision: documentation upgraded.** The README and
   troubleshooting now spell out three integration patterns (Tailwind-only,
   both, VSP-only) and flag the legacy `.dark` mapping for removal in v1.0.
+
+- **Light theme tokens are now declared once.** Previously `:root` and
+  `.vsp-light` carried two near-identical 17-line blocks of CSS variable
+  declarations; they were trivial to drift apart in a future palette tweak.
+  They now share a combined `:root, .vsp-light` selector so light values
+  are listed exactly once. Structural tokens (`--vs-radius`, transitions,
+  z-index, etc.) stay on `:root` alone since they don't differ by theme.
+  Pure refactor — no visual change.
+
+- **Stylesheet header now references `.vsp-dark` instead of `.dark`.** The
+  top-of-file comment still pointed consumers at `.dark` after the
+  deprecation; updated to the recommended class.

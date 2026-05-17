@@ -1,16 +1,36 @@
 /* =====================================================================
    Vue Select Plus — default theme
-   Customise by overriding the CSS variables below or by setting the
-   `.dark` class on a parent element.
+   Customise by overriding the CSS variables below, or toggle dark mode by
+   adding `.vsp-dark` to an ancestor (`.dark` is also honoured for now to
+   match Tailwind, but is planned for removal in v1.0). Use `.vsp-light`
+   to pin a single instance to its light theme inside a `.dark` page.
    ===================================================================== */
 
+/* Structural tokens — shared across themes. */
 :root {
+    --vs-radius: 6px;
+    --vs-radius-sm: 4px;
+    --vs-opacity-disabled: 0.6;
+    --vs-transition: 150ms ease;
+    --vs-z-menu: 50;
+    --vs-control-height: 2.5rem;
+    --vs-font-size: 0.875rem;
+    --vs-danger: #dc2626;
+    --vs-danger-soft: rgba(220, 38, 38, 0.15);
+}
+
+/*
+ * Light theme tokens. Applied at `:root` so they win by default, and also at
+ * `.vsp-light` so a child instance can reclaim the light theme inside a
+ * `.dark` / `.vsp-dark` ancestor. Listed once to keep the two selectors in
+ * lockstep.
+ */
+:root,
+.vsp-light {
     --vs-primary: #2563eb;
     --vs-primary-hover: #1d4ed8;
     --vs-primary-contrast: #ffffff;
     --vs-focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.45);
-    --vs-danger: #dc2626;
-    --vs-danger-soft: rgba(220, 38, 38, 0.15);
 
     --vs-bg: #ffffff;
     --vs-bg-elevated: #ffffff;
@@ -33,15 +53,8 @@
     --vs-tag-text: #3730a3;
     --vs-tag-remove-hover-bg: rgba(67, 56, 202, 0.15);
 
-    --vs-radius: 6px;
-    --vs-radius-sm: 4px;
-    --vs-opacity-disabled: 0.6;
     --vs-shadow-menu: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
                       0 4px 6px -4px rgba(0, 0, 0, 0.1);
-    --vs-transition: 150ms ease;
-    --vs-z-menu: 50;
-    --vs-control-height: 2.5rem;
-    --vs-font-size: 0.875rem;
 }
 
 /*
@@ -111,43 +124,6 @@
 
     --vs-shadow-menu: 0 10px 15px -3px rgba(0, 0, 0, 0.4),
                       0 4px 6px -4px rgba(0, 0, 0, 0.4);
-}
-
-/*
- * Light override class. Use this to pin the component to its light theme
- * even when an ancestor has `.dark` / `.vsp-dark` (typical scenario:
- * Tailwind sets `.dark` on `<html>` but you want a single VSelect — say,
- * inside a notification toast — to stay light).
- */
-.vsp-light {
-    --vs-primary: #2563eb;
-    --vs-primary-hover: #1d4ed8;
-    --vs-primary-contrast: #ffffff;
-    --vs-focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.45);
-
-    --vs-bg: #ffffff;
-    --vs-bg-elevated: #ffffff;
-    --vs-bg-subtle: #f9fafb;
-    --vs-bg-hover: #f3f4f6;
-    --vs-bg-active: #e5e7eb;
-
-    --vs-text: #111827;
-    --vs-text-muted: #6b7280;
-    --vs-text-disabled: #9ca3af;
-
-    --vs-border: #d1d5db;
-    --vs-border-hover: #9ca3af;
-    --vs-border-strong: #6b7280;
-
-    --vs-selected-bg: #dbeafe;
-    --vs-selected-text: #1e40af;
-
-    --vs-tag-bg: #eef2ff;
-    --vs-tag-text: #3730a3;
-    --vs-tag-remove-hover-bg: rgba(67, 56, 202, 0.15);
-
-    --vs-shadow-menu: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-                      0 4px 6px -4px rgba(0, 0, 0, 0.1);
 }
 
 /* =====================================================================
