@@ -1,8 +1,29 @@
-import { defineConfig } from 'vitest/config'
+import { defineConfig, type PluginOption } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 import dts from 'vite-plugin-dts'
 import { resolve } from 'path'
 import { fileURLToPath, URL } from 'node:url'
+import { copyFile, mkdir } from 'node:fs/promises'
+
+/*
+ * Copy the canonical stylesheet from `@vue-select-plus/styles` into this
+ * package's `dist/` so consumers can import via `@vue-select-plus/vue/styles.css`
+ * without also installing `@vue-select-plus/styles`. Needed because pnpm's
+ * strict mode (the default) does not hoist transitive deps, breaking the
+ * documented `import '@vue-select-plus/styles'` path for consumers who only
+ * install the vue package.
+ */
+function bundleStylesheet(): PluginOption {
+    const src = fileURLToPath(new URL('../styles/src/style.css', import.meta.url));
+    const distDir = fileURLToPath(new URL('./dist', import.meta.url));
+    return {
+        name: 'vsp-bundle-stylesheet',
+        async closeBundle() {
+            await mkdir(distDir, { recursive: true });
+            await copyFile(src, resolve(distDir, 'style.css'));
+        },
+    };
+}
 
 export default defineConfig({
     resolve: {
@@ -19,6 +40,7 @@ export default defineConfig({
     },
     plugins: [
         vue(),
+        bundleStylesheet(),
         dts({
             tsconfigPath: './tsconfig.build.json',
             cleanVueFileName: true,

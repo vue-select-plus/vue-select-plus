@@ -26,7 +26,7 @@ export default defineNuxtPlugin((nuxt) => {
 ```ts
 // nuxt.config.ts
 export default defineNuxtConfig({
-    css: ['@vue-select-plus/styles']
+    css: ['@vue-select-plus/vue/styles.css']
 });
 ```
 
@@ -61,7 +61,7 @@ If you render the component server-side and the user has JavaScript disabled, th
 ```astro
 ---
 import { VSelect } from '@vue-select-plus/vue';
-import '@vue-select-plus/styles';
+import '@vue-select-plus/vue/styles.css';
 ---
 
 <VSelect client:load options={fruits} label="Fruit" />

@@ -21,3 +21,15 @@ Build, packaging, and tooling improvements.
   `./style.css` subpath has been removed. The package now exports only `.`
   pointing at the same file; one canonical path for bundlers, slightly
   faster resolution.
+- **Stylesheet now ships inside `@vue-select-plus/vue` as well.** The vue
+  package's build step copies `style.css` into its own `dist/` and exposes
+  it via three subpaths: `./styles`, `./styles.css`, and `./style.css`.
+  Consumers can now do a single install (`npm i @vue-select-plus/vue`) and
+  one import (`import '@vue-select-plus/vue/styles.css'`) instead of having
+  to also install `@vue-select-plus/styles` separately. This fixes the
+  pnpm-strict-mode issue where transitive deps don't hoist into the
+  consumer's `node_modules`, breaking the legacy
+  `import '@vue-select-plus/styles'` path with a "Failed to resolve" error.
+  The legacy package still publishes and resolves identically; the new
+  subpath is just a more robust default. All quickstart docs migrated to
+  the new path.

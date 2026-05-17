@@ -36,7 +36,10 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.js",
             "default": "./dist/index.js"
-        }
+        },
+        "./styles": "./dist/style.css",
+        "./styles.css": "./dist/style.css",
+        "./style.css": "./dist/style.css"
     },
     "files": [
         "dist",

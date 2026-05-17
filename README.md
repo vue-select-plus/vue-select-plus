@@ -25,10 +25,11 @@
 ## Install
 
 ```bash
-npm install @vue-select-plus/vue @vue-select-plus/styles
+npm install @vue-select-plus/vue
 ```
 
-Requires Vue 3.5 or newer.
+Requires Vue 3.5 or newer. The default stylesheet ships inside the vue
+package, so a single install is enough.
 
 ## Usage
 
@@ -37,7 +38,7 @@ Requires Vue 3.5 or newer.
 import { ref } from 'vue';
 import { VSelect } from '@vue-select-plus/vue';
 import type { SelectOption } from '@vue-select-plus/core';
-import '@vue-select-plus/styles';
+import '@vue-select-plus/vue/styles.css';
 
 const value = ref<string | null>(null);
 const options: SelectOption[] = [

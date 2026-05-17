@@ -25,10 +25,13 @@ The Vue 3 component for **Vue Select Plus** — an accessible, headless, enterpr
 ## Install
 
 ```bash
-npm install @vue-select-plus/vue @vue-select-plus/styles
+npm install @vue-select-plus/vue
 ```
 
-Requires **Vue 3.5+**.
+Requires **Vue 3.5+**. The default stylesheet ships inside this package — no
+separate install needed. (If you prefer to install it explicitly,
+`@vue-select-plus/styles` is still available; both paths resolve to the
+same CSS.)
 
 ## Quickstart
 
@@ -36,7 +39,7 @@ Requires **Vue 3.5+**.
 <script setup lang="ts">
 import { ref } from 'vue';
 import { VSelect, type SelectOption } from '@vue-select-plus/vue';
-import '@vue-select-plus/styles';
+import '@vue-select-plus/vue/styles.css';
 
 const fruit = ref<string | null>(null);
 const options: SelectOption[] = [
