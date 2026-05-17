@@ -1,4 +1,4 @@
-import { computed, ref, toValue, type Ref, type MaybeRefOrGetter } from 'vue';
+import { computed, ref, toValue, watch, type Ref, type MaybeRefOrGetter } from 'vue';
 import type { SelectOption, FlatOption, SelectValue } from '../types';
 
 interface UseOptionsProps {
@@ -116,19 +116,30 @@ export function useOptions({
         return indices;
     });
 
-    // Built once per options change so multi-tag rendering stays O(n) for the
-    // whole set instead of O(n) per tag.
-    const labelMap = computed(() => {
-        const map = new Map<SelectValue, string>();
-        const walk = (nodes: ReadonlyArray<SelectOption>) => {
-            for (const node of nodes) {
-                if (node.value !== undefined) map.set(node.value, node.label);
-                if (node.children?.length) walk(node.children);
-            }
-        };
-        walk(toValue(options));
-        return map;
-    });
+    // Persistent label cache: when options swap (paginated server search,
+    // tab change, etc.), values that were in earlier batches keep their
+    // labels here. Without this, a selected option that drops out of
+    // `options` would render as its raw id ("u-12345") in tags and the
+    // single-value display.
+    const labelHistory: Ref<Map<SelectValue, string>> = ref(new Map());
+
+    watch(
+        () => toValue(options),
+        (opts) => {
+            const next = new Map(labelHistory.value);
+            const walk = (nodes: ReadonlyArray<SelectOption>) => {
+                for (const node of nodes) {
+                    if (node.value !== undefined) next.set(node.value, node.label);
+                    if (node.children?.length) walk(node.children);
+                }
+            };
+            walk(opts);
+            labelHistory.value = next;
+        },
+        { immediate: true, flush: 'sync' }
+    );
+
+    const labelMap = computed(() => labelHistory.value);
 
     return {
         visibleOptions,

@@ -141,6 +141,68 @@ describe('VSelect — selection behavior', () => {
     });
 });
 
+describe('VSelect — label cache', () => {
+    it('keeps showing the selected label after the option drops out of options', async () => {
+        const Host = defineComponent({
+            components: { VSelect },
+            data() {
+                return {
+                    model: 'alice' as string | null,
+                    opts: [
+                        { value: 'alice', label: 'Alice' },
+                        { value: 'bob', label: 'Bob' }
+                    ] as SelectOption[]
+                };
+            },
+            template: '<VSelect :options="opts" label="User" :teleport="false" v-model="model" />'
+        });
+        const wrapper = mount(Host);
+        await flushPromises();
+
+        const trigger = wrapper.find('[role="combobox"]');
+        const labelledBy = trigger.attributes('aria-labelledby')!.split(' ');
+        const triggerText = () => labelledBy.map(id => wrapper.find(`#${id}`).text()).join(' ');
+
+        expect(triggerText()).toContain('Alice');
+
+        // Server search returns a different page — Alice is no longer in `options`.
+        (wrapper.vm as any).opts = [{ value: 'carol', label: 'Carol' }];
+        await flushPromises();
+
+        // Without the cache the trigger would render the raw id 'alice' here.
+        expect(triggerText()).toContain('Alice');
+    });
+
+    it('keeps multi-select tags labelled when their options drop out', async () => {
+        const Host = defineComponent({
+            components: { VSelect },
+            data() {
+                return {
+                    model: ['alice', 'bob'] as string[],
+                    opts: [
+                        { value: 'alice', label: 'Alice' },
+                        { value: 'bob', label: 'Bob' }
+                    ] as SelectOption[]
+                };
+            },
+            template: '<VSelect :options="opts" label="Users" multiple :teleport="false" v-model="model" />'
+        });
+        const wrapper = mount(Host);
+        await flushPromises();
+        expect(wrapper.findAll('.vue-select-tag').map(t => t.text())).toEqual(
+            expect.arrayContaining([expect.stringContaining('Alice'), expect.stringContaining('Bob')])
+        );
+
+        (wrapper.vm as any).opts = [{ value: 'carol', label: 'Carol' }];
+        await flushPromises();
+
+        // Tags still render the real labels, not 'alice' / 'bob'.
+        const tagTexts = wrapper.findAll('.vue-select-tag').map(t => t.text());
+        expect(tagTexts.some(t => t.includes('Alice'))).toBe(true);
+        expect(tagTexts.some(t => t.includes('Bob'))).toBe(true);
+    });
+});
+
 describe('VSelect — native form integration', () => {
     it('emits a single hidden input per selected value', async () => {
         const Host = defineComponent({

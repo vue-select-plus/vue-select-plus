@@ -184,7 +184,12 @@ export function useSelect(props: UseSelectProps) {
         visibleOptions,
         /** Indices into `visibleOptions` that can receive keyboard highlight. */
         navigableIndices,
-        /** `value → label` lookup for rendering tags / single-value displays. */
+        /**
+         * `value → label` lookup for rendering tags and single-value displays.
+         * Entries persist across `options` swaps so a previously-selected
+         * value still resolves to its real label even if it drops out of
+         * the current options array (paginated server search, tab switch).
+         */
         labelMap,
 
         /**
