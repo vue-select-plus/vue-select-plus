@@ -219,6 +219,30 @@ describe('VSelect — HTML5 validation', () => {
     });
 });
 
+describe('VSelect — creatable', () => {
+    const nested: SelectOption[] = [
+        { value: 'be', label: 'Backend', children: [
+            { value: 'node', label: 'Node.js' }
+        ]}
+    ];
+
+    it('does not render add-child handles by default', async () => {
+        const Host = makeHost(() => ({ options: nested, label: 'Tech', teleport: false }));
+        const wrapper = mount(Host);
+        await wrapper.find('[role="combobox"]').trigger('click');
+        await flushPromises();
+        expect(wrapper.find('button.vue-select-action-btn').exists()).toBe(false);
+    });
+
+    it('renders add-child handles when creatable is true', async () => {
+        const Host = makeHost(() => ({ options: nested, label: 'Tech', creatable: true, teleport: false }));
+        const wrapper = mount(Host);
+        await wrapper.find('[role="combobox"]').trigger('click');
+        await flushPromises();
+        expect(wrapper.find('button.vue-select-action-btn').exists()).toBe(true);
+    });
+});
+
 describe('VSelect — clearable', () => {
     it('clear button resets to undefined in single mode', async () => {
         const Host = makeHost(() => ({ options: fruits, label: 'Fruit', clearable: true, teleport: false }), 'banana');

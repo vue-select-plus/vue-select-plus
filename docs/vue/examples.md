@@ -239,14 +239,18 @@ const techStack = [
         :options="creatorOptions"
         label="Add child"
         placeholder="Hover a group, hit +"
+        creatable
         @create="handleCreate"
     />
     <p class="muted small">Hover any group with children — a <kbd>+</kbd> button appears.</p>
 </div>
 
 ```vue
-<VSelect v-model="value" :options="options" @create="handleCreate" />
+<VSelect v-model="value" :options="options" creatable @create="handleCreate" />
 ```
+
+The `+` handles only render when `creatable` is set. Listening to
+`@create` alone isn't enough — the prop is the explicit opt-in.
 
 ```ts
 function handleCreate({ parent, value }: { parent: string | number; value: string }) {

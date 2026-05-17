@@ -325,7 +325,8 @@ export const CreatorMode: Story = {
     args: {
         options: nestedComplex,
         label: 'Add Custom Item',
-        placeholder: 'Click + on Backend'
+        placeholder: 'Click + on Backend',
+        creatable: true
     },
     render: (args: any) => ({
         components: { VSelect },
