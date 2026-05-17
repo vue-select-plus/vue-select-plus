@@ -5,30 +5,31 @@
 ![License](https://img.shields.io/github/license/vue-select-plus/vue-select-plus?style=flat-square&color=blue)
 ![TypeScript](https://img.shields.io/badge/Written%20in-TypeScript-3178C6?style=flat-square)
 
-📘 **Documentation**: <https://vue-select-plus.github.io/vue-select-plus/>
+Documentation: <https://vue-select-plus.github.io/vue-select-plus/>
 
-> An accessible, headless, enterprise-ready select component for Vue 3.
+An accessible, headless select component for Vue 3.
 
-## Highlights
+## Features
 
-- 🦾 **WAI-ARIA 1.2 combobox pattern** — every state, every transition, every option labelled.
-- 🌲 **Tree-aware** — infinite nesting with expand/collapse and keyboard navigation.
-- 🔍 **Searchable, both ways** — client filtering out of the box, or server-side via `@search` + `:filterable="false"`.
-- ⏳ **Async ready** — `loading`, `aria-busy`, debounce, min-search-length, race-safe.
-- 🏷️ **Multi select** — tags with keyboard-reachable remove buttons and Backspace shortcut.
-- 🪟 **Floating UI** — dropdown teleports to `<body>`, auto-flips, sticks to the trigger width.
-- 📋 **Native form integration** — pass a `name` and the value submits via `FormData`.
-- 🎨 **Themeable** — CSS variables, automatic dark mode, `forced-colors`, `prefers-reduced-motion`.
-- 🚀 **Virtualized** — handles 100k+ options without lag.
-- 🧩 **Headless core** — `@vue-select-plus/core` ships the logic without the UI.
+- WAI-ARIA 1.2 combobox pattern with full keyboard support.
+- Tree-aware (infinite nesting, expand/collapse navigation).
+- Client filtering, or server-side via `@search` + `:filterable="false"`.
+- Multi-select with keyboard-reachable tags.
+- Floating UI for positioning (auto-flip, teleport, sticky width).
+- Native form submission via hidden `<input>`.
+- Themeable via CSS variables, including dark mode, `forced-colors`,
+  and `prefers-reduced-motion`.
+- Virtualised list — usable with 100k+ options.
+- Headless core (`@vue-select-plus/core`) exposes the logic without the UI.
 
 ## Install
 
 ```bash
-npm install @vue-select-plus/vue @vue-select-plus/styles
+npm install @vue-select-plus/vue
 ```
 
-Requires Vue 3.5 or newer.
+Requires Vue 3.5 or newer. The default stylesheet ships inside the vue
+package, so a single install is enough.
 
 ## Usage
 
@@ -37,7 +38,7 @@ Requires Vue 3.5 or newer.
 import { ref } from 'vue';
 import { VSelect } from '@vue-select-plus/vue';
 import type { SelectOption } from '@vue-select-plus/core';
-import '@vue-select-plus/styles';
+import '@vue-select-plus/vue/styles.css';
 
 const value = ref<string | null>(null);
 const options: SelectOption[] = [

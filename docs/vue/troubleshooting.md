@@ -227,16 +227,10 @@ Expected order of magnitude (production build, mid-range laptop):
 
 **Cause:** Each tag-remove is keyboard-reachable on purpose — that's the WCAG-compliant default.
 
-**Workaround:** Use `<style>` to hide them from non-mouse users, but be aware this breaks WCAG 2.1.1 ("Keyboard"):
-
-```css
-.vue-select-tag-remove {
-    /* DON'T do this on accessibility-sensitive sites */
-    display: none;
-}
-```
-
-A better fix is a roving-tabindex pattern — we plan to ship this in a future minor.
+If you need quieter tab order, the best you can do today is wrap the
+select in a section the user can skip past (`role="region"` with a skip
+link). Hiding the buttons with `display: none` breaks WCAG 2.1.1
+("Keyboard").
 
 ## My selected value renders as a raw id
 
@@ -275,7 +269,8 @@ See [`packages/vue/src/__tests__/setup.ts`](https://github.com/vue-select-plus/v
 
 **Symptom:** `await trigger.click(); expect(listbox.exists()).toBe(true)` — fails.
 
-**Cause:** Two click handlers fight each other (an old bug that's fixed in 1.0). If you see this on `< 1.0`, upgrade.
+**Cause:** Two click handlers fighting each other — fixed in 0.1.1.
+Upgrade if you're on an older patch.
 
 ## I still need help
 

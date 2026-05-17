@@ -15,38 +15,21 @@ import { useKeyboard } from './useKeyboard';
  * reads each input with `toValue()`.
  */
 export interface UseSelectProps {
-    /** The option tree (flat or nested via `children`). */
     options: MaybeRefOrGetter<ReadonlyArray<SelectOption>>;
-    /**
-     * Two-way-bound model. Pass a writable `Ref` — a `defineModel()` result
-     * in a component, or a `ref(initial)` standalone. Read-only refs would
-     * break selection.
-     */
+    /** Writable ref — a `defineModel()` result or a `ref(initial)`. */
     modelValue: Ref<SelectModelValue>;
-    /**
-     * Whether to render multi-select UI. The model becomes an array. Reactive:
-     * flipping single ↔ multi at runtime is supported.
-     */
     multiple: MaybeRefOrGetter<boolean>;
-    /** Whether to render a text-search input. Reactive. */
     searchable: MaybeRefOrGetter<boolean>;
-    /** Disables open/keyboard handling. */
     disabled: MaybeRefOrGetter<boolean>;
-    /**
-     * Enables built-in client-side filtering. Pass `false` for server-driven
-     * search — the parent watches `searchQuery` and replaces `options` itself.
-     * @default true
-     */
+    /** Built-in client filtering. Pass `false` for server-driven search. @default true */
     filterable?: MaybeRefOrGetter<boolean>;
 }
 
 /**
- * Headless engine behind `<VSelect>` — selection state, keyboard navigation,
- * option flattening (incl. tree collapse + creator-row injection), and a
- * pre-built label lookup map.
+ * Headless engine behind `<VSelect>`. Owns selection state, keyboard
+ * navigation, option flattening, and the label lookup map.
  *
  * @example
- * ```ts
  * const { isOpen, visibleOptions, handleSelect, onKeyDown } = useSelect({
  *     options: ref(opts),
  *     modelValue: ref(null),
@@ -54,7 +37,6 @@ export interface UseSelectProps {
  *     searchable: false,
  *     disabled: ref(false)
  * });
- * ```
  */
 export function useSelect(props: UseSelectProps) {
 
@@ -127,8 +109,7 @@ export function useSelect(props: UseSelectProps) {
             model === null ||
             (Array.isArray(model) && model.length === 0);
 
-        // Skip the O(n) full-options scan when nothing is selected — for large
-        // option lists (5k+ items) this halves the work done on every open.
+        // Skip the O(n) findOptionIndex scan when nothing is selected.
         if (modelIsEmpty) {
             const firstNavigable = navigableIndices.value[0];
             setHighlight(firstNavigable ?? -1);
@@ -189,10 +170,7 @@ export function useSelect(props: UseSelectProps) {
         isOpen,
         /** Current search query string. Read-write; clearing this resets filtering. */
         searchQuery,
-        /**
-         * Index into `visibleOptions` of the currently highlighted row (the
-         * `aria-activedescendant` target). `-1` when no row is highlighted.
-         */
+        /** `aria-activedescendant` target index into `visibleOptions`, or `-1`. */
         highlightedIndex,
         /** Set of tree-node values that are currently collapsed. Read-write. */
         collapsedValues,
@@ -203,15 +181,9 @@ export function useSelect(props: UseSelectProps) {
          * any of `options`, `searchQuery`, or `collapsedValues` changes.
          */
         visibleOptions,
-        /**
-         * Indices into `visibleOptions` of rows that can receive keyboard
-         * highlight (excludes groups, disabled rows, the creator placeholder).
-         */
+        /** Indices into `visibleOptions` that can receive keyboard highlight. */
         navigableIndices,
-        /**
-         * Flat `value → label` lookup built once per options change. Use this
-         * to render selected tags or single-value displays in O(1).
-         */
+        /** `value → label` lookup for rendering tags / single-value displays. */
         labelMap,
 
         /**
@@ -223,10 +195,7 @@ export function useSelect(props: UseSelectProps) {
         close: closeWithCleanup,
         /** Toggle open/closed. */
         toggle: toggleMenu,
-        /**
-         * Keyboard handler covering the full WAI-ARIA 1.2 combobox contract.
-         * Wire to `@keydown` on your root element.
-         */
+        /** WAI-ARIA 1.2 combobox keyboard handler. Wire to `@keydown`. */
         onKeyDown,
         /** Expand / collapse a tree node by its `value`. */
         toggleCollapse,

@@ -1,7 +1,7 @@
 {
     "name": "@vue-select-plus/vue",
-    "version": "0.1.2",
-    "description": "The official Vue 3 component for Vue Select Plus. Enterprise-grade, headless, and accessible.",
+    "version": "0.1.4",
+    "description": "Accessible, headless Vue 3 select component (combobox, multi-select, tree, async).",
     "keywords": [
         "vue",
         "vue3",
@@ -16,7 +16,7 @@
         "combobox"
     ],
     "license": "MIT",
-    "author": "Vue Select Plus Team",
+    "author": "Leon Mathey",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/vue-select-plus/vue-select-plus.git",
@@ -36,7 +36,10 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.js",
             "default": "./dist/index.js"
-        }
+        },
+        "./styles": "./dist/style.css",
+        "./styles.css": "./dist/style.css",
+        "./style.css": "./dist/style.css"
     },
     "files": [
         "dist",

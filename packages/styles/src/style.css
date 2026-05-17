@@ -1,16 +1,31 @@
-/* =====================================================================
-   Vue Select Plus — default theme
-   Customise by overriding the CSS variables below or by setting the
-   `.dark` class on a parent element.
-   ===================================================================== */
+/*
+ * Vue Select Plus — default theme.
+ *
+ * Toggle dark mode with `.vsp-dark` (or `.dark`, kept for Tailwind parity
+ * until v1.0). `.vsp-light` re-opts a child back into the light theme.
+ */
 
 :root {
+    --vs-radius: 6px;
+    --vs-radius-sm: 4px;
+    --vs-opacity-disabled: 0.6;
+    --vs-transition: 150ms ease;
+    --vs-z-menu: 50;
+    --vs-control-height: 2.5rem;
+    --vs-font-size: 0.875rem;
+    --vs-tree-indent-step: 1.25rem;
+    --vs-tree-indent-base: 0.5rem;
+    --vs-tree-toggle-gap: 0.25rem;
+    --vs-danger: #dc2626;
+    --vs-danger-soft: rgba(220, 38, 38, 0.15);
+}
+
+:root,
+.vsp-light {
     --vs-primary: #2563eb;
     --vs-primary-hover: #1d4ed8;
     --vs-primary-contrast: #ffffff;
     --vs-focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.45);
-    --vs-danger: #dc2626;
-    --vs-danger-soft: rgba(220, 38, 38, 0.15);
 
     --vs-bg: #ffffff;
     --vs-bg-elevated: #ffffff;
@@ -33,54 +48,10 @@
     --vs-tag-text: #3730a3;
     --vs-tag-remove-hover-bg: rgba(67, 56, 202, 0.15);
 
-    --vs-radius: 6px;
-    --vs-radius-sm: 4px;
-    --vs-opacity-disabled: 0.6;
     --vs-shadow-menu: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
                       0 4px 6px -4px rgba(0, 0, 0, 0.1);
-    --vs-transition: 150ms ease;
-    --vs-z-menu: 50;
-    --vs-control-height: 2.5rem;
-    --vs-font-size: 0.875rem;
 }
 
-/*
- * Class-based dark mode only.
- *
- * Up to 0.1.0 the default styles also flipped to dark via
- * `@media (prefers-color-scheme: dark)`. That was surprising in real apps:
- * VitePress, Tailwind (default class mode), Nuxt UI and friends all toggle
- * a `.dark` class on `<html>` and *remove* it for light mode — they never
- * apply a `.light` class. So when the host was light but the user's OS
- * preferred dark, `<VSelect>` flipped on its own, against the app's
- * explicit choice.
- *
- * The component now follows the host class only. If you want automatic
- * system-preference switching, add this one-liner to your global CSS:
- *
- *     @media (prefers-color-scheme: dark) {
- *         :root { ... copy the .vsp-dark block below ... }
- *     }
- *
- * — or simply toggle `.vsp-dark` on `<html>` yourself.
- */
-
-/*
- * Class-based dark override (works even without media query).
- *
- * `.vsp-dark` is the recommended, component-namespaced class. `.dark` is also
- * supported for now to match Tailwind's default dark-mode selector — BUT this
- * causes Vue Select Plus to flip its theme any time Tailwind does, even if
- * that wasn't your intent.
- *
- * The `.dark` mapping is planned to be removed in v1.0. Migrate to `.vsp-dark`,
- * or set the CSS variables yourself if you need finer control:
- *
- *     :root.your-app-dark {
- *         --vs-bg: ...;
- *         --vs-text: ...;
- *     }
- */
 .vsp-dark,
 .dark {
     --vs-primary: #3b82f6;
@@ -113,46 +84,7 @@
                       0 4px 6px -4px rgba(0, 0, 0, 0.4);
 }
 
-/*
- * Light override class. Use this to pin the component to its light theme
- * even when an ancestor has `.dark` / `.vsp-dark` (typical scenario:
- * Tailwind sets `.dark` on `<html>` but you want a single VSelect — say,
- * inside a notification toast — to stay light).
- */
-.vsp-light {
-    --vs-primary: #2563eb;
-    --vs-primary-hover: #1d4ed8;
-    --vs-primary-contrast: #ffffff;
-    --vs-focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.45);
-
-    --vs-bg: #ffffff;
-    --vs-bg-elevated: #ffffff;
-    --vs-bg-subtle: #f9fafb;
-    --vs-bg-hover: #f3f4f6;
-    --vs-bg-active: #e5e7eb;
-
-    --vs-text: #111827;
-    --vs-text-muted: #6b7280;
-    --vs-text-disabled: #9ca3af;
-
-    --vs-border: #d1d5db;
-    --vs-border-hover: #9ca3af;
-    --vs-border-strong: #6b7280;
-
-    --vs-selected-bg: #dbeafe;
-    --vs-selected-text: #1e40af;
-
-    --vs-tag-bg: #eef2ff;
-    --vs-tag-text: #3730a3;
-    --vs-tag-remove-hover-bg: rgba(67, 56, 202, 0.15);
-
-    --vs-shadow-menu: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-                      0 4px 6px -4px rgba(0, 0, 0, 0.1);
-}
-
-/* =====================================================================
-   Root container
-   ===================================================================== */
+/* Root container */
 .vue-select-root {
     position: relative;
     inline-size: 100%;
@@ -178,9 +110,7 @@
     pointer-events: none;
 }
 
-/* =====================================================================
-   Label
-   ===================================================================== */
+/* Label */
 .vue-select-label {
     display: block;
     margin-block-end: 0.375rem;
@@ -195,9 +125,7 @@
     margin-inline-start: 0.125rem;
 }
 
-/* =====================================================================
-   Control (trigger wrapper)
-   ===================================================================== */
+/* Control (trigger wrapper) */
 .vue-select-control {
     display: flex;
     align-items: stretch;
@@ -237,9 +165,7 @@
     box-shadow: 0 0 0 3px var(--vs-danger-soft);
 }
 
-/* =====================================================================
-   Content area
-   ===================================================================== */
+/* Content area */
 .vue-select-content {
     display: flex;
     flex: 1 1 auto;
@@ -264,9 +190,7 @@
     user-select: none;
 }
 
-/* =====================================================================
-   Combobox surfaces
-   ===================================================================== */
+/* Combobox surfaces */
 .vue-select-input {
     border: none;
     background: transparent;
@@ -288,15 +212,7 @@
     color: var(--vs-text-disabled);
 }
 
-/*
- * The non-searchable trigger is a real <button role="combobox"> — but the
- * visible "trigger surface" is the wrapping `.vue-select-control`. The button
- * therefore needs to be focus-target-only: present in the accessibility tree,
- * not in the visual layout. We hide it via the standard sr-only pattern.
- *
- * Clicks on the wrapper call `focusTrigger()` which programmatically focuses
- * this hidden button; the focus ring lives on `.vue-select-control:focus-within`.
- */
+/* Visually-hidden focus target; the focus ring lives on .vue-select-control. */
 .vue-select-button {
     position: absolute;
     inline-size: 1px;
@@ -320,9 +236,7 @@
     padding: 0;
 }
 
-/* =====================================================================
-   Tags
-   ===================================================================== */
+/* Tags */
 .vue-select-tag {
     display: inline-flex;
     align-items: center;
@@ -369,9 +283,7 @@
     box-shadow: var(--vs-focus-ring);
 }
 
-/* =====================================================================
-   Indicators
-   ===================================================================== */
+/* Indicators */
 .vue-select-indicators {
     display: flex;
     align-items: center;
@@ -421,12 +333,8 @@
     transform: rotate(180deg);
 }
 
-/* =====================================================================
-   Menu / Listbox
-   Positioned via Floating UI (inline styles); CSS only provides theming.
-   ===================================================================== */
+/* Menu / Listbox. Position is owned by Floating UI; CSS sets theme + sizing. */
 .vue-select-menu {
-    /* Position is set by Floating UI's `floatingStyles` — do not override here. */
     background-color: var(--vs-bg-elevated);
     border: 1px solid var(--vs-border);
     border-radius: var(--vs-radius);
@@ -435,7 +343,9 @@
     overflow-y: auto;
     padding-block: 0.25rem;
     list-style: none;
-    /* When teleported to <body>, ensure the menu inherits our font. */
+    min-inline-size: var(--vs-menu-min-width, var(--vsp-menu-control-width, 0));
+    max-block-size: var(--vs-menu-max-height, var(--vsp-menu-available-height, none));
+    /* Inherit font when teleported to <body>. */
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
                  "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: var(--vs-font-size);
@@ -465,9 +375,7 @@
     color: var(--vs-text);
 }
 
-/* =====================================================================
-   Loading spinner
-   ===================================================================== */
+/* Loading spinner */
 .vue-select-spinner {
     display: inline-flex;
     align-items: center;
@@ -495,9 +403,7 @@
     }
 }
 
-/* =====================================================================
-   Options
-   ===================================================================== */
+/* Options */
 .vue-select-option {
     position: relative;
     display: flex;
@@ -539,9 +445,7 @@
     background-color: transparent;
 }
 
-/* =====================================================================
-   Tree (expand / actions)
-   ===================================================================== */
+/* Tree (expand / actions) */
 .vue-select-toggle,
 .vue-select-action-btn {
     appearance: none;
@@ -556,9 +460,9 @@
 }
 
 .vue-select-toggle {
-    inline-size: 1.25rem;
-    block-size: 1.25rem;
-    margin-inline-end: 0.25rem;
+    inline-size: var(--vs-tree-indent-step);
+    block-size: var(--vs-tree-indent-step);
+    margin-inline-end: var(--vs-tree-toggle-gap);
 }
 
 .vue-select-toggle:hover {
@@ -575,7 +479,7 @@
 }
 
 .vue-select-spacer {
-    inline-size: 1.5rem;
+    inline-size: calc(var(--vs-tree-indent-step) + var(--vs-tree-toggle-gap));
     display: inline-block;
 }
 
@@ -613,9 +517,7 @@
     background-color: var(--vs-bg-hover);
 }
 
-/* =====================================================================
-   Groups
-   ===================================================================== */
+/* Groups */
 .vue-select-group {
     padding-block: 0.5rem;
     padding-inline: 0.75rem;
@@ -633,9 +535,7 @@
     border-block-start: none;
 }
 
-/* =====================================================================
-   Creator
-   ===================================================================== */
+/* Creator */
 .vue-select-creator {
     padding-block: 0.25rem;
     padding-inline: 0.5rem;
@@ -654,9 +554,7 @@
     box-shadow: var(--vs-focus-ring);
 }
 
-/* =====================================================================
-   Error message
-   ===================================================================== */
+/* Error message */
 .vue-select-error-msg {
     display: block;
     margin-block-start: 0.25rem;
@@ -665,9 +563,7 @@
     color: var(--vs-danger);
 }
 
-/* =====================================================================
-   Screen-reader only utility
-   ===================================================================== */
+/* Screen-reader only utility */
 .vue-select-sr-only {
     position: absolute;
     inline-size: 1px;
@@ -680,11 +576,7 @@
     border: 0;
 }
 
-/* =====================================================================
-   HTML5 form validation input
-   Invisible, but focusable so the browser can target it with its native
-   validation tooltip when the form is submitted with an empty `required` field.
-   ===================================================================== */
+/* Focusable target for the browser's native validation tooltip. */
 .vue-select-validation {
     position: absolute;
     inset-block-start: 0;
@@ -693,13 +585,10 @@
     block-size: 1px;
     opacity: 0;
     pointer-events: none;
-    /* Keep it inside the layout so the browser's tooltip anchors near the control. */
     z-index: -1;
 }
 
-/* =====================================================================
-   Size variants
-   ===================================================================== */
+/* Size variants */
 .vue-select-root--sm {
     --vs-control-height: 2rem;
     --vs-font-size: 0.8125rem;
@@ -750,15 +639,7 @@
     padding-inline: 1rem;
 }
 
-/* =====================================================================
-   Open / close transitions
-
-   The menu uses Floating UI's `floatingStyles` which set `transform` on the
-   element's inline style for positioning. Animating `transform` here would
-   stomp the positioning during enter/leave and the menu would visually jump
-   to (0, 0). We therefore only animate `opacity` — Floating UI keeps full
-   control of position.
-   ===================================================================== */
+/* Animate opacity only — `transform` is owned by Floating UI for positioning. */
 .vue-select-menu-enter-active,
 .vue-select-menu-leave-active {
     transition: opacity 120ms ease;
@@ -776,9 +657,7 @@
     }
 }
 
-/* =====================================================================
-   Motion preferences
-   ===================================================================== */
+/* Motion preferences */
 @media (prefers-reduced-motion: reduce) {
     .vue-select-root,
     .vue-select-root *,
@@ -790,9 +669,7 @@
     }
 }
 
-/* =====================================================================
-   Windows High Contrast / forced colors
-   ===================================================================== */
+/* Windows High Contrast / forced colors */
 @media (forced-colors: active) {
     .vue-select-control,
     .vue-select-menu,

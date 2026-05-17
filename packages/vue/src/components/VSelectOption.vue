@@ -2,11 +2,8 @@
 import { computed } from 'vue';
 import type { FlatOption, SelectValue } from '@vue-select-plus/core';
 
-/**
- * Internal renderer used by `<VSelect>` for every row in the virtualized
- * listbox. Not part of the public component API — consumers customize via
- * the `option`, `toggle-icon`, `add-icon` slots on `<VSelect>` instead.
- */
+// Internal row renderer. Public customisation goes through the `option`,
+// `toggle-icon`, and `add-icon` slots on <VSelect>.
 interface Props {
     /** The flattened option to render (already enriched with depth/grouping). */
     option: FlatOption;
@@ -25,31 +22,31 @@ interface Props {
     setSize?: number;
     /** 1-based position inside the navigable set. Exposed via `aria-posinset`. */
     posInSet?: number;
-    /** Localized formatter for the tree expand button's accessible label. */
     expandLabel?: (label: string) => string;
-    /** Localized formatter for the tree collapse button's accessible label. */
     collapseLabel?: (label: string) => string;
-    /** Localized formatter for the "+" creator-mode button's accessible label. */
     addChildLabel?: (label: string) => string;
 }
 
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-    /** Fired when the user clicks the row body. The host calls `handleSelect`. */
     click: [option: FlatOption];
-    /** Fired when the user clicks the tree-expand chevron. Payload is the row's value. */
     toggle: [value: SelectValue];
-    /** Fired when the user clicks the "+" add-child button. Payload is the parent's value. */
     'add-child': [value: SelectValue];
 }>();
 
 const indentStyle = computed(() => ({
-    paddingInlineStart: `${(props.option.depth * 1.25) + 0.5}rem`
+    paddingInlineStart: `calc(${props.option.depth} * var(--vs-tree-indent-step) + var(--vs-tree-indent-base))`
 }));
 
 const hasChildren = computed(() => !!props.option.children?.length);
 const optionValue = computed(() => props.option.value);
+
+// aria-level is only meaningful in a tree; omitting it on flat listboxes
+// keeps axe quiet.
+const ariaLevel = computed<number | undefined>(() =>
+    (props.option.depth > 0 || hasChildren.value) ? props.option.depth + 1 : undefined
+);
 
 function onToggleClick(e: MouseEvent) {
     e.stopPropagation();
@@ -74,7 +71,7 @@ function onOptionClick() {
         :aria-selected="selected"
         :aria-disabled="option.disabled || undefined"
         :aria-expanded="hasChildren ? !collapsed : undefined"
-        :aria-level="option.depth + 1"
+        :aria-level="ariaLevel"
         :aria-setsize="setSize"
         :aria-posinset="posInSet"
         class="vue-select-option"
@@ -109,12 +106,7 @@ function onOptionClick() {
             </slot>
         </button>
 
-        <!--
-          The spacer is NOT a second indent (the tree depth lives in
-          `padding-inline-start` via `indentStyle`). It reserves the width of
-          the chevron slot on leaf rows so labels align vertically with their
-          parents that DO have a toggle button.
-        -->
+        <!-- Reserves the chevron slot on leaf rows so labels stay aligned. -->
         <span v-else class="vue-select-spacer" aria-hidden="true"></span>
 
         <div class="vue-select-label-container">

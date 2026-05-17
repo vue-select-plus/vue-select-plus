@@ -5,6 +5,13 @@
 
 The default theme for [`@vue-select-plus/vue`](https://www.npmjs.com/package/@vue-select-plus/vue). Plain CSS — no preprocessor, no runtime, no JS.
 
+> **You probably don't need to install this package directly.** The same
+> stylesheet is re-exported by `@vue-select-plus/vue` under
+> `@vue-select-plus/vue/styles.css`, which works under every package manager
+> (including pnpm strict mode and yarn berry PnP). Install this package only
+> if you want to consume the CSS without the Vue component (e.g. SSR shells,
+> design-system bundles, theme overrides shipped separately).
+
 ## Install
 
 ```bash

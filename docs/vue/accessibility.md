@@ -40,7 +40,7 @@
 | `role` | always | `"option"` |
 | `aria-selected` | always | `"true"` if part of the model |
 | `aria-disabled` | option's `disabled: true` | `"true"` |
-| `aria-level` | always | depth in the tree (1-based) |
+| `aria-level` | row is in a tree (depth > 0 or has children) | depth in the tree (1-based) |
 | `aria-setsize` | always | number of navigable siblings |
 | `aria-posinset` | always | 1-based position |
 | `aria-expanded` | option has `children` | `"true"` when expanded |

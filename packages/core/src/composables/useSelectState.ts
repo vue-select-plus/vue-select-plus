@@ -1,8 +1,5 @@
 import { ref, type MaybeRefOrGetter, toValue } from 'vue';
 
-/**
- * Manages the basic UI state of the select component.
- */
 export function useSelectState(disabled: MaybeRefOrGetter<boolean>) {
     const isOpen = ref(false);
     const searchQuery = ref('');

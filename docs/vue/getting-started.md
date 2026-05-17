@@ -3,10 +3,10 @@
 ## Install
 
 ```bash
-npm install @vue-select-plus/vue @vue-select-plus/styles
+npm install @vue-select-plus/vue
 ```
 
-The Vue package depends transitively on `@vue-select-plus/core`, `@floating-ui/vue` and `@tanstack/vue-virtual` — npm pulls them in automatically.
+The Vue package depends transitively on `@vue-select-plus/core`, `@floating-ui/vue` and `@tanstack/vue-virtual` — npm pulls them in automatically. The default stylesheet is bundled inside the vue package as well, so a single install is enough.
 
 > **Peer requirement:** Vue 3.5 or newer (the component uses `useId()` for SSR-safe ids).
 
@@ -18,10 +18,16 @@ Import the stylesheet once, anywhere in your app's entry. Tree-shakers won't dro
 // main.ts
 import { createApp } from 'vue';
 import App from './App.vue';
-import '@vue-select-plus/styles';
+import '@vue-select-plus/vue/styles.css';
 
 createApp(App).mount('#app');
 ```
+
+> **Why the `/styles.css` subpath?** It's re-exported from the vue package so it
+> resolves under every package manager, including pnpm's strict mode and
+> yarn berry's PnP. The legacy `@vue-select-plus/styles` package import still
+> works if you install that package explicitly, but the subpath is the
+> recommended single-install path.
 
 If you'd rather ship your own theme, skip this import and override the [CSS variables](./api#css-variables).
 
