@@ -45,18 +45,14 @@ const emit = defineEmits<{
 }>();
 
 const indentStyle = computed(() => ({
-    paddingInlineStart: `${(props.option.depth * 1.25) + 0.5}rem`
+    paddingInlineStart: `calc(${props.option.depth} * var(--vs-tree-indent-step) + var(--vs-tree-indent-base))`
 }));
 
 const hasChildren = computed(() => !!props.option.children?.length);
 const optionValue = computed(() => props.option.value);
 
-/*
- * Only expose `aria-level` when this row is part of an actual tree (nested,
- * or has children). Emitting `aria-level="1"` on every option in a flat
- * listbox is what axe-core flags as an ARIA misuse — the value is correct
- * but semantically meaningless for non-tree listboxes.
- */
+// aria-level is only meaningful in a tree; omitting it on flat listboxes
+// keeps axe quiet.
 const ariaLevel = computed<number | undefined>(() =>
     (props.option.depth > 0 || hasChildren.value) ? props.option.depth + 1 : undefined
 );
@@ -119,12 +115,7 @@ function onOptionClick() {
             </slot>
         </button>
 
-        <!--
-          The spacer is NOT a second indent (the tree depth lives in
-          `padding-inline-start` via `indentStyle`). It reserves the width of
-          the chevron slot on leaf rows so labels align vertically with their
-          parents that DO have a toggle button.
-        -->
+        <!-- Reserves the chevron slot on leaf rows so labels stay aligned. -->
         <span v-else class="vue-select-spacer" aria-hidden="true"></span>
 
         <div class="vue-select-label-container">

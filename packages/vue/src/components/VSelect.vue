@@ -79,34 +79,32 @@ interface VSelectLabels {
     addChildTo?: (label: string) => string;
 }
 
+const defaultLabels: Required<VSelectLabels> = {
+    clear: 'Clear selection',
+    removeItem: (label: string) => `Remove ${label}`,
+    noResults: 'No results.',
+    addChild: 'Add child item',
+    resultsCount: (count: number) =>
+        count === 0 ? 'No results available.' : `${count} result${count === 1 ? '' : 's'} available.`,
+    loading: 'Loading…',
+    typeToSearch: (min: number) => `Type at least ${min} character${min === 1 ? '' : 's'} to search.`,
+    expand: (label: string) => `Expand ${label}`,
+    collapse: (label: string) => `Collapse ${label}`,
+    addChildTo: (label: string) => `Add child to ${label}`
+};
+
 interface VSelectProps {
     /** Option tree. Items can be flat or nested via `children`. */
     options: ReadonlyArray<SelectOption>;
     /** Visible label rendered above the control and used as the accessible name. */
     label?: string;
-    /**
-     * Text shown when nothing is selected (and, in searchable mode, used as the
-     * input's placeholder).
-     * @default 'Select...'
-     */
+    /** @default 'Select...' */
     placeholder?: string;
-    /**
-     * Enable multi-select. The model becomes an array; selections render as
-     * keyboard-reachable tags.
-     * @default false
-     */
+    /** Multi-select; the model becomes an array. @default false */
     multiple?: boolean;
-    /**
-     * Render a text input that filters options. Combined with `filterable: false`
-     * for server-driven search.
-     * @default false
-     */
+    /** Render a text input that filters options. @default false */
     searchable?: boolean;
-    /**
-     * Disable the entire control. Sets `disabled` on the focusable element and
-     * prevents the menu from opening.
-     * @default false
-     */
+    /** @default false */
     disabled?: boolean;
     /**
      * Sets `aria-required="true"` and, with `validateOnSubmit`, blocks form
@@ -114,10 +112,7 @@ interface VSelectProps {
      * @default false
      */
     required?: boolean;
-    /**
-     * Render a clear (×) button whenever a value is selected.
-     * @default false
-     */
+    /** Show a clear (×) button when a value is selected. @default false */
     clearable?: boolean;
     /**
      * When set, hidden `<input name="...">` elements are emitted so the value
@@ -131,19 +126,13 @@ interface VSelectProps {
     id?: string;
     /** Error message. Sets `aria-invalid` and links to the message via `aria-describedby`. */
     error?: string;
-    /**
-     * Row height in px used by the virtualizer.
-     * @default 40
-     */
+    /** Row height in px used by the virtualizer. @default 40 */
     itemHeight?: number;
     /** Accessible label for the listbox. Defaults to the `label` prop. */
     listboxLabel?: string;
     /** Localizable text for screen reader announcements. */
     labels?: VSelectLabels;
-    /**
-     * Preferred placement of the dropdown. Auto-flips when no space is available.
-     * @default 'bottom-start'
-     */
+    /** Preferred dropdown placement; auto-flips. @default 'bottom-start' */
     placement?: Placement;
     /**
      * Where to render the dropdown.
@@ -153,17 +142,9 @@ interface VSelectProps {
      * @default true
      */
     teleport?: boolean | string | HTMLElement;
-    /**
-     * Maximum visible height of the dropdown in px. Floating UI clamps further
-     * to the available viewport space.
-     * @default 320
-     */
+    /** Maximum dropdown height in px; clamped further by viewport. @default 320 */
     maxMenuHeight?: number;
-    /**
-     * Show a spinner + announce a busy state (typically while async-fetching
-     * options).
-     * @default false
-     */
+    /** Spinner + `aria-busy`; typically toggled during async fetches. @default false */
     loading?: boolean;
     /**
      * Enable client-side filtering. Set to `false` for server-driven search —
@@ -171,27 +152,13 @@ interface VSelectProps {
      * @default true
      */
     filterable?: boolean;
-    /**
-     * Minimum query length before `@search` is emitted and the menu attempts
-     * to show results.
-     * @default 0
-     */
+    /** Minimum query length before `@search` fires. @default 0 */
     minSearchLength?: number;
-    /**
-     * Debounce delay (ms) for the `@search` event. `0` disables debouncing.
-     * @default 0
-     */
+    /** Debounce for `@search` in ms; 0 disables. @default 0 */
     searchDebounce?: number;
-    /**
-     * Visual size variant. Maps to padding + font-size + control height.
-     * @default 'md'
-     */
+    /** Visual size variant. @default 'md' */
     size?: 'sm' | 'md' | 'lg';
-    /**
-     * Forwarded to the underlying input in searchable mode. Use this for browser
-     * autofill hints (`autocomplete="country"`, `autocomplete="off"`, …).
-     * @default 'off'
-     */
+    /** Forwarded to the search input. @default 'off' */
     autocomplete?: string;
     /**
      * Forwarded `inputmode` for soft-keyboard hints on mobile. Defaults to the
@@ -233,16 +200,12 @@ const props = withDefaults(defineProps<VSelectProps>(), {
     validateOnSubmit: true
 });
 
+if (!props.options) {
+    throw new TypeError('VSelect: the `options` prop is required.');
+}
+
 const model = defineModel<SelectModelValue>({ required: false });
 
-/**
- * Component events — Vue 3.3+ short-hand tuple syntax.
- *
- * Note: Vue's generated component type widens emit handler return values to
- * `any` regardless of how they're declared. That's a framework decision
- * (template `@event="…"` callbacks may return any value). The arg types
- * stay correct — only the return type is `any` in the emitted `.d.ts`.
- */
 const emit = defineEmits<{
     /**
      * Emitted when the user submits the creator-mode input (Enter on the
@@ -262,13 +225,10 @@ const emit = defineEmits<{
     search: [query: string];
 }>();
 
-const optionsRef = toRef(props, 'options');
-const disabledRef = toRef(props, 'disabled');
-const filterableRef = toRef(props, 'filterable');
-
 const {
     isOpen,
     visibleOptions,
+    navigableIndices,
     highlightedIndex,
     searchQuery,
     creatorParentValue,
@@ -286,12 +246,12 @@ const {
     clear,
     setHighlight
 } = useSelect({
-    options: optionsRef,
+    options: toRef(props, 'options'),
     modelValue: model,
-    multiple: props.multiple,
-    searchable: props.searchable,
-    disabled: disabledRef,
-    filterable: filterableRef
+    multiple: toRef(props, 'multiple'),
+    searchable: toRef(props, 'searchable'),
+    disabled: toRef(props, 'disabled'),
+    filterable: toRef(props, 'filterable')
 });
 
 // --- IDs (SSR-safe) ---
@@ -324,10 +284,9 @@ const { floatingStyles, placement: actualPlacement } = useFloating(controlRef, l
         sizeMiddleware({
             padding: 8,
             apply({ rects, elements, availableHeight }) {
-                Object.assign(elements.floating.style, {
-                    minWidth: `${rects.reference.width}px`,
-                    maxHeight: `${Math.min(availableHeight, props.maxMenuHeight)}px`
-                });
+                const { style } = elements.floating;
+                style.setProperty('--vsp-menu-control-width', `${rects.reference.width}px`);
+                style.setProperty('--vsp-menu-available-height', `${Math.min(availableHeight, props.maxMenuHeight)}px`);
             }
         })
     ])
@@ -418,10 +377,9 @@ watch(searchQuery, (val) => {
     }
 });
 
-watch(visibleOptions, (list) => {
-    if (highlightedIndex.value >= list.length) {
-        setHighlight(list.length > 0 ? 0 : -1);
-    }
+watch(visibleOptions, () => {
+    const first = navigableIndices.value[0] ?? -1;
+    setHighlight(first);
 });
 
 function handleCreate(e: Event) {
@@ -466,15 +424,8 @@ const showPlaceholder = computed(() => {
     return true;
 });
 
-/**
- * Whether the searchable <input> should be visible.
- *
- * - Always invisible when not `searchable` (the <button> trigger is used).
- * - Always visible in `multiple` mode (the input lives alongside the tags).
- * - In single mode it's visible only while actively searching, or when no
- *   value is selected — otherwise the `vue-select-single-value` span owns
- *   the visual slot and stacking both would double-render the label.
- */
+// Hide the search input in single mode once a value is selected, so its
+// placeholder doesn't stack on top of `vue-select-single-value`.
 const showSearchInput = computed(() => {
     if (!props.searchable) return false;
     if (props.multiple) return true;
@@ -502,21 +453,13 @@ const activeOptionId = computed(() => {
     return `${rootId.value}-opt-${highlightedIndex.value}`;
 });
 
-// Per WAI-ARIA, `aria-labelledby` takes precedence over `aria-label`. Setting
-// both is permitted but flagged by some linters as a conflict. We pick exactly
-// one: an external `<label>` (preferred) → labelledby, otherwise → label.
+// Pick one of aria-labelledby / aria-label; setting both makes ARIA linters complain.
 const listboxLabelledBy = computed(() => (props.label ? labelId.value : undefined));
 const listboxAriaLabel = computed(() => {
     if (listboxLabelledBy.value) return undefined;
     return props.listboxLabel ?? props.placeholder;
 });
 
-/**
- * Screen-reader announcement of the current selection. For non-searchable mode
- * this becomes part of the combobox's accessible name (via aria-labelledby).
- * For searchable mode it's referenced via aria-describedby only when the
- * search input is empty — otherwise the typed query is what the user cares about.
- */
 const valueAnnouncement = computed(() => {
     if (props.multiple) {
         const n = selectedTags.value.length;
@@ -551,20 +494,7 @@ const triggerDescribedBy = computed(() => {
     return parts.length ? parts.join(' ') : undefined;
 });
 
-const resolvedLabels = computed(() => ({
-    clear: props.labels?.clear ?? 'Clear selection',
-    removeItem: props.labels?.removeItem ?? ((label: string) => `Remove ${label}`),
-    noResults: props.labels?.noResults ?? 'No results.',
-    addChild: props.labels?.addChild ?? 'Add child item',
-    resultsCount: props.labels?.resultsCount ?? ((count: number) =>
-        count === 0 ? 'No results available.' : `${count} result${count === 1 ? '' : 's'} available.`),
-    loading: props.labels?.loading ?? 'Loading…',
-    typeToSearch: props.labels?.typeToSearch ?? ((min: number) =>
-        `Type at least ${min} character${min === 1 ? '' : 's'} to search.`),
-    expand: props.labels?.expand ?? ((label: string) => `Expand ${label}`),
-    collapse: props.labels?.collapse ?? ((label: string) => `Collapse ${label}`),
-    addChildTo: props.labels?.addChildTo ?? ((label: string) => `Add child to ${label}`)
-}));
+const resolvedLabels = computed(() => ({ ...defaultLabels, ...props.labels }));
 
 const navigableCount = computed(() =>
     visibleOptions.value.filter(o => !o.isGroup && !o.isCreator && !o.disabled).length
@@ -615,9 +545,6 @@ function onRemoveTag(value: SelectValue, e: Event) {
     focusTrigger();
 }
 
-// HTML5 form validation: when `required` + `validateOnSubmit` are on and the
-// model is empty, set a custom validity message so form submission is blocked
-// by the browser. The validation surface is a 1×1 invisible focusable input.
 const isModelEmpty = computed(() =>
     Array.isArray(model.value)
         ? model.value.length === 0
@@ -638,8 +565,8 @@ watch([isModelEmpty, () => props.required, () => props.validateOnSubmit, () => p
     nextTick(syncValidity);
 });
 
-// Bridge focus from the hidden validation input back to the real combobox so the
-// native validation tooltip points at something the user can actually see.
+// The native validation tooltip points at this hidden input; bounce focus
+// back to the visible trigger.
 function onValidationFocus() {
     focusTrigger();
 }
@@ -649,25 +576,14 @@ onBeforeUnmount(() => {
     if (isOpen.value) close();
 });
 
-/**
- * Imperative API for template-ref consumers:
- *
- * ```ts
- * const selectRef = ref<InstanceType<typeof VSelect> | null>(null);
- * selectRef.value?.open();
- * ```
- */
 defineExpose({
     /** Open the listbox (no-op when `disabled`). */
     open,
     /** Close the listbox and cancel any active creator-mode input. */
     close,
-    /**
-     * Move focus to the trigger — the `<button>` in non-searchable mode, or
-     * the `<input>` in searchable mode.
-     */
+    /** Move focus to the trigger (button or input depending on `searchable`). */
     focus: focusTrigger,
-    /** Reset the model: `undefined` in single mode, `[]` in multi mode. */
+    /** Reset the model to `undefined` / `[]`. */
     clear
 });
 </script>

@@ -1,12 +1,10 @@
-/* =====================================================================
-   Vue Select Plus — default theme
-   Customise by overriding the CSS variables below, or toggle dark mode by
-   adding `.vsp-dark` to an ancestor (`.dark` is also honoured for now to
-   match Tailwind, but is planned for removal in v1.0). Use `.vsp-light`
-   to pin a single instance to its light theme inside a `.dark` page.
-   ===================================================================== */
+/*
+ * Vue Select Plus — default theme.
+ *
+ * Toggle dark mode with `.vsp-dark` (or `.dark`, kept for Tailwind parity
+ * until v1.0). `.vsp-light` re-opts a child back into the light theme.
+ */
 
-/* Structural tokens — shared across themes. */
 :root {
     --vs-radius: 6px;
     --vs-radius-sm: 4px;
@@ -15,16 +13,13 @@
     --vs-z-menu: 50;
     --vs-control-height: 2.5rem;
     --vs-font-size: 0.875rem;
+    --vs-tree-indent-step: 1.25rem;
+    --vs-tree-indent-base: 0.5rem;
+    --vs-tree-toggle-gap: 0.25rem;
     --vs-danger: #dc2626;
     --vs-danger-soft: rgba(220, 38, 38, 0.15);
 }
 
-/*
- * Light theme tokens. Applied at `:root` so they win by default, and also at
- * `.vsp-light` so a child instance can reclaim the light theme inside a
- * `.dark` / `.vsp-dark` ancestor. Listed once to keep the two selectors in
- * lockstep.
- */
 :root,
 .vsp-light {
     --vs-primary: #2563eb;
@@ -57,43 +52,6 @@
                       0 4px 6px -4px rgba(0, 0, 0, 0.1);
 }
 
-/*
- * Class-based dark mode only.
- *
- * Up to 0.1.0 the default styles also flipped to dark via
- * `@media (prefers-color-scheme: dark)`. That was surprising in real apps:
- * VitePress, Tailwind (default class mode), Nuxt UI and friends all toggle
- * a `.dark` class on `<html>` and *remove* it for light mode — they never
- * apply a `.light` class. So when the host was light but the user's OS
- * preferred dark, `<VSelect>` flipped on its own, against the app's
- * explicit choice.
- *
- * The component now follows the host class only. If you want automatic
- * system-preference switching, add this one-liner to your global CSS:
- *
- *     @media (prefers-color-scheme: dark) {
- *         :root { ... copy the .vsp-dark block below ... }
- *     }
- *
- * — or simply toggle `.vsp-dark` on `<html>` yourself.
- */
-
-/*
- * Class-based dark override (works even without media query).
- *
- * `.vsp-dark` is the recommended, component-namespaced class. `.dark` is also
- * supported for now to match Tailwind's default dark-mode selector — BUT this
- * causes Vue Select Plus to flip its theme any time Tailwind does, even if
- * that wasn't your intent.
- *
- * The `.dark` mapping is planned to be removed in v1.0. Migrate to `.vsp-dark`,
- * or set the CSS variables yourself if you need finer control:
- *
- *     :root.your-app-dark {
- *         --vs-bg: ...;
- *         --vs-text: ...;
- *     }
- */
 .vsp-dark,
 .dark {
     --vs-primary: #3b82f6;
@@ -411,6 +369,8 @@
     overflow-y: auto;
     padding-block: 0.25rem;
     list-style: none;
+    min-inline-size: var(--vs-menu-min-width, var(--vsp-menu-control-width, 0));
+    max-block-size: var(--vs-menu-max-height, var(--vsp-menu-available-height, none));
     /* When teleported to <body>, ensure the menu inherits our font. */
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
                  "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -532,9 +492,9 @@
 }
 
 .vue-select-toggle {
-    inline-size: 1.25rem;
-    block-size: 1.25rem;
-    margin-inline-end: 0.25rem;
+    inline-size: var(--vs-tree-indent-step);
+    block-size: var(--vs-tree-indent-step);
+    margin-inline-end: var(--vs-tree-toggle-gap);
 }
 
 .vue-select-toggle:hover {
@@ -551,7 +511,7 @@
 }
 
 .vue-select-spacer {
-    inline-size: 1.5rem;
+    inline-size: calc(var(--vs-tree-indent-step) + var(--vs-tree-toggle-gap));
     display: inline-block;
 }
 

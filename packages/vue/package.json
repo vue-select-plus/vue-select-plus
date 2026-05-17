@@ -1,7 +1,7 @@
 {
     "name": "@vue-select-plus/vue",
     "version": "0.1.0",
-    "description": "The official Vue 3 component for Vue Select Plus. Enterprise-grade, headless, and accessible.",
+    "description": "Accessible, headless Vue 3 select component (combobox, multi-select, tree, async).",
     "keywords": [
         "vue",
         "vue3",

@@ -5,22 +5,20 @@
 [![Bundle size](https://img.shields.io/bundlephobia/minzip/@vue-select-plus/vue?label=gzipped&style=flat-square)](https://bundlephobia.com/package/@vue-select-plus/vue)
 [![TypeScript](https://img.shields.io/badge/Written%20in-TypeScript-3178C6?style=flat-square)](https://www.typescriptlang.org/)
 
-The Vue 3 component for **Vue Select Plus** — an accessible, headless, enterprise-ready select.
+An accessible, headless select component for Vue 3.
 
-📘 **Docs**: <https://vue-select-plus.github.io/vue-select-plus/>
+Docs: <https://vue-select-plus.github.io/vue-select-plus/>
 
-## Highlights
+## Features
 
-- 🦾 **WAI-ARIA 1.2 combobox pattern** — proper roles, labels, focus management, live regions.
-- 🌲 **Tree support** — infinite nesting with keyboard expand/collapse navigation.
-- 🔍 **Searchable** — client filtering out of the box, or server-side via `@search` + `:filterable="false"`.
-- ⏳ **Async-ready** — `loading`, `aria-busy`, debounce, min-search-length.
-- 🏷️ **Multi-select** — tags with keyboard-reachable remove buttons.
-- 🪟 **Floating UI** — auto-flip, viewport-aware, teleports to `<body>` to escape clipping.
-- 📋 **Native form integration** — pass `name`, get hidden `<input>`s that serialize via `FormData`.
-- 🎨 **Themeable** — CSS variables, automatic dark mode, `forced-colors`, `prefers-reduced-motion`.
-- 🚀 **Virtualized** — handles 100k+ options without lag.
-- 🦺 **TypeScript-first** — strict types, SSR-safe IDs via Vue 3.5's `useId()`.
+- WAI-ARIA 1.2 combobox pattern with full keyboard support.
+- Single, multi, and tree selection.
+- Client filtering, or server-side via `@search` + `:filterable="false"`.
+- Floating UI positioning with teleport to `<body>`.
+- Native form integration via hidden `<input>`s and `FormData`.
+- CSS-variable theming, dark mode, `forced-colors`, `prefers-reduced-motion`.
+- Virtualised list for large option sets.
+- TypeScript types and SSR-safe IDs (Vue 3.5 `useId()`).
 
 ## Install
 
@@ -28,10 +26,9 @@ The Vue 3 component for **Vue Select Plus** — an accessible, headless, enterpr
 npm install @vue-select-plus/vue
 ```
 
-Requires **Vue 3.5+**. The default stylesheet ships inside this package — no
-separate install needed. (If you prefer to install it explicitly,
-`@vue-select-plus/styles` is still available; both paths resolve to the
-same CSS.)
+Requires Vue 3.5 or newer. The default stylesheet is bundled inside the
+package; `@vue-select-plus/styles` still publishes the same file separately
+if you prefer to install it explicitly.
 
 ## Quickstart
 
