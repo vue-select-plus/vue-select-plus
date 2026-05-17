@@ -22,6 +22,7 @@ interface Props {
     setSize?: number;
     /** 1-based position inside the navigable set. Exposed via `aria-posinset`. */
     posInSet?: number;
+    creatable?: boolean;
     expandLabel?: (label: string) => string;
     collapseLabel?: (label: string) => string;
     addChildLabel?: (label: string) => string;
@@ -115,7 +116,7 @@ function onOptionClick() {
             </slot>
         </div>
 
-        <div v-if="!option.disabled && hasChildren" class="vue-select-actions">
+        <div v-if="creatable && !option.disabled && hasChildren" class="vue-select-actions">
             <button
                 type="button"
                 class="vue-select-action-btn"

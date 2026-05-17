@@ -153,6 +153,13 @@ interface VSelectProps {
      * Defaults to `'Please select an item.'` when omitted.
      */
     validationMessage?: string;
+    /**
+     * Show the inline `+` handle on tree nodes for creating a new child.
+     * The component fires `@create({ parent, value })`; the parent owns the
+     * data and is responsible for appending the new option.
+     * @default false
+     */
+    creatable?: boolean;
 }
 
 const props = withDefaults(defineProps<VSelectProps>(), {
@@ -172,12 +179,9 @@ const props = withDefaults(defineProps<VSelectProps>(), {
     searchDebounce: 0,
     size: 'md',
     autocomplete: 'off',
-    validateOnSubmit: true
+    validateOnSubmit: true,
+    creatable: false
 });
-
-if (!props.options) {
-    throw new TypeError('VSelect: the `options` prop is required.');
-}
 
 const model = defineModel<SelectModelValue>({ required: false });
 
@@ -229,7 +233,7 @@ const {
     clear,
     setHighlight
 } = useSelect({
-    options: toRef(props, 'options'),
+    options: () => props.options ?? [],
     modelValue: model,
     multiple: toRef(props, 'multiple'),
     searchable: toRef(props, 'searchable'),
@@ -885,6 +889,7 @@ defineExpose({
                             :collapsed="visibleOptions[virtualRow.index]!.value !== undefined && collapsedValues.has(visibleOptions[virtualRow.index]!.value!)"
                             :set-size="navigableCount"
                             :pos-in-set="virtualRow.index + 1"
+                            :creatable="creatable"
                             :expand-label="resolvedLabels.expand"
                             :collapse-label="resolvedLabels.collapse"
                             :add-child-label="resolvedLabels.addChildTo"

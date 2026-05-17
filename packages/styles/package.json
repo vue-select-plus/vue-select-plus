@@ -28,7 +28,8 @@
     "files": [
         "src",
         "LICENSE",
-        "README.md"
+        "README.md",
+        "CHANGELOG.md"
     ],
     "exports": {
         ".": "./src/style.css"
