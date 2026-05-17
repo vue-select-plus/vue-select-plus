@@ -3,7 +3,7 @@
 <script setup>
 import { ref } from 'vue'
 import { VSelect } from '@vue-select-plus/vue'
-import '@vue-select-plus/vue/styles.css'
+import '@vue-select-plus/styles'
 
 const fruits = [
     { value: 'apple', label: 'Apple' },

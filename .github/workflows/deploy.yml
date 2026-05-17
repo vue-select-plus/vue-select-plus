@@ -33,6 +33,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Docs import from `@vue-select-plus/vue` (and indirectly its
+      # `./styles.css` subpath); both resolve via the published `exports`
+      # field which points into `dist/`. Build the lib workspaces first.
+      - name: Build library packages
+        run: npm run build -w @vue-select-plus/core -w @vue-select-plus/vue
+
       - name: Build with VitePress
         run: npm run build -w docs
 
