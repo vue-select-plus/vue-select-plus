@@ -15,9 +15,13 @@ export interface SelectOption {
 
 /** Flattened, depth-tagged shape produced internally and exposed via `visibleOptions`. */
 export interface FlatOption extends SelectOption {
+    /** 0-based depth in the tree. */
     depth: number;
+    /** `true` when this row is a group header (rendered, not selectable). */
     isGroup: boolean;
+    /** `true` when this row is the inline creator-mode input placeholder. */
     isCreator?: boolean;
+    /** Value of the tree-node parent (only set on creator and child rows). */
     parentValue?: SelectValue;
     key: string | number;
 }

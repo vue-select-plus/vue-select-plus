@@ -6,6 +6,14 @@ import { useSelection } from './useSelection';
 import { useOptions } from './useOptions';
 import { useKeyboard } from './useKeyboard';
 
+/**
+ * Configuration accepted by {@link useSelect}.
+ *
+ * Every option (except `modelValue`, which must be a writable `Ref`) accepts
+ * a `MaybeRefOrGetter` — a plain value, a `ref`, a `computed`, or a getter
+ * function. Pick whatever matches your reactivity needs; the implementation
+ * reads each input with `toValue()`.
+ */
 export interface UseSelectProps {
     options: MaybeRefOrGetter<ReadonlyArray<SelectOption>>;
     /** Writable ref — a `defineModel()` result or a `ref(initial)`. */
@@ -158,33 +166,62 @@ export function useSelect(props: UseSelectProps) {
     });
 
     return {
+        /** `true` while the listbox is open. Read-write. */
         isOpen,
+        /** Current search query string. Read-write; clearing this resets filtering. */
         searchQuery,
         /** `aria-activedescendant` target index into `visibleOptions`, or `-1`. */
         highlightedIndex,
+        /** Set of tree-node values that are currently collapsed. Read-write. */
         collapsedValues,
+        /** Parent value of the active creator-mode input, or `null` when inactive. */
         creatorParentValue,
+        /**
+         * Flattened, filtered, collapse-aware option list. Recomputed when
+         * any of `options`, `searchQuery`, or `collapsedValues` changes.
+         */
         visibleOptions,
         /** Indices into `visibleOptions` that can receive keyboard highlight. */
         navigableIndices,
         /** `value → label` lookup for rendering tags / single-value displays. */
         labelMap,
 
+        /**
+         * Open the listbox. No-op when `disabled`. Also pre-highlights the
+         * currently-selected option (or the first navigable one).
+         */
         open,
+        /** Close the listbox and cancel any active creator-mode input. */
         close: closeWithCleanup,
+        /** Toggle open/closed. */
         toggle: toggleMenu,
         /** WAI-ARIA 1.2 combobox keyboard handler. Wire to `@keydown`. */
         onKeyDown,
+        /** Expand / collapse a tree node by its `value`. */
         toggleCollapse,
+        /** Move the active descendant to an index in `visibleOptions`. */
         setHighlight,
 
+        /** Predicate: is this value part of the current model? */
         isSelected,
+        /**
+         * Apply a selection. In multi mode this toggles the value;
+         * in single mode it sets the value and calls `close()`.
+         */
         handleSelect,
+        /** Remove one value from the model. */
         removeValue,
+        /** Pop the last value from a multi-mode model. No-op otherwise. */
         removeLast,
+        /** Reset the model: `undefined` in single mode, `[]` in multi mode. */
         clear,
 
+        /**
+         * Start the inline creator under a tree node. Auto-expands the parent
+         * first if it's currently collapsed.
+         */
         startCreator,
+        /** Dismiss the active creator-mode input. */
         cancelCreator
     };
 }

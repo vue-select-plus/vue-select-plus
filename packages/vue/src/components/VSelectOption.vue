@@ -5,12 +5,22 @@ import type { FlatOption, SelectValue } from '@vue-select-plus/core';
 // Internal row renderer. Public customisation goes through the `option`,
 // `toggle-icon`, and `add-icon` slots on <VSelect>.
 interface Props {
+    /** The flattened option to render (already enriched with depth/grouping). */
     option: FlatOption;
+    /** `true` when this row is the current `aria-activedescendant` target. */
     active: boolean;
+    /** `true` when this row's value is part of the model. */
     selected: boolean;
+    /** `true` when this option's children are currently hidden in the tree. */
     collapsed: boolean;
+    /** DOM id referenced by the combobox's `aria-activedescendant`. */
     id: string;
+    /**
+     * Total number of *navigable* siblings (groups, disabled rows, and the
+     * creator placeholder are excluded). Exposed via `aria-setsize`.
+     */
     setSize?: number;
+    /** 1-based position inside the navigable set. Exposed via `aria-posinset`. */
     posInSet?: number;
     expandLabel?: (label: string) => string;
     collapseLabel?: (label: string) => string;

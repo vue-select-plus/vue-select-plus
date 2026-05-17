@@ -31,12 +31,21 @@ import VSelectOption from './VSelectOption.vue';
 
 /** Localisable strings. Anything you omit falls back to its English default. */
 interface VSelectLabels {
+    /** Accessible label on the clear (×) button. @default 'Clear selection' */
     clear?: string;
+    /**
+     * Accessible label on each tag's remove button. Called once per visible
+     * tag with the tag's own label.
+     * @default (label) => `Remove ${label}`
+     */
     removeItem?: (label: string) => string;
+    /** Shown in the menu when the option list is empty. @default 'No results.' */
     noResults?: string;
+    /** Accessible label on the "+" creator-mode button on tree rows. @default 'Add child item' */
     addChild?: string;
     /** Announced via the polite live region whenever the result count changes. */
     resultsCount?: (count: number) => string;
+    /** Announced + rendered in the menu when `loading` is true. @default 'Loading…' */
     loading?: string;
     /** Shown when the typed query is shorter than `minSearchLength`. */
     typeToSearch?: (min: number) => string;
@@ -172,6 +181,14 @@ if (!props.options) {
 
 const model = defineModel<SelectModelValue>({ required: false });
 
+/**
+ * Component events — Vue 3.3+ short-hand tuple syntax.
+ *
+ * Note: Vue's generated component type widens emit handler return values to
+ * `any` regardless of how they're declared. That's a framework decision
+ * (template `@event="…"` callbacks may return any value). The arg types
+ * stay correct — only the return type is `any` in the emitted `.d.ts`.
+ */
 const emit = defineEmits<{
     /**
      * Emitted when the user submits the creator-mode input (Enter on the
@@ -536,6 +553,14 @@ onBeforeUnmount(() => {
     if (isOpen.value) close();
 });
 
+/**
+ * Imperative API for template-ref consumers:
+ *
+ * ```ts
+ * const selectRef = ref<InstanceType<typeof VSelect> | null>(null);
+ * selectRef.value?.open();
+ * ```
+ */
 defineExpose({
     /** Open the listbox (no-op when `disabled`). */
     open,
