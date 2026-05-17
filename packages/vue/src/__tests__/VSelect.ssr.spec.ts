@@ -61,6 +61,17 @@ describe('VSelect — SSR smoke', () => {
         expect(html).toContain('value="apple"');
     });
 
+    // Nuxt's useFetch can hand back `null` on a failed initial fetch, and
+    // async data resolution puts plain `undefined` in front of the first
+    // server render. Either way the component must survive — throwing here
+    // takes down the whole SSR response.
+    it('survives a missing options prop without throwing', async () => {
+        for (const opts of [undefined, null]) {
+            const html = await render({ options: opts, label: 'Fruit', teleport: false });
+            expect(html).toContain('role="combobox"');
+        }
+    });
+
     it('does not leak Math.random ids — same options give the same id seed across renders', async () => {
         // useId() should produce deterministic-ish ids in SSR per app, not Math.random based.
         const a = await render({ options: fruits, label: 'Fruit', teleport: false });

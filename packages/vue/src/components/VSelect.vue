@@ -166,10 +166,6 @@ const props = withDefaults(defineProps<VSelectProps>(), {
     validateOnSubmit: true
 });
 
-if (!props.options) {
-    throw new TypeError('VSelect: the `options` prop is required.');
-}
-
 const model = defineModel<SelectModelValue>({ required: false });
 
 const emit = defineEmits<{
@@ -212,7 +208,7 @@ const {
     clear,
     setHighlight
 } = useSelect({
-    options: toRef(props, 'options'),
+    options: () => props.options ?? [],
     modelValue: model,
     multiple: toRef(props, 'multiple'),
     searchable: toRef(props, 'searchable'),
