@@ -6,7 +6,6 @@ import type { SelectOption } from '@vue-select-plus/core';
 
 import '@vue-select-plus/styles';
 
-// --- MOCK DATA ---
 const fruitOptions: SelectOption[] = [
     { value: 'apple', label: 'Apple' },
     { value: 'banana', label: 'Banana' },

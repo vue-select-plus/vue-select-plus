@@ -84,9 +84,7 @@
                       0 4px 6px -4px rgba(0, 0, 0, 0.4);
 }
 
-/* =====================================================================
-   Root container
-   ===================================================================== */
+/* Root container */
 .vue-select-root {
     position: relative;
     inline-size: 100%;
@@ -112,9 +110,7 @@
     pointer-events: none;
 }
 
-/* =====================================================================
-   Label
-   ===================================================================== */
+/* Label */
 .vue-select-label {
     display: block;
     margin-block-end: 0.375rem;
@@ -129,9 +125,7 @@
     margin-inline-start: 0.125rem;
 }
 
-/* =====================================================================
-   Control (trigger wrapper)
-   ===================================================================== */
+/* Control (trigger wrapper) */
 .vue-select-control {
     display: flex;
     align-items: stretch;
@@ -171,9 +165,7 @@
     box-shadow: 0 0 0 3px var(--vs-danger-soft);
 }
 
-/* =====================================================================
-   Content area
-   ===================================================================== */
+/* Content area */
 .vue-select-content {
     display: flex;
     flex: 1 1 auto;
@@ -198,9 +190,7 @@
     user-select: none;
 }
 
-/* =====================================================================
-   Combobox surfaces
-   ===================================================================== */
+/* Combobox surfaces */
 .vue-select-input {
     border: none;
     background: transparent;
@@ -222,15 +212,7 @@
     color: var(--vs-text-disabled);
 }
 
-/*
- * The non-searchable trigger is a real <button role="combobox"> — but the
- * visible "trigger surface" is the wrapping `.vue-select-control`. The button
- * therefore needs to be focus-target-only: present in the accessibility tree,
- * not in the visual layout. We hide it via the standard sr-only pattern.
- *
- * Clicks on the wrapper call `focusTrigger()` which programmatically focuses
- * this hidden button; the focus ring lives on `.vue-select-control:focus-within`.
- */
+/* Visually-hidden focus target; the focus ring lives on .vue-select-control. */
 .vue-select-button {
     position: absolute;
     inline-size: 1px;
@@ -254,9 +236,7 @@
     padding: 0;
 }
 
-/* =====================================================================
-   Tags
-   ===================================================================== */
+/* Tags */
 .vue-select-tag {
     display: inline-flex;
     align-items: center;
@@ -303,9 +283,7 @@
     box-shadow: var(--vs-focus-ring);
 }
 
-/* =====================================================================
-   Indicators
-   ===================================================================== */
+/* Indicators */
 .vue-select-indicators {
     display: flex;
     align-items: center;
@@ -355,12 +333,8 @@
     transform: rotate(180deg);
 }
 
-/* =====================================================================
-   Menu / Listbox
-   Positioned via Floating UI (inline styles); CSS only provides theming.
-   ===================================================================== */
+/* Menu / Listbox. Position is owned by Floating UI; CSS sets theme + sizing. */
 .vue-select-menu {
-    /* Position is set by Floating UI's `floatingStyles` — do not override here. */
     background-color: var(--vs-bg-elevated);
     border: 1px solid var(--vs-border);
     border-radius: var(--vs-radius);
@@ -371,7 +345,7 @@
     list-style: none;
     min-inline-size: var(--vs-menu-min-width, var(--vsp-menu-control-width, 0));
     max-block-size: var(--vs-menu-max-height, var(--vsp-menu-available-height, none));
-    /* When teleported to <body>, ensure the menu inherits our font. */
+    /* Inherit font when teleported to <body>. */
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
                  "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: var(--vs-font-size);
@@ -401,9 +375,7 @@
     color: var(--vs-text);
 }
 
-/* =====================================================================
-   Loading spinner
-   ===================================================================== */
+/* Loading spinner */
 .vue-select-spinner {
     display: inline-flex;
     align-items: center;
@@ -431,9 +403,7 @@
     }
 }
 
-/* =====================================================================
-   Options
-   ===================================================================== */
+/* Options */
 .vue-select-option {
     position: relative;
     display: flex;
@@ -475,9 +445,7 @@
     background-color: transparent;
 }
 
-/* =====================================================================
-   Tree (expand / actions)
-   ===================================================================== */
+/* Tree (expand / actions) */
 .vue-select-toggle,
 .vue-select-action-btn {
     appearance: none;
@@ -549,9 +517,7 @@
     background-color: var(--vs-bg-hover);
 }
 
-/* =====================================================================
-   Groups
-   ===================================================================== */
+/* Groups */
 .vue-select-group {
     padding-block: 0.5rem;
     padding-inline: 0.75rem;
@@ -569,9 +535,7 @@
     border-block-start: none;
 }
 
-/* =====================================================================
-   Creator
-   ===================================================================== */
+/* Creator */
 .vue-select-creator {
     padding-block: 0.25rem;
     padding-inline: 0.5rem;
@@ -590,9 +554,7 @@
     box-shadow: var(--vs-focus-ring);
 }
 
-/* =====================================================================
-   Error message
-   ===================================================================== */
+/* Error message */
 .vue-select-error-msg {
     display: block;
     margin-block-start: 0.25rem;
@@ -601,9 +563,7 @@
     color: var(--vs-danger);
 }
 
-/* =====================================================================
-   Screen-reader only utility
-   ===================================================================== */
+/* Screen-reader only utility */
 .vue-select-sr-only {
     position: absolute;
     inline-size: 1px;
@@ -616,11 +576,7 @@
     border: 0;
 }
 
-/* =====================================================================
-   HTML5 form validation input
-   Invisible, but focusable so the browser can target it with its native
-   validation tooltip when the form is submitted with an empty `required` field.
-   ===================================================================== */
+/* Focusable target for the browser's native validation tooltip. */
 .vue-select-validation {
     position: absolute;
     inset-block-start: 0;
@@ -629,13 +585,10 @@
     block-size: 1px;
     opacity: 0;
     pointer-events: none;
-    /* Keep it inside the layout so the browser's tooltip anchors near the control. */
     z-index: -1;
 }
 
-/* =====================================================================
-   Size variants
-   ===================================================================== */
+/* Size variants */
 .vue-select-root--sm {
     --vs-control-height: 2rem;
     --vs-font-size: 0.8125rem;
@@ -686,15 +639,7 @@
     padding-inline: 1rem;
 }
 
-/* =====================================================================
-   Open / close transitions
-
-   The menu uses Floating UI's `floatingStyles` which set `transform` on the
-   element's inline style for positioning. Animating `transform` here would
-   stomp the positioning during enter/leave and the menu would visually jump
-   to (0, 0). We therefore only animate `opacity` — Floating UI keeps full
-   control of position.
-   ===================================================================== */
+/* Animate opacity only — `transform` is owned by Floating UI for positioning. */
 .vue-select-menu-enter-active,
 .vue-select-menu-leave-active {
     transition: opacity 120ms ease;
@@ -712,9 +657,7 @@
     }
 }
 
-/* =====================================================================
-   Motion preferences
-   ===================================================================== */
+/* Motion preferences */
 @media (prefers-reduced-motion: reduce) {
     .vue-select-root,
     .vue-select-root *,
@@ -726,9 +669,7 @@
     }
 }
 
-/* =====================================================================
-   Windows High Contrast / forced colors
-   ===================================================================== */
+/* Windows High Contrast / forced colors */
 @media (forced-colors: active) {
     .vue-select-control,
     .vue-select-menu,

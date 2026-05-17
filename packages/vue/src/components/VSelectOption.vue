@@ -2,45 +2,26 @@
 import { computed } from 'vue';
 import type { FlatOption, SelectValue } from '@vue-select-plus/core';
 
-/**
- * Internal renderer used by `<VSelect>` for every row in the virtualized
- * listbox. Not part of the public component API — consumers customize via
- * the `option`, `toggle-icon`, `add-icon` slots on `<VSelect>` instead.
- */
+// Internal row renderer. Public customisation goes through the `option`,
+// `toggle-icon`, and `add-icon` slots on <VSelect>.
 interface Props {
-    /** The flattened option to render (already enriched with depth/grouping). */
     option: FlatOption;
-    /** `true` when this row is the current `aria-activedescendant` target. */
     active: boolean;
-    /** `true` when this row's value is part of the model. */
     selected: boolean;
-    /** `true` when this option's children are currently hidden in the tree. */
     collapsed: boolean;
-    /** DOM id referenced by the combobox's `aria-activedescendant`. */
     id: string;
-    /**
-     * Total number of *navigable* siblings (groups, disabled rows, and the
-     * creator placeholder are excluded). Exposed via `aria-setsize`.
-     */
     setSize?: number;
-    /** 1-based position inside the navigable set. Exposed via `aria-posinset`. */
     posInSet?: number;
-    /** Localized formatter for the tree expand button's accessible label. */
     expandLabel?: (label: string) => string;
-    /** Localized formatter for the tree collapse button's accessible label. */
     collapseLabel?: (label: string) => string;
-    /** Localized formatter for the "+" creator-mode button's accessible label. */
     addChildLabel?: (label: string) => string;
 }
 
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-    /** Fired when the user clicks the row body. The host calls `handleSelect`. */
     click: [option: FlatOption];
-    /** Fired when the user clicks the tree-expand chevron. Payload is the row's value. */
     toggle: [value: SelectValue];
-    /** Fired when the user clicks the "+" add-child button. Payload is the parent's value. */
     'add-child': [value: SelectValue];
 }>();
 

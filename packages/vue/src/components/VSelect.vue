@@ -29,53 +29,19 @@ import {
 } from '@vue-select-plus/core';
 import VSelectOption from './VSelectOption.vue';
 
-/**
- * Localizable text used by the component. Every key is optional — anything
- * you omit falls back to its English default. Used for screen-reader
- * announcements and visible-but-low-prominence UI like the clear button.
- */
+/** Localisable strings. Anything you omit falls back to its English default. */
 interface VSelectLabels {
-    /** Accessible label on the clear (×) button. @default 'Clear selection' */
     clear?: string;
-    /**
-     * Accessible label on each tag's remove button. Called once per visible
-     * tag with the tag's own label.
-     * @default (label) => `Remove ${label}`
-     */
     removeItem?: (label: string) => string;
-    /** Shown in the menu when the option list is empty. @default 'No results.' */
     noResults?: string;
-    /** Accessible label on the "+" creator-mode button on tree rows. @default 'Add child item' */
     addChild?: string;
-    /**
-     * Announced via the polite live region whenever the navigable result count
-     * changes (search, filtering, options updates).
-     * @default (n) => `${n} result(s) available.`
-     */
+    /** Announced via the polite live region whenever the result count changes. */
     resultsCount?: (count: number) => string;
-    /** Announced + rendered in the menu when `loading` is true. @default 'Loading…' */
     loading?: string;
-    /**
-     * Announced + rendered in the menu when the typed query is shorter than
-     * `minSearchLength`. Receives the configured minimum.
-     * @default (min) => `Type at least ${min} character(s) to search.`
-     */
+    /** Shown when the typed query is shorter than `minSearchLength`. */
     typeToSearch?: (min: number) => string;
-    /**
-     * Accessible label on the expand button of a collapsed tree node.
-     * @default (label) => `Expand ${label}`
-     */
     expand?: (label: string) => string;
-    /**
-     * Accessible label on the collapse button of an expanded tree node.
-     * @default (label) => `Collapse ${label}`
-     */
     collapse?: (label: string) => string;
-    /**
-     * Accessible label on the "+" creator-mode button. Receives the parent
-     * row's label.
-     * @default (label) => `Add child to ${label}`
-     */
     addChildTo?: (label: string) => string;
 }
 
@@ -254,7 +220,6 @@ const {
     filterable: toRef(props, 'filterable')
 });
 
-// --- IDs (SSR-safe) ---
 const autoId = useId();
 const rootId = computed(() => props.id ?? `vsp-${autoId}`);
 const listboxId = computed(() => `${rootId.value}-listbox`);
@@ -263,7 +228,6 @@ const errorId = computed(() => `${rootId.value}-error`);
 const statusId = computed(() => `${rootId.value}-status`);
 const valueId = computed(() => `${rootId.value}-value`);
 
-// --- Refs ---
 const containerRef = useTemplateRef<HTMLElement>('container');
 const controlRef = useTemplateRef<HTMLElement>('control');
 const listRef = useTemplateRef<HTMLElement>('list');
@@ -271,7 +235,6 @@ const inputRef = useTemplateRef<HTMLInputElement>('input');
 const buttonRef = useTemplateRef<HTMLButtonElement>('button');
 const validationRef = useTemplateRef<HTMLInputElement>('validation');
 
-// --- Floating UI ---
 const { floatingStyles, placement: actualPlacement } = useFloating(controlRef, listRef, {
     open: isOpen,
     placement: computed(() => props.placement),
@@ -298,7 +261,6 @@ const teleportTarget = computed(() => {
     return props.teleport;
 });
 
-// --- Virtualizer ---
 const rowVirtualizer = useVirtualizer({
     get count() { return visibleOptions.value.length; },
     getScrollElement: () => listRef.value,
@@ -311,7 +273,7 @@ const setCreatorInput = (el: unknown) => {
     if (el instanceof HTMLInputElement) activeCreatorInput.value = el;
 };
 
-// Include `listRef` so clicks inside the teleported menu aren't treated as outside.
+// listRef is in the outside list so clicks inside the teleported menu don't close it.
 useClickOutside([containerRef, listRef], () => {
     if (isOpen.value) close();
 });
@@ -333,7 +295,6 @@ watch(isOpen, async (val, prev) => {
         }
     } else if (prev) {
         emit('close');
-        // Return focus to the trigger when the menu closes via keyboard/clickoutside.
         await nextTick();
         if (document.activeElement === document.body) {
             focusTrigger();
@@ -353,8 +314,7 @@ watch(creatorParentValue, async (val) => {
     }
 });
 
-// Debounced `@search` emission. Internal `searchQuery` always updates immediately
-// so the input stays responsive — only the outbound event is throttled.
+// Internal `searchQuery` updates synchronously; only the outbound emit is debounced.
 let searchEmitTimer: ReturnType<typeof setTimeout> | null = null;
 let lastEmittedQuery: string | null = null;
 

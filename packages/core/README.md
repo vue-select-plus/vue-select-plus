@@ -4,17 +4,17 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](./LICENSE)
 [![Bundle size](https://img.shields.io/bundlephobia/minzip/@vue-select-plus/core?label=gzipped&style=flat-square)](https://bundlephobia.com/package/@vue-select-plus/core)
 
-The **headless engine** behind Vue Select Plus. Selection state, search, keyboard navigation, tree flattening, virtualisation-friendly option lists — without any UI.
+The headless engine behind Vue Select Plus: selection state, search,
+keyboard navigation, tree flattening, virtualisation-friendly option lists.
+No UI.
 
-📘 **Docs**: <https://vue-select-plus.github.io/vue-select-plus/core/getting-started>
+Docs: <https://vue-select-plus.github.io/vue-select-plus/core/getting-started>
 
-## When to use this vs. `@vue-select-plus/vue`
-
-| You want… | Use |
-| :--- | :--- |
-| A complete, accessible `<VSelect>` component | [`@vue-select-plus/vue`](https://www.npmjs.com/package/@vue-select-plus/vue) |
-| Full markup control, exotic UI, custom virtualizer | This package |
-| Selection state for a non-dropdown UI (multi-toggle list, command palette …) | This package |
+If you just want a working `<VSelect>`, use
+[`@vue-select-plus/vue`](https://www.npmjs.com/package/@vue-select-plus/vue).
+Reach for this package when you need your own markup — exotic UI, a custom
+virtualiser, or selection state for something that isn't a dropdown
+(multi-toggle list, command palette, etc.).
 
 ## Install
 

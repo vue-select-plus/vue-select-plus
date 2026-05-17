@@ -7,18 +7,12 @@ interface UseOptionsProps {
     searchable: MaybeRefOrGetter<boolean>;
     creatorParentValue: MaybeRefOrGetter<SelectValue | null>;
     disabled: MaybeRefOrGetter<boolean>;
-    /**
-     * Enables client-side filtering when truthy. Set to `false` for server-driven
-     * search (the parent updates `options` based on the `@search` event).
-     */
+    /** Client-side filtering. Set `false` for server-driven search. */
     filterable?: MaybeRefOrGetter<boolean>;
 }
 
 const CREATOR_VALUE = '__vsp_creator__' as const;
 
-/**
- * Handles option flattening, filtering, and visibility logic.
- */
 export function useOptions({
     options,
     searchQuery,
@@ -28,10 +22,8 @@ export function useOptions({
     filterable
 }: UseOptionsProps) {
 
-    // Annotated explicitly: TypeScript's inference produces a noisy
-    // intersection like `Ref<Set<SelectValue> & Omit<Set<SelectValue>, …>>`
-    // in IDE tooltips. The explicit `Ref<Set<SelectValue>>` keeps the surface
-    // readable for headless consumers.
+    // Explicit annotation: inferring this from `ref(new Set())` produces a
+    // noisy intersection type in IDE tooltips for headless consumers.
     const collapsedValues: Ref<Set<SelectValue>> = ref(new Set());
 
     function toggleCollapse(value: SelectValue | undefined) {
@@ -113,10 +105,6 @@ export function useOptions({
         return flatten(filtered);
     });
 
-    /**
-     * Indices of options that can be highlighted via keyboard. Excludes groups,
-     * disabled options, and creator placeholders.
-     */
     const navigableIndices = computed(() => {
         const indices: number[] = [];
         const list = visibleOptions.value;
@@ -128,10 +116,8 @@ export function useOptions({
         return indices;
     });
 
-    /**
-     * Flat label lookup for every value in the tree. O(n) once per options change
-     * instead of O(n) per call, which matters in multi-select with many tags.
-     */
+    // Built once per options change so multi-tag rendering stays O(n) for the
+    // whole set instead of O(n) per tag.
     const labelMap = computed(() => {
         const map = new Map<SelectValue, string>();
         const walk = (nodes: ReadonlyArray<SelectOption>) => {
