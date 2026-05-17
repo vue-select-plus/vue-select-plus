@@ -1,6 +1,6 @@
 {
     "name": "@vue-select-plus/vue",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "The official Vue 3 component for Vue Select Plus. Enterprise-grade, headless, and accessible.",
     "keywords": [
         "vue",
@@ -55,8 +55,8 @@
     "dependencies": {
         "@floating-ui/vue": "^1.1.11",
         "@tanstack/vue-virtual": "^3.13.13",
-        "@vue-select-plus/core": "^0.1.1",
-        "@vue-select-plus/styles": "^0.1.1"
+        "@vue-select-plus/core": "^0.1.2",
+        "@vue-select-plus/styles": "^0.1.2"
     },
     "devDependencies": {
         "@csstools/css-parser-algorithms": "^3.0.5",
