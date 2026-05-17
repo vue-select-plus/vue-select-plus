@@ -109,7 +109,7 @@ Accessible via template ref (`ref="mySelect"` → `mySelect.value.open()`):
 | <kbd>→</kbd> | Expand current tree node. |
 | <kbd>←</kbd> | Collapse current tree node, or jump to its parent. |
 | <kbd>Enter</kbd> / <kbd>Space</kbd> | Select the highlighted option. |
-| <kbd>Backspace</kbd> | In multi mode with an empty search input (or no input at all): remove the last selected tag. |
+| <kbd>Backspace</kbd> | Empty search input. Single mode: clear the selected value. Multi mode: remove the last selected tag. |
 | <kbd>Escape</kbd> | Close the menu, return focus to the trigger. |
 | <kbd>Tab</kbd> | Close the menu and continue tab order. |
 

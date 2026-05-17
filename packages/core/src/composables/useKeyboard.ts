@@ -19,6 +19,7 @@ interface UseKeyboardProps {
     cancelCreator: () => void;
     setHighlight: (index: number) => void;
     removeLastSelection: () => void;
+    clear: () => void;
     collapsedValues: Ref<Set<SelectValue>>;
 }
 
@@ -39,6 +40,7 @@ export function useKeyboard({
     cancelCreator,
     setHighlight,
     removeLastSelection,
+    clear,
     collapsedValues
 }: UseKeyboardProps) {
 
@@ -94,8 +96,15 @@ export function useKeyboard({
 
         switch (e.key) {
             case 'Backspace':
-                if (toValue(multiple) && searchQuery.value.length === 0) {
-                    removeLastSelection();
+                // Multi: pop the last tag. Single: clear the value. In both
+                // cases only when the search input is empty, so we don't
+                // hijack the user's normal text editing.
+                if (searchQuery.value.length === 0) {
+                    if (toValue(multiple)) {
+                        removeLastSelection();
+                    } else {
+                        clear();
+                    }
                 }
                 break;
 

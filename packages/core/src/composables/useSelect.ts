@@ -162,7 +162,8 @@ export function useSelect(props: UseSelectProps) {
         toggleCollapse,
         cancelCreator,
         setHighlight,
-        removeLastSelection: removeLast
+        removeLastSelection: removeLast,
+        clear
     });
 
     return {

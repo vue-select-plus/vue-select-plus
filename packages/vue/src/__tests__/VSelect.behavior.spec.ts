@@ -105,6 +105,40 @@ describe('VSelect — selection behavior', () => {
         await flushPromises();
         expect(wrapper.find('[role="listbox"]').exists()).toBe(false);
     });
+
+    it('single mode: Backspace clears the value when the search input is empty', async () => {
+        const Host = makeHost(
+            () => ({ options: fruits, label: 'Fruit', searchable: true, teleport: false }),
+            'apple'
+        );
+        const wrapper = mount(Host);
+        await flushPromises();
+        // sanity: model is 'apple'
+        const input = wrapper.find('input[role="combobox"]');
+        await input.trigger('keydown', { key: 'Backspace' });
+        await flushPromises();
+        // value-summary should no longer contain "Apple"
+        const valueId = input.attributes('aria-describedby')?.split(' ').find(id => id.endsWith('-value'))
+            ?? wrapper.find('[role="combobox"]').attributes('aria-labelledby')!.split(' ').pop()!;
+        expect(wrapper.find(`#${valueId}`).text()).not.toContain('Apple');
+    });
+
+    it('single mode: Backspace does not clear while the user is typing', async () => {
+        // Use `name` so we can read the model out of the hidden form input.
+        const Host = makeHost(
+            () => ({ options: fruits, label: 'Fruit', searchable: true, name: 'fruit', teleport: false }),
+            'apple'
+        );
+        const wrapper = mount(Host);
+        await flushPromises();
+        const input = wrapper.find<HTMLInputElement>('input[role="combobox"]');
+        await input.trigger('click');
+        await input.setValue('ap');
+        await input.trigger('keydown', { key: 'Backspace' });
+        await flushPromises();
+        const hidden = wrapper.find<HTMLInputElement>('input[type="hidden"][name="fruit"]');
+        expect(hidden.element.value).toBe('apple');
+    });
 });
 
 describe('VSelect — native form integration', () => {
