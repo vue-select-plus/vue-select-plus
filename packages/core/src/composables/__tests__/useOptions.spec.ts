@@ -112,4 +112,41 @@ describe('useOptions', () => {
         expect(labelMap.value.get('group1')).toBe('Group 1');
         expect(labelMap.value.get('1.1')).toBe('Child 1.1');
     });
+
+    it('keeps labels of values that drop out of options', () => {
+        const opts = ref<SelectOption[]>([
+            { value: 'alice', label: 'Alice' },
+            { value: 'bob', label: 'Bob' }
+        ]);
+        const { labelMap } = useOptions({
+            options: opts,
+            searchQuery: ref(''),
+            searchable: false,
+            creatorParentValue: ref(null),
+            disabled: ref(false)
+        });
+
+        expect(labelMap.value.get('alice')).toBe('Alice');
+
+        // Server search returns a different page — Alice is no longer present.
+        opts.value = [{ value: 'carol', label: 'Carol' }];
+
+        expect(labelMap.value.get('alice')).toBe('Alice');
+        expect(labelMap.value.get('carol')).toBe('Carol');
+    });
+
+    it('lets the current options win when a value reappears with a new label', () => {
+        const opts = ref<SelectOption[]>([{ value: 'x', label: 'Old label' }]);
+        const { labelMap } = useOptions({
+            options: opts,
+            searchQuery: ref(''),
+            searchable: false,
+            creatorParentValue: ref(null),
+            disabled: ref(false)
+        });
+
+        expect(labelMap.value.get('x')).toBe('Old label');
+        opts.value = [{ value: 'x', label: 'New label' }];
+        expect(labelMap.value.get('x')).toBe('New label');
+    });
 });

@@ -236,9 +236,17 @@ link). Hiding the buttons with `display: none` breaks WCAG 2.1.1
 
 **Symptom:** The trigger shows `"u-123"` instead of `"Alice"`.
 
-**Cause:** The option for that value isn't in `options` yet (probably async-fetched).
+**Cause:** The option for that value has *never* been in `options` during
+this component's lifetime. The component keeps a label cache that
+remembers every value it's ever seen, so once an option has been part
+of `options` its label survives later swaps. But the first render of a
+fresh component instance with a v-model that points at a value not
+in the initial `options` array has nothing to look up.
 
-**Fix:** See the ["Restoring the selected value"](./recipes#restoring-the-selected-value-when-options-arrive-late) recipe. Either pre-seed the options array or use the `value` slot.
+**Fix:** Pre-seed `options` with the selected entry, or use the `value`
+slot to render whatever you have on hand. The
+["Restoring the selected value"](./recipes#restoring-the-selected-value-when-options-arrive-late)
+recipe covers both patterns.
 
 ## TypeScript: "Type 'X' is not assignable to type 'SelectModelValue'"
 
