@@ -1,4 +1,4 @@
-import { type Ref, toValue } from 'vue';
+import { type Ref, type MaybeRefOrGetter, toValue } from 'vue';
 import type { SelectOption, SelectModelValue, FlatOption, SelectValue } from '../types';
 import { useSelectState } from './useSelectState';
 import { useCreator } from './useCreator';
@@ -6,16 +6,56 @@ import { useSelection } from './useSelection';
 import { useOptions } from './useOptions';
 import { useKeyboard } from './useKeyboard';
 
+/**
+ * Configuration accepted by {@link useSelect}.
+ *
+ * Every option (except `modelValue`, which must be a writable `Ref`) accepts
+ * a `MaybeRefOrGetter` — a plain value, a `ref`, a `computed`, or a getter
+ * function. Pick whatever matches your reactivity needs; the implementation
+ * reads each input with `toValue()`.
+ */
 export interface UseSelectProps {
-    options: Ref<ReadonlyArray<SelectOption>>;
+    /** The option tree (flat or nested via `children`). */
+    options: MaybeRefOrGetter<ReadonlyArray<SelectOption>>;
+    /**
+     * Two-way-bound model. Pass a writable `Ref` — a `defineModel()` result
+     * in a component, or a `ref(initial)` standalone. Read-only refs would
+     * break selection.
+     */
     modelValue: Ref<SelectModelValue>;
-    multiple: boolean;
-    searchable: boolean;
-    disabled: Ref<boolean>;
-    /** When false, client-side filtering is disabled (for async/server-driven search). */
-    filterable?: Ref<boolean>;
+    /**
+     * Whether to render multi-select UI. The model becomes an array. Reactive:
+     * flipping single ↔ multi at runtime is supported.
+     */
+    multiple: MaybeRefOrGetter<boolean>;
+    /** Whether to render a text-search input. Reactive. */
+    searchable: MaybeRefOrGetter<boolean>;
+    /** Disables open/keyboard handling. */
+    disabled: MaybeRefOrGetter<boolean>;
+    /**
+     * Enables built-in client-side filtering. Pass `false` for server-driven
+     * search — the parent watches `searchQuery` and replaces `options` itself.
+     * @default true
+     */
+    filterable?: MaybeRefOrGetter<boolean>;
 }
 
+/**
+ * Headless engine behind `<VSelect>` — selection state, keyboard navigation,
+ * option flattening (incl. tree collapse + creator-row injection), and a
+ * pre-built label lookup map.
+ *
+ * @example
+ * ```ts
+ * const { isOpen, visibleOptions, handleSelect, onKeyDown } = useSelect({
+ *     options: ref(opts),
+ *     modelValue: ref(null),
+ *     multiple: false,
+ *     searchable: false,
+ *     disabled: ref(false)
+ * });
+ * ```
+ */
 export function useSelect(props: UseSelectProps) {
 
     const {
@@ -67,9 +107,10 @@ export function useSelect(props: UseSelectProps) {
 
     function findOptionIndex(options: ReadonlyArray<FlatOption>, model: SelectModelValue): number {
         if (model === null || model === undefined) return -1;
+        const isMulti = toValue(props.multiple);
         return options.findIndex(opt => {
             if (opt.isGroup || opt.isCreator || opt.value === undefined) return false;
-            if (props.multiple && Array.isArray(model)) {
+            if (isMulti && Array.isArray(model)) {
                 return model.some(val => val === opt.value);
             }
             return opt.value === model;
@@ -144,29 +185,74 @@ export function useSelect(props: UseSelectProps) {
     });
 
     return {
+        /** `true` while the listbox is open. Read-write. */
         isOpen,
+        /** Current search query string. Read-write; clearing this resets filtering. */
         searchQuery,
+        /**
+         * Index into `visibleOptions` of the currently highlighted row (the
+         * `aria-activedescendant` target). `-1` when no row is highlighted.
+         */
         highlightedIndex,
+        /** Set of tree-node values that are currently collapsed. Read-write. */
         collapsedValues,
+        /** Parent value of the active creator-mode input, or `null` when inactive. */
         creatorParentValue,
+        /**
+         * Flattened, filtered, collapse-aware option list. Recomputed when
+         * any of `options`, `searchQuery`, or `collapsedValues` changes.
+         */
         visibleOptions,
+        /**
+         * Indices into `visibleOptions` of rows that can receive keyboard
+         * highlight (excludes groups, disabled rows, the creator placeholder).
+         */
         navigableIndices,
+        /**
+         * Flat `value → label` lookup built once per options change. Use this
+         * to render selected tags or single-value displays in O(1).
+         */
         labelMap,
 
+        /**
+         * Open the listbox. No-op when `disabled`. Also pre-highlights the
+         * currently-selected option (or the first navigable one).
+         */
         open,
+        /** Close the listbox and cancel any active creator-mode input. */
         close: closeWithCleanup,
+        /** Toggle open/closed. */
         toggle: toggleMenu,
+        /**
+         * Keyboard handler covering the full WAI-ARIA 1.2 combobox contract.
+         * Wire to `@keydown` on your root element.
+         */
         onKeyDown,
+        /** Expand / collapse a tree node by its `value`. */
         toggleCollapse,
+        /** Move the active descendant to an index in `visibleOptions`. */
         setHighlight,
 
+        /** Predicate: is this value part of the current model? */
         isSelected,
+        /**
+         * Apply a selection. In multi mode this toggles the value;
+         * in single mode it sets the value and calls `close()`.
+         */
         handleSelect,
+        /** Remove one value from the model. */
         removeValue,
+        /** Pop the last value from a multi-mode model. No-op otherwise. */
         removeLast,
+        /** Reset the model: `undefined` in single mode, `[]` in multi mode. */
         clear,
 
+        /**
+         * Start the inline creator under a tree node. Auto-expands the parent
+         * first if it's currently collapsed.
+         */
         startCreator,
+        /** Dismiss the active creator-mode input. */
         cancelCreator
     };
 }

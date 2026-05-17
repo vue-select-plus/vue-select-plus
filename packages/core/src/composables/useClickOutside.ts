@@ -4,7 +4,19 @@ type MaybeRef<T> = T | Ref<T>;
 
 /**
  * Detects clicks outside of the specified target element(s) and triggers a callback.
- * Listeners attach in capture phase so they fire before modal/portal layers can swallow them.
+ * Listeners attach in the capture phase so they fire before modal/portal layers
+ * can swallow them.
+ *
+ * Pass an **array** of refs when the menu is teleported — include both the
+ * anchor and the floating menu, so clicks on the menu don't count as "outside".
+ *
+ * @param targets - One ref or an array of refs identifying the "inside" region(s).
+ * @param handler - Invoked once per outside pointerdown, before bubble-phase handlers run.
+ *
+ * @example
+ * ```ts
+ * useClickOutside([containerRef, menuRef], () => close());
+ * ```
  */
 export function useClickOutside(
     targets: MaybeRef<HTMLElement | null> | MaybeRef<HTMLElement | null>[],

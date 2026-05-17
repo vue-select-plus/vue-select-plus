@@ -35,6 +35,7 @@
 
     --vs-radius: 6px;
     --vs-radius-sm: 4px;
+    --vs-opacity-disabled: 0.6;
     --vs-shadow-menu: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
                       0 4px 6px -4px rgba(0, 0, 0, 0.1);
     --vs-transition: 150ms ease;
@@ -43,46 +44,42 @@
     --vs-font-size: 0.875rem;
 }
 
-/* System-preference dark mode */
-@media (prefers-color-scheme: dark) {
-    :root:not(.light) {
-        --vs-primary: #3b82f6;
-        --vs-primary-hover: #60a5fa;
-        --vs-primary-contrast: #0b1220;
-        --vs-focus-ring: 0 0 0 3px rgba(96, 165, 250, 0.55);
-
-        --vs-bg: #111827;
-        --vs-bg-elevated: #1f2937;
-        --vs-bg-subtle: #1f2937;
-        --vs-bg-hover: #374151;
-        --vs-bg-active: #4b5563;
-
-        --vs-text: #f9fafb;
-        --vs-text-muted: #9ca3af;
-        --vs-text-disabled: #6b7280;
-
-        --vs-border: #374151;
-        --vs-border-hover: #4b5563;
-        --vs-border-strong: #9ca3af;
-
-        --vs-selected-bg: #1e3a8a;
-        --vs-selected-text: #ffffff;
-
-        --vs-tag-bg: #312e81;
-        --vs-tag-text: #c7d2fe;
-        --vs-tag-remove-hover-bg: rgba(199, 210, 254, 0.2);
-
-        --vs-shadow-menu: 0 10px 15px -3px rgba(0, 0, 0, 0.4),
-                          0 4px 6px -4px rgba(0, 0, 0, 0.4);
-    }
-}
+/*
+ * Class-based dark mode only.
+ *
+ * Up to 0.1.0 the default styles also flipped to dark via
+ * `@media (prefers-color-scheme: dark)`. That was surprising in real apps:
+ * VitePress, Tailwind (default class mode), Nuxt UI and friends all toggle
+ * a `.dark` class on `<html>` and *remove* it for light mode — they never
+ * apply a `.light` class. So when the host was light but the user's OS
+ * preferred dark, `<VSelect>` flipped on its own, against the app's
+ * explicit choice.
+ *
+ * The component now follows the host class only. If you want automatic
+ * system-preference switching, add this one-liner to your global CSS:
+ *
+ *     @media (prefers-color-scheme: dark) {
+ *         :root { ... copy the .vsp-dark block below ... }
+ *     }
+ *
+ * — or simply toggle `.vsp-dark` on `<html>` yourself.
+ */
 
 /*
  * Class-based dark override (works even without media query).
  *
- * Both `.dark` (legacy / Tailwind-compatible) and `.vsp-dark` (component-namespaced,
- * recommended) work. Use `.vsp-dark` if your app already owns the `.dark` class
- * for unrelated theming so the two systems don't collide.
+ * `.vsp-dark` is the recommended, component-namespaced class. `.dark` is also
+ * supported for now to match Tailwind's default dark-mode selector — BUT this
+ * causes Vue Select Plus to flip its theme any time Tailwind does, even if
+ * that wasn't your intent.
+ *
+ * The `.dark` mapping is planned to be removed in v1.0. Migrate to `.vsp-dark`,
+ * or set the CSS variables yourself if you need finer control:
+ *
+ *     :root.your-app-dark {
+ *         --vs-bg: ...;
+ *         --vs-text: ...;
+ *     }
  */
 .vsp-dark,
 .dark {
@@ -116,6 +113,43 @@
                       0 4px 6px -4px rgba(0, 0, 0, 0.4);
 }
 
+/*
+ * Light override class. Use this to pin the component to its light theme
+ * even when an ancestor has `.dark` / `.vsp-dark` (typical scenario:
+ * Tailwind sets `.dark` on `<html>` but you want a single VSelect — say,
+ * inside a notification toast — to stay light).
+ */
+.vsp-light {
+    --vs-primary: #2563eb;
+    --vs-primary-hover: #1d4ed8;
+    --vs-primary-contrast: #ffffff;
+    --vs-focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.45);
+
+    --vs-bg: #ffffff;
+    --vs-bg-elevated: #ffffff;
+    --vs-bg-subtle: #f9fafb;
+    --vs-bg-hover: #f3f4f6;
+    --vs-bg-active: #e5e7eb;
+
+    --vs-text: #111827;
+    --vs-text-muted: #6b7280;
+    --vs-text-disabled: #9ca3af;
+
+    --vs-border: #d1d5db;
+    --vs-border-hover: #9ca3af;
+    --vs-border-strong: #6b7280;
+
+    --vs-selected-bg: #dbeafe;
+    --vs-selected-text: #1e40af;
+
+    --vs-tag-bg: #eef2ff;
+    --vs-tag-text: #3730a3;
+    --vs-tag-remove-hover-bg: rgba(67, 56, 202, 0.15);
+
+    --vs-shadow-menu: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                      0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
 /* =====================================================================
    Root container
    ===================================================================== */
@@ -136,7 +170,7 @@
 }
 
 .vue-select-root.is-disabled {
-    opacity: 0.6;
+    opacity: var(--vs-opacity-disabled);
     cursor: not-allowed;
 }
 

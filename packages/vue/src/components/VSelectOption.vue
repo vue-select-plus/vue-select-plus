@@ -2,23 +2,46 @@
 import { computed } from 'vue';
 import type { FlatOption, SelectValue } from '@vue-select-plus/core';
 
+/**
+ * Internal renderer used by `<VSelect>` for every row in the virtualized
+ * listbox. Not part of the public component API — consumers customize via
+ * the `option`, `toggle-icon`, `add-icon` slots on `<VSelect>` instead.
+ */
 interface Props {
+    /** The flattened option to render (already enriched with depth/grouping). */
     option: FlatOption;
+    /** `true` when this row is the current `aria-activedescendant` target. */
     active: boolean;
+    /** `true` when this row's value is part of the model. */
     selected: boolean;
+    /** `true` when this option's children are currently hidden in the tree. */
     collapsed: boolean;
+    /** DOM id referenced by the combobox's `aria-activedescendant`. */
     id: string;
+    /**
+     * Total number of *navigable* siblings (groups, disabled rows, and the
+     * creator placeholder are excluded). Exposed via `aria-setsize`.
+     */
     setSize?: number;
+    /** 1-based position inside the navigable set. Exposed via `aria-posinset`. */
     posInSet?: number;
-    removeLabel?: string;
+    /** Localized formatter for the tree expand button's accessible label. */
+    expandLabel?: (label: string) => string;
+    /** Localized formatter for the tree collapse button's accessible label. */
+    collapseLabel?: (label: string) => string;
+    /** Localized formatter for the "+" creator-mode button's accessible label. */
+    addChildLabel?: (label: string) => string;
 }
 
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-    (e: 'click', option: FlatOption): void;
-    (e: 'toggle', value: SelectValue): void;
-    (e: 'add-child', value: SelectValue): void;
+    /** Fired when the user clicks the row body. The host calls `handleSelect`. */
+    click: [option: FlatOption];
+    /** Fired when the user clicks the tree-expand chevron. Payload is the row's value. */
+    toggle: [value: SelectValue];
+    /** Fired when the user clicks the "+" add-child button. Payload is the parent's value. */
+    'add-child': [value: SelectValue];
 }>();
 
 const indentStyle = computed(() => ({
@@ -67,7 +90,11 @@ function onOptionClick() {
             v-if="hasChildren"
             type="button"
             class="vue-select-toggle"
-            :aria-label="collapsed ? `Expand ${option.label}` : `Collapse ${option.label}`"
+            :aria-label="
+                collapsed
+                    ? (expandLabel ? expandLabel(option.label) : `Expand ${option.label}`)
+                    : (collapseLabel ? collapseLabel(option.label) : `Collapse ${option.label}`)
+            "
             :aria-controls="`${id}-children`"
             :aria-expanded="!collapsed"
             tabindex="-1"
@@ -82,6 +109,12 @@ function onOptionClick() {
             </slot>
         </button>
 
+        <!--
+          The spacer is NOT a second indent (the tree depth lives in
+          `padding-inline-start` via `indentStyle`). It reserves the width of
+          the chevron slot on leaf rows so labels align vertically with their
+          parents that DO have a toggle button.
+        -->
         <span v-else class="vue-select-spacer" aria-hidden="true"></span>
 
         <div class="vue-select-label-container">
@@ -94,7 +127,7 @@ function onOptionClick() {
             <button
                 type="button"
                 class="vue-select-action-btn"
-                :aria-label="removeLabel ?? `Add child to ${option.label}`"
+                :aria-label="addChildLabel ? addChildLabel(option.label) : `Add child to ${option.label}`"
                 tabindex="-1"
                 @click="onAddChildClick"
                 @mousedown.stop.prevent

@@ -29,72 +29,187 @@ import {
 } from '@vue-select-plus/core';
 import VSelectOption from './VSelectOption.vue';
 
+/**
+ * Localizable text used by the component. Every key is optional — anything
+ * you omit falls back to its English default. Used for screen-reader
+ * announcements and visible-but-low-prominence UI like the clear button.
+ */
 interface VSelectLabels {
+    /** Accessible label on the clear (×) button. @default 'Clear selection' */
     clear?: string;
+    /**
+     * Accessible label on each tag's remove button. Called once per visible
+     * tag with the tag's own label.
+     * @default (label) => `Remove ${label}`
+     */
     removeItem?: (label: string) => string;
+    /** Shown in the menu when the option list is empty. @default 'No results.' */
     noResults?: string;
+    /** Accessible label on the "+" creator-mode button on tree rows. @default 'Add child item' */
     addChild?: string;
+    /**
+     * Announced via the polite live region whenever the navigable result count
+     * changes (search, filtering, options updates).
+     * @default (n) => `${n} result(s) available.`
+     */
     resultsCount?: (count: number) => string;
+    /** Announced + rendered in the menu when `loading` is true. @default 'Loading…' */
     loading?: string;
+    /**
+     * Announced + rendered in the menu when the typed query is shorter than
+     * `minSearchLength`. Receives the configured minimum.
+     * @default (min) => `Type at least ${min} character(s) to search.`
+     */
     typeToSearch?: (min: number) => string;
+    /**
+     * Accessible label on the expand button of a collapsed tree node.
+     * @default (label) => `Expand ${label}`
+     */
+    expand?: (label: string) => string;
+    /**
+     * Accessible label on the collapse button of an expanded tree node.
+     * @default (label) => `Collapse ${label}`
+     */
+    collapse?: (label: string) => string;
+    /**
+     * Accessible label on the "+" creator-mode button. Receives the parent
+     * row's label.
+     * @default (label) => `Add child to ${label}`
+     */
+    addChildTo?: (label: string) => string;
 }
 
 interface VSelectProps {
+    /** Option tree. Items can be flat or nested via `children`. */
     options: ReadonlyArray<SelectOption>;
+    /** Visible label rendered above the control and used as the accessible name. */
     label?: string;
+    /**
+     * Text shown when nothing is selected (and, in searchable mode, used as the
+     * input's placeholder).
+     * @default 'Select...'
+     */
     placeholder?: string;
+    /**
+     * Enable multi-select. The model becomes an array; selections render as
+     * keyboard-reachable tags.
+     * @default false
+     */
     multiple?: boolean;
+    /**
+     * Render a text input that filters options. Combined with `filterable: false`
+     * for server-driven search.
+     * @default false
+     */
     searchable?: boolean;
+    /**
+     * Disable the entire control. Sets `disabled` on the focusable element and
+     * prevents the menu from opening.
+     * @default false
+     */
     disabled?: boolean;
+    /**
+     * Sets `aria-required="true"` and, with `validateOnSubmit`, blocks form
+     * submission while the model is empty.
+     * @default false
+     */
     required?: boolean;
+    /**
+     * Render a clear (×) button whenever a value is selected.
+     * @default false
+     */
     clearable?: boolean;
+    /**
+     * When set, hidden `<input name="...">` elements are emitted so the value
+     * serializes via `FormData` like a native `<select>`.
+     */
     name?: string;
+    /**
+     * Root element id. The trigger, listbox, label, error and live-region ids
+     * are derived from this. Defaults to an SSR-safe `useId()`-generated value.
+     */
     id?: string;
+    /** Error message. Sets `aria-invalid` and links to the message via `aria-describedby`. */
     error?: string;
-    /** Visible row height in px. Used for virtualization. */
+    /**
+     * Row height in px used by the virtualizer.
+     * @default 40
+     */
     itemHeight?: number;
     /** Accessible label for the listbox. Defaults to the `label` prop. */
     listboxLabel?: string;
     /** Localizable text for screen reader announcements. */
     labels?: VSelectLabels;
-    /** Preferred placement of the dropdown. Auto-flips when no space is available. */
+    /**
+     * Preferred placement of the dropdown. Auto-flips when no space is available.
+     * @default 'bottom-start'
+     */
     placement?: Placement;
     /**
      * Where to render the dropdown.
      * - `true` (default): teleport to `<body>` to escape `overflow: hidden` ancestors.
      * - `false`: render inline (same DOM position as the trigger).
      * - `string` (CSS selector) or `HTMLElement`: teleport to that target.
+     * @default true
      */
     teleport?: boolean | string | HTMLElement;
-    /** Maximum visible height of the dropdown in px. */
+    /**
+     * Maximum visible height of the dropdown in px. Floating UI clamps further
+     * to the available viewport space.
+     * @default 320
+     */
     maxMenuHeight?: number;
-    /** Show a spinner + announce a busy state (typically while async-fetching options). */
+    /**
+     * Show a spinner + announce a busy state (typically while async-fetching
+     * options).
+     * @default false
+     */
     loading?: boolean;
     /**
-     * Enable client-side filtering. Set to `false` for server-driven search:
+     * Enable client-side filtering. Set to `false` for server-driven search —
      * the parent listens to `@search` and replaces `options` itself.
+     * @default true
      */
     filterable?: boolean;
-    /** Minimum query length before `@search` is emitted and the menu attempts to show results. */
+    /**
+     * Minimum query length before `@search` is emitted and the menu attempts
+     * to show results.
+     * @default 0
+     */
     minSearchLength?: number;
-    /** Debounce delay (ms) for the `@search` event. `0` disables debouncing. */
+    /**
+     * Debounce delay (ms) for the `@search` event. `0` disables debouncing.
+     * @default 0
+     */
     searchDebounce?: number;
-    /** Visual size variant. Maps to padding + font-size + control height. */
+    /**
+     * Visual size variant. Maps to padding + font-size + control height.
+     * @default 'md'
+     */
     size?: 'sm' | 'md' | 'lg';
     /**
      * Forwarded to the underlying input in searchable mode. Use this for browser
      * autofill hints (`autocomplete="country"`, `autocomplete="off"`, …).
+     * @default 'off'
      */
     autocomplete?: string;
-    /** Forwarded `inputmode` for soft-keyboard hints on mobile. */
+    /**
+     * Forwarded `inputmode` for soft-keyboard hints on mobile. Defaults to the
+     * browser default (omitted attribute).
+     */
     inputmode?: 'none' | 'text' | 'search' | 'numeric' | 'email' | 'tel' | 'url' | 'decimal';
     /**
-     * Enable browser-native form validation. When `required` is true and the
-     * model is empty, the next `<form>` submit will be blocked and the browser
-     * will surface its own validation tooltip.
+     * Enable browser-native HTML5 form validation. When `required` is true and
+     * the model is empty, the next `<form>` submit is blocked and the browser
+     * surfaces its own validation tooltip. Set to `false` to delegate to a
+     * validation library (VeeValidate, FormKit, …).
+     * @default true
      */
     validateOnSubmit?: boolean;
-    /** Custom message for the browser-native required validation tooltip. */
+    /**
+     * Custom message for the browser-native required validation tooltip.
+     * Defaults to `'Please select an item.'` when omitted.
+     */
     validationMessage?: string;
 }
 
@@ -120,11 +235,31 @@ const props = withDefaults(defineProps<VSelectProps>(), {
 
 const model = defineModel<SelectModelValue>({ required: false });
 
+/**
+ * Component events — Vue 3.3+ short-hand tuple syntax.
+ *
+ * Note: Vue's generated component type widens emit handler return values to
+ * `any` regardless of how they're declared. That's a framework decision
+ * (template `@event="…"` callbacks may return any value). The arg types
+ * stay correct — only the return type is `any` in the emitted `.d.ts`.
+ */
 const emit = defineEmits<{
-    (e: 'create', payload: { parent: SelectValue; value: string }): void;
-    (e: 'open'): void;
-    (e: 'close'): void;
-    (e: 'search', query: string): void;
+    /**
+     * Emitted when the user submits the creator-mode input (Enter on the
+     * inline "+" row). The parent owns the data: react by appending a child
+     * with `value` under the option identified by `parent`.
+     */
+    create: [payload: { parent: SelectValue; value: string }];
+    /** Emitted after the listbox opens. */
+    open: [];
+    /** Emitted after the listbox closes (any cause: selection, Escape, click outside, Tab). */
+    close: [];
+    /**
+     * Emitted when the search query changes. Honors `searchDebounce` and
+     * `minSearchLength` — for server-driven search, listen here and replace
+     * `options` from the parent.
+     */
+    search: [query: string];
 }>();
 
 const optionsRef = toRef(props, 'options');
@@ -331,6 +466,21 @@ const showPlaceholder = computed(() => {
     return true;
 });
 
+/**
+ * Whether the searchable <input> should be visible.
+ *
+ * - Always invisible when not `searchable` (the <button> trigger is used).
+ * - Always visible in `multiple` mode (the input lives alongside the tags).
+ * - In single mode it's visible only while actively searching, or when no
+ *   value is selected — otherwise the `vue-select-single-value` span owns
+ *   the visual slot and stacking both would double-render the label.
+ */
+const showSearchInput = computed(() => {
+    if (!props.searchable) return false;
+    if (props.multiple) return true;
+    return showSearch.value || singleLabel.value === null;
+});
+
 const searchPlaceholder = computed(() => {
     if (props.multiple) {
         // When no tags exist yet the input is the only thing on the row — show
@@ -338,7 +488,11 @@ const searchPlaceholder = computed(() => {
         // tags read clearly.
         return showTags.value ? '' : props.placeholder;
     }
-    return singleLabel.value !== null ? String(singleLabel.value) : props.placeholder;
+    // In single mode the input is only visible when the menu is open (see
+    // `showSearchInput`); using the static placeholder rather than the
+    // currently-selected label avoids the "selected label as placeholder"
+    // UX which looks like a missing value to most users.
+    return props.placeholder;
 });
 
 const activeOptionId = computed(() => {
@@ -348,7 +502,14 @@ const activeOptionId = computed(() => {
     return `${rootId.value}-opt-${highlightedIndex.value}`;
 });
 
-const listboxAriaLabel = computed(() => props.listboxLabel ?? (props.label ? undefined : props.placeholder));
+// Per WAI-ARIA, `aria-labelledby` takes precedence over `aria-label`. Setting
+// both is permitted but flagged by some linters as a conflict. We pick exactly
+// one: an external `<label>` (preferred) → labelledby, otherwise → label.
+const listboxLabelledBy = computed(() => (props.label ? labelId.value : undefined));
+const listboxAriaLabel = computed(() => {
+    if (listboxLabelledBy.value) return undefined;
+    return props.listboxLabel ?? props.placeholder;
+});
 
 /**
  * Screen-reader announcement of the current selection. For non-searchable mode
@@ -399,7 +560,10 @@ const resolvedLabels = computed(() => ({
         count === 0 ? 'No results available.' : `${count} result${count === 1 ? '' : 's'} available.`),
     loading: props.labels?.loading ?? 'Loading…',
     typeToSearch: props.labels?.typeToSearch ?? ((min: number) =>
-        `Type at least ${min} character${min === 1 ? '' : 's'} to search.`)
+        `Type at least ${min} character${min === 1 ? '' : 's'} to search.`),
+    expand: props.labels?.expand ?? ((label: string) => `Expand ${label}`),
+    collapse: props.labels?.collapse ?? ((label: string) => `Collapse ${label}`),
+    addChildTo: props.labels?.addChildTo ?? ((label: string) => `Add child to ${label}`)
 }));
 
 const navigableCount = computed(() =>
@@ -485,10 +649,25 @@ onBeforeUnmount(() => {
     if (isOpen.value) close();
 });
 
+/**
+ * Imperative API for template-ref consumers:
+ *
+ * ```ts
+ * const selectRef = ref<InstanceType<typeof VSelect> | null>(null);
+ * selectRef.value?.open();
+ * ```
+ */
 defineExpose({
+    /** Open the listbox (no-op when `disabled`). */
     open,
+    /** Close the listbox and cancel any active creator-mode input. */
     close,
+    /**
+     * Move focus to the trigger — the `<button>` in non-searchable mode, or
+     * the `<input>` in searchable mode.
+     */
     focus: focusTrigger,
+    /** Reset the model: `undefined` in single mode, `[]` in multi mode. */
     clear
 });
 </script>
@@ -560,6 +739,7 @@ defineExpose({
                 <!-- Searchable: input is the combobox -->
                 <input
                     v-if="searchable"
+                    v-show="showSearchInput"
                     ref="input"
                     :id="`${rootId}-input`"
                     v-model="searchQuery"
@@ -710,7 +890,7 @@ defineExpose({
             :style="floatingStyles"
             :data-placement="actualPlacement"
             :aria-label="listboxAriaLabel"
-            :aria-labelledby="label ? labelId : undefined"
+            :aria-labelledby="listboxLabelledBy"
             :aria-multiselectable="multiple || undefined"
             :aria-busy="loading || undefined"
             @mousedown.prevent
@@ -804,7 +984,9 @@ defineExpose({
                             :collapsed="visibleOptions[virtualRow.index]!.value !== undefined && collapsedValues.has(visibleOptions[virtualRow.index]!.value!)"
                             :set-size="navigableCount"
                             :pos-in-set="virtualRow.index + 1"
-                            :remove-label="resolvedLabels.addChild"
+                            :expand-label="resolvedLabels.expand"
+                            :collapse-label="resolvedLabels.collapse"
+                            :add-child-label="resolvedLabels.addChildTo"
                             @click="handleSelect"
                             @toggle="toggleCollapse"
                             @add-child="startCreator"
